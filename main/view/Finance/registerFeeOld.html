@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head id="Head1">
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/moment.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=7e815023-d4c4-47c7-87f4-cd3a5a71e01b', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        navId = '7e815023-d4c4-47c7-87f4-cd3a5a71e01b';
+
+        function selectMember(navId) {
+            window.parent.showDialog("选择幼儿", "../Modules/CRM/SelectMultiMembers.aspx?navId=" + navId + "&memberType=1&act=tuitionin", "760px", "420px");
+        }
+
+        function AddMemberInfo(memberGuid, memberName, depositGuid, amount) {
+            var hfInfo = $("#hfMember").val();
+            if (hfInfo != "") {
+                jsonObjList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonObjList = [];
+            }
+            var isExist = false;
+            for (var i = 0; i < jsonObjList.length; i++) {
+                if (memberGuid.toLocaleLowerCase() == jsonObjList[i].MemberGuid.toLocaleLowerCase()) {
+                    isExist = true;
+                }
+            }
+
+            if (isExist) {
+                parent.parent.ShowTips("该幼儿已添加");
+            } else {
+                jsonObjList.push({
+                    "MemberGuid": memberGuid,
+                    "MemberName": memberName,
+                    "DepositGuid": depositGuid,
+                    "Amount": amount
+                });
+                $("#hfMember").val(JSON.stringify(jsonObjList));
+                BindMember();
+                parent.parent.ShowTips("添加成功");
+            }
+        }
+
+        function DeleteMember(memberGuid) {
+            var hfInfo = $("#hfMember").val();
+            if (hfInfo != "") {
+                jsonObjList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonObjList = [];
+            }
+            for (var i = 0; i < jsonObjList.length; i++) {
+                if (jsonObjList[i].MemberGuid.toLocaleLowerCase() == memberGuid.toLocaleLowerCase()) {
+                    jsonObjList.splice(i, 1);
+                }
+            }
+            $("#hfMember").val(JSON.stringify(jsonObjList));
+            BindMember();
+        }
+
+        function BindMember() {
+            var hfInfo = $("#hfMember").val();
+            if (hfInfo != "") {
+                jsonObjList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonObjList = [];
+            }
+
+            var html = "";
+            for (var i = 0; i < jsonObjList.length; i++) {
+                var memberName = jsonObjList[i].MemberName;
+                if (jsonObjList[i].DepositGuid != "00000000-0000-0000-0000-000000000000") {
+                    memberName += "（定金：" + jsonObjList[i].Amount + "）";
+                }
+                html += "<span style=\"padding-right:15px;\">" + memberName;
+                html += "<span ><a title=\"取消\" onclick=\"DeleteMember('" + jsonObjList[i].MemberGuid + "')\" href=\"javascript:void(0)\"><img style=\"vertical-align:middle;\" src=\"../../Images/del.png\"></a></span>";
+                html += "</span>";
+            }
+
+            $("#lbMember").html(html);
+        }
+
+        function selectTuitionItem(navId) {
+            var EffectiveLen = "M";
+            if ($("#rdbTimeStepM").is(':checked')) {
+                EffectiveLen = "M";
+            } else {
+                EffectiveLen = "T";
+            }
+            window.parent.showDialog("选择收费科目", "../Modules/Finance/SelectTuitionItem.aspx?navId=" + navId + "&EffectiveLen=" + EffectiveLen, "760px", "420px");
+        }
+
+        function AddTuitionItem(Items) {
+            if (Items != null && Items != "") {
+                var discount = "1.00";
+                if ($.trim($("#txtDiscount").val()) != "")
+                    discount = $.trim($("#txtDiscount").val());
+
+                var hfInfo = $("#hfTuitionItemData").val();
+                if (hfInfo != "") {
+                    jsonObjList = jQuery.parseJSON(hfInfo);
+                } else {
+                    jsonObjList = [];
+                }
+                var jsonItemList = jQuery.parseJSON(Items);
+
+                var isExist = false;
+                for (var i = 0; i < jsonObjList.length; i++) {
+                    if (jsonObjList[i].TuitionItemGuid.toLocaleLowerCase() == jsonItemList[0].TuitionItemGuid.toLocaleLowerCase()) {
+                        isExist = true;
+                    }
+                }
+                if (isExist) {
+                    parent.parent.ShowTips("该科目已添加");
+                } else {
+                    if (jsonItemList[0].IsDiscount == "True" || jsonItemList[0].IsDiscount == "true" || jsonItemList[0].IsDiscount == "1") {
+                        jsonObjList.push({
+                            MemberTuitionItemGuid: "00000000-0000-0000-0000-000000000000",
+                            MemberTuitionGuid: "00000000-0000-0000-0000-000000000000",
+                            TuitionItemGuid: jsonItemList[0].TuitionItemGuid,
+                            ItemName: jsonItemList[0].ItemName,
+                            ItemPrice: jsonItemList[0].ItemPrice,
+                            ItemCount: 1,
+                            ItemType: 1,
+                            ItemAmount: (Number(jsonItemList[0].ItemPrice)).toFixed(2),
+                            Discount: discount,
+                            ActualAmount: (Number(jsonItemList[0].ItemPrice) * (Number(discount))).toFixed(2),
+                            IsDiscount: jsonItemList[0].IsDiscount,
+                            EffectiveLen: jsonItemList[0].EffectiveLen
+                        });
+                    } else {
+                        jsonObjList.push({
+                            MemberTuitionItemGuid: "00000000-0000-0000-0000-000000000000",
+                            MemberTuitionGuid: "00000000-0000-0000-0000-000000000000",
+                            TuitionItemGuid: jsonItemList[0].TuitionItemGuid,
+                            ItemName: jsonItemList[0].ItemName,
+                            ItemPrice: jsonItemList[0].ItemPrice,
+                            ItemCount: 1,
+                            ItemType: 1,
+                            ItemAmount: (Number(jsonItemList[0].ItemPrice)).toFixed(2),
+                            Discount: "1.00",
+                            ActualAmount: (Number(jsonItemList[0].ItemPrice) * (Number(1.00))).toFixed(2),
+                            IsDiscount: jsonItemList[0].IsDiscount,
+                            EffectiveLen: jsonItemList[0].EffectiveLen
+                        });
+                    }
+                    $("#hfTuitionItemData").val(JSON.stringify(jsonObjList));
+                    BindItem();
+                    parent.parent.ShowTips("添加成功");
+                }
+
+            }
+
+        }
+
+        function BindItem() {
+            var hfInfo = $("#hfTuitionItemData").val();
+            if (hfInfo != "") {
+                jsonItemList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonItemList = [];
+            }
+            var trHtml = '';
+            for (var i = 0; i < jsonItemList.length; i++) {
+                trHtml += '<tr>';
+                trHtml += '<td>' + jsonItemList[i].ItemName + '</td>';
+                trHtml += '<td style="text-align:right;">' + (Number(jsonItemList[i].ItemPrice)).toFixed(2) + '</td>';
+                if (jsonItemList[i].IsDiscount.toString() == "True" || jsonItemList[i].IsDiscount.toString() == "true" || jsonItemList[i].IsDiscount.toString() == "1") {
+
+                    trHtml += '<td><input type="text" name="tbDiscountTrue" value="' + (Number(jsonItemList[i].Discount)).toFixed(2) + '" class="int tbTuitionItemDiscount" style="width:60px;text-align:right;" /></td>';
+                } else {
+                    trHtml += '<td><input type="text" name="tbDiscount" disabled="true" value="' + (Number(jsonItemList[i].Discount)).toFixed(2) + '" class="int tbTuitionItemDiscount" style="width:60px;text-align:right;" /></td>';
+                }
+                trHtml += '<td style="text-align:right;">' + jsonItemList[i].ItemAmount + '</td>';
+                trHtml += '<td style="text-align:right;">' + jsonItemList[i].ActualAmount + '</td>';
+                trHtml += '<td><a href="javascript:void(0)" title="删除" class="deleteTuitionItem"><img src="../../Images/del_c.png" /></a>';
+                trHtml += '<input type="hidden" name="hfTuitionItemGuid" value=\'' + jsonItemList[i].TuitionItemGuid + '\' />';
+                trHtml += '</td>';
+                trHtml += '</tr>';
+            }
+            $("#TuitionItemList tbody").html(trHtml);
+            ItemAutoCompute();
+        }
+
+        function ItemAutoCompute() {
+            var subTotal = 0,
+                discountSubTotal = 0;
+            $("#TuitionItemList tbody tr").each(function() {
+                var itemAmount = Number($(this).children().eq(3).text());
+                var itemDiscount = Number($(this).children().eq(2).find("input").val());
+                $(this).children().eq(4).text((itemAmount * itemDiscount).toFixed(2));
+                subTotal += itemAmount;
+                discountSubTotal += itemAmount * itemDiscount;
+            });
+            $("#lbTuitionItemTotal").text(subTotal.toFixed(2));
+            $("#lbTuitionItemDiscountTotal").text(discountSubTotal.toFixed(2));
+            ColAmount();
+            ReSizeScrollbar();
+        }
+
+        function ColAmount() {
+            var totalAmount = 0;
+            var actualAmount = 0;
+            if (isNaN(parseFloat($("#lbLessonDiscountTotal").html())))
+                actualAmount += parseFloat(0);
+            else
+                actualAmount += parseFloat($("#lbLessonDiscountTotal").html());
+
+            if (isNaN(parseFloat($("#lbTuitionItemDiscountTotal").html())))
+                actualAmount += parseFloat(0);
+            else
+                actualAmount += parseFloat($("#lbTuitionItemDiscountTotal").html());
+
+            if (isNaN(parseFloat($("#lbProductDiscountTotal").html())))
+                actualAmount += parseFloat(0);
+            else
+                actualAmount += parseFloat($("#lbProductDiscountTotal").html());
+
+            if (isNaN(parseFloat($("#lbDiscountTotal").html())))
+                totalAmount += parseFloat(0);
+            else
+                totalAmount += parseFloat($("#lbDiscountTotal").html());
+
+            if (isNaN(parseFloat($("#lbTuitionItemTotal").html())))
+                totalAmount += parseFloat(0);
+            else
+                totalAmount += parseFloat($("#lbTuitionItemTotal").html());
+
+            if (isNaN(parseFloat($("#lbProductTotal").html())))
+                totalAmount += parseFloat(0);
+            else
+                totalAmount += parseFloat($("#lbProductTotal").html());
+
+            $("#tbTotalAmount").val(Number(actualAmount).toFixed(2));
+            $("#tbActualAmount").val(Number(actualAmount).toFixed(2));
+
+        }
+        $(function() {
+            $(".tbTuitionItemDiscount").live("change", function() {
+                var tuitionItemGuid = $(this).parent().parent().children().eq(5).find("input[name='hfTuitionItemGuid']").val();
+                var dis = $(this).val();
+                if (isNaN(dis)) {
+                    dis = "1.00";
+                } else {
+                    if (Number(dis) <= 0 || Number(dis) > 1)
+                        dis = "1.00";
+                }
+                if ($("#hfTuitionItemData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfTuitionItemData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].TuitionItemGuid.toLocaleLowerCase() == tuitionItemGuid.toLocaleLowerCase()) {
+                            jsonItemList[i].Discount = dis;
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfTuitionItemData").val(JSON.stringify(jsonItemList));
+                    BindItem();
+                    ItemAutoCompute();
+                }
+            });
+            $(".deleteTuitionItem").live("click", function() {
+                var tuitionItemGuid = $(this).parent().parent().children().eq(5).find("input[name='hfTuitionItemGuid']").val();
+
+                if ($("#hfTuitionItemData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfTuitionItemData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].TuitionItemGuid.toLocaleLowerCase() == tuitionItemGuid.toLocaleLowerCase()) {
+                            jsonItemList.splice(i, 1);
+                        }
+                    }
+                    $("#hfTuitionItemData").val(JSON.stringify(jsonItemList));
+                    BindItem();
+                    ItemAutoCompute();
+                }
+            });
+        });
+
+        function selectLesson(navId) {
+            window.parent.showDialog("选择才艺课", "../Modules/Teach/SelectLikeLesson.aspx?navId=" + navId, "500px", "420px");
+        }
+
+        function AddLikeLessonInfo(Items) {
+            if (Items != null && Items != "") {
+                var discount = "1.00";
+                if ($.trim($("#txtDiscount").val()) != "")
+                    discount = $.trim($("#txtDiscount").val());
+
+                var hfInfo = $("#hfLessonData").val();
+                if (hfInfo != "") {
+                    jsonObjList = jQuery.parseJSON(hfInfo);
+                } else {
+                    jsonObjList = [];
+                }
+                var jsonItemList = jQuery.parseJSON(Items);
+
+                var isExist = false;
+                for (var i = 0; i < jsonObjList.length; i++) {
+                    if (jsonObjList[i].LessonGuid.toLocaleLowerCase() == jsonItemList[0].LikeLessonGuid.toLocaleLowerCase()) {
+                        isExist = true;
+                    }
+                }
+                if (isExist) {
+                    parent.parent.ShowTips("该兴趣课已添加");
+                } else {
+                    if (jsonItemList[0].IsDiscount == "True" || jsonItemList[0].IsDiscount == "true" || jsonItemList[0].IsDiscount == "1") {
+                        jsonObjList.push({
+                            MemberTuitionLessonGuid: "00000000-0000-0000-0000-000000000000",
+                            MemberTuitionGuid: "00000000-0000-0000-0000-000000000000",
+                            LessonGuid: jsonItemList[0].LikeLessonGuid,
+                            LessonName: jsonItemList[0].LikeLessonName,
+                            LessonPrice: jsonItemList[0].LikeLessonPrice,
+                            SumAmount: (Number(jsonItemList[0].LikeLessonPrice)).toFixed(2),
+                            Discount: discount,
+                            ActualAmount: (Number(jsonItemList[0].LikeLessonPrice) * (Number(discount))).toFixed(2),
+                            IsDiscount: jsonItemList[0].IsDiscount
+                        });
+                    } else {
+                        jsonObjList.push({
+                            MemberTuitionLessonGuid: "00000000-0000-0000-0000-000000000000",
+                            MemberTuitionGuid: "00000000-0000-0000-0000-000000000000",
+                            LessonGuid: jsonItemList[0].LikeLessonGuid,
+                            LessonName: jsonItemList[0].LikeLessonName,
+                            LessonPrice: jsonItemList[0].LikeLessonPrice,
+                            SumAmount: (Number(jsonItemList[0].LikeLessonPrice)).toFixed(2),
+                            Discount: "1.00",
+                            ActualAmount: (Number(jsonItemList[0].LikeLessonPrice) * (Number(1.00))).toFixed(2),
+                            IsDiscount: jsonItemList[0].IsDiscount
+                        });
+                    }
+
+                    $("#hfLessonData").val(JSON.stringify(jsonObjList));
+                    BindLesson();
+                    parent.parent.ShowTips("添加成功");
+                }
+
+            }
+
+        }
+
+        function BindLesson() {
+            var hfInfo = $("#hfLessonData").val();
+            if (hfInfo != "") {
+                jsonItemList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonItemList = [];
+            }
+            var trHtml = '';
+            for (i = 0; i < jsonItemList.length; i++) {
+                trHtml += '<tr>';
+                trHtml += '<td>' + jsonItemList[i].LessonName + '</td>';
+                trHtml += '<td style="text-align:right;">' + (Number(jsonItemList[i].LessonPrice)).toFixed(2) + '</td>';
+                if (jsonItemList[i].IsDiscount.toString() == "True" || jsonItemList[i].IsDiscount.toString() == "true" || jsonItemList[i].IsDiscount.toString() == "1") {
+
+                    trHtml += '<td><input type="text" name="tbDiscountTrue" value="' + (Number(jsonItemList[i].Discount)).toFixed(2) + '" class="int tbLessonDiscount" style="width:60px;text-align:right;" /></td>';
+                } else {
+                    trHtml += '<td><input type="text" name="tbDiscount" disabled="true" value="' + (Number(jsonItemList[i].Discount)).toFixed(2) + '" class="int" style="width:60px;text-align:right;" /></td>';
+                }
+                trHtml += '<td style="text-align:right;">' + jsonItemList[i].SumAmount + '</td>';
+                trHtml += '<td style="text-align:right;">' + jsonItemList[i].ActualAmount + '</td>';
+                trHtml += '<td><a href="javascript:void(0)" title="删除" class="deleteLesson"><img src="../../Images/del_c.png" /></a>';
+                trHtml += '<input type="hidden" name="hfLessonGuid" value=\'' + jsonItemList[i].LessonGuid + '\' />';
+                trHtml += '</td>';
+                trHtml += '</tr>';
+            }
+            $("#lessonList tbody").html(trHtml);
+            LessonAutoCompute();
+        }
+
+        function LessonAutoCompute() {
+            var subTotal = 0,
+                discountSubTotal = 0;
+            $("#lessonList tbody tr").each(function() {
+                var itemAmount = Number($(this).children().eq(1).text());
+                var itemDiscount = Number($(this).children().eq(2).find("input").val());
+                $(this).children().eq(4).text((itemAmount * itemDiscount).toFixed(2));
+                subTotal += itemAmount;
+                discountSubTotal += itemAmount * itemDiscount;
+            });
+            $("#lbLessonTotal").text(subTotal.toFixed(2));
+            $("#lbLessonDiscountTotal").text(discountSubTotal.toFixed(2));
+            ColAmount();
+            ReSizeScrollbar();
+        }
+        $(function() {
+            $(".tbLessonDiscount").live("change", function() {
+                var lessonGuid = $(this).parent().parent().children().eq(5).find("input[name='hfLessonGuid']").val();
+                var dis = $(this).val();
+                if (isNaN(dis)) {
+                    dis = "1.00";
+                } else {
+                    if (Number(dis) <= 0 || Number(dis) > 1)
+                        dis = "1.00";
+                }
+                if ($("#hfLessonData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfLessonData").val());
+                    for (var i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].LessonGuid.toLocaleLowerCase() == lessonGuid.toLocaleLowerCase()) {
+                            jsonItemList[i].Discount = dis;
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfLessonData").val(JSON.stringify(jsonItemList));
+                    BindLesson();
+                }
+            });
+            $(".deleteLesson").live("click", function() {
+                var lessonGuid = $(this).parent().parent().children().eq(5).find("input[name='hfLessonGuid']").val();
+                if ($("#hfLessonData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfLessonData").val());
+                    for (var i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].LessonGuid.toLocaleLowerCase() == lessonGuid.toLocaleLowerCase()) {
+                            jsonItemList.splice(i, 1);
+                        }
+                    }
+                    $("#hfLessonData").val(JSON.stringify(jsonItemList));
+                    BindLesson();
+                }
+            });
+        });
+
+
+        function selectProduct(navId) {
+            window.parent.showDialog("选择物料", "../Modules/Asset/SelectInventory.aspx?navId=" + navId + "&act=1", "800px", "500px");
+        }
+
+        function AddProduct(Items) {
+            if (Items != null && Items != "") {
+                var discount = "1.00";
+                if ($.trim($("#txtDiscount").val()) != "")
+                    discount = $.trim($("#txtDiscount").val());
+
+                var hfInfo = $("#hfProductData").val();
+                if (hfInfo != "") {
+                    jsonObjList = jQuery.parseJSON(hfInfo);
+                } else {
+                    jsonObjList = [];
+                }
+                var jsonItemList = jQuery.parseJSON(Items);
+
+                var isExist = false;
+                for (var i = 0; i < jsonObjList.length; i++) {
+                    if (jsonObjList[i].ProductGuid.toLocaleLowerCase() == jsonItemList[0].ProductGuid.toLocaleLowerCase()) {
+                        isExist = true;
+                    }
+                }
+                if (isExist) {
+                    parent.parent.ShowTips("该物料已添加");
+                } else {
+
+                    jsonObjList.push({
+                        MemberTuitionLessonGuid: "00000000-0000-0000-0000-000000000000",
+                        MemberTuitionGuid: "00000000-0000-0000-0000-000000000000",
+                        ProductGuid: jsonItemList[0].ProductGuid,
+                        ProductPrice: jsonItemList[0].SalePrice,
+                        ProductName: jsonItemList[0].ProductName,
+                        ProductCount: 1,
+                        GiftCount: 1,
+                        Discount: discount,
+                        SumAmount: (Number(jsonItemList[0].SalePrice)).toFixed(2),
+                        ActualAmount: (Number(jsonItemList[0].SalePrice) * (Number(discount))).toFixed(2),
+                        InventoryGuid: jsonItemList[0].InventoryGuid
+                    });
+
+
+                    $("#hfProductData").val(JSON.stringify(jsonObjList));
+                    BindProduct();
+                    parent.parent.ShowTips("添加成功");
+                }
+
+            }
+
+        }
+
+        function BindProduct() {
+            var hfInfo = $("#hfProductData").val();
+            if (hfInfo != "") {
+                jsonItemList = jQuery.parseJSON(hfInfo);
+            } else {
+                jsonItemList = [];
+            }
+            var trHtml = '';
+            for (i = 0; i < jsonItemList.length; i++) {
+                trHtml += '<tr>';
+                trHtml += '<td>' + jsonItemList[i].ProductName + '</td>';
+                trHtml += '<td style="text-align:right;">' + (Number(jsonItemList[i].ProductPrice)).toFixed(2) + '</td>';
+
+
+                trHtml += '<td style="text-align:center;"><input class="int tbProductCount" value="' + jsonItemList[i].ProductCount + '" style="width:60px;text-align:right;" /></td>';
+                trHtml += '<td style="text-align:center;"><input class="int tbGiftCount" value="' + jsonItemList[i].GiftCount + '" style="width:60px;text-align:right;" /></td>';
+                trHtml += '<td><input type="text" name="tbDiscountTrue" value="' + (Number(jsonItemList[i].Discount)).toFixed(2) + '" class="int tbProductDiscount" style="width:60px;text-align:right;" /></td>';
+
+                trHtml += '<td style="text-align:right;">' + (Number(jsonItemList[i].SumAmount)).toFixed(2) + '</td>';
+                trHtml += '<td style="text-align:right;">' + (Number(jsonItemList[i].ActualAmount)).toFixed(2) + '</td>';
+                trHtml += '<td><a href="javascript:void(0)" title="删除" class="deleteProduct"><img src="../../Images/del_c.png" /></a>';
+                trHtml += '<input type="hidden" name="hfProductGuid" value=\'' + jsonItemList[i].ProductGuid + '\' />';
+                trHtml += '</td>';
+                trHtml += '</tr>';
+            }
+            $("#ProductList tbody").html(trHtml);
+            ProductAutoCompute();
+        }
+
+        function ProductAutoCompute() {
+            var subTotal = 0,
+                discountSubTotal = 0;
+            $("#ProductList tbody tr").each(function() {
+                var itemAmount = Number($(this).children().eq(5).text());
+                var itemDiscount = Number($(this).children().eq(4).find("input").val());
+                $(this).children().eq(6).text((itemAmount * itemDiscount).toFixed(2));
+                subTotal += itemAmount;
+                discountSubTotal += itemAmount * itemDiscount;
+            });
+            $("#lbProductTotal").text(subTotal.toFixed(2));
+            $("#lbProductDiscountTotal").text(discountSubTotal.toFixed(2));
+            ColAmount();
+            ReSizeScrollbar();
+        }
+        $(function() {
+            $(".tbProductCount").live("change", function() {
+                var productGuid = $(this).parent().parent().children().eq(7).find("input[name='hfProductGuid']").val();
+                var productCount = $(this).val();
+                if (isNaN($(this).val())) {
+                    productCount = "1.00";
+                } else {
+                    if (Number($(this).val()) < 0)
+                        productCount = "1.00";
+                }
+                if ($("#hfProductData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfProductData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].ProductGuid.toLocaleLowerCase() == productGuid.toLocaleLowerCase()) {
+                            jsonItemList[i].ProductCount = productCount;
+                            jsonItemList[i].SumAmount = ((Number(productCount)) * Number(jsonItemList[i].ProductPrice)).toFixed(2);
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfProductData").val(JSON.stringify(jsonItemList));
+                    BindProduct();
+                }
+            });
+            $(".tbGiftCount").live("change", function() {
+                var productGuid = $(this).parent().parent().children().eq(7).find("input[name='hfProductGuid']").val();
+                var giftCount = $(this).val();
+                if (isNaN($(this).val())) {
+                    giftCount = "1.00";
+                } else {
+                    if (Number($(this).val()) < 0)
+                        giftCount = "1.00";
+                }
+                if ($("#hfProductData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfProductData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].ProductGuid.toLocaleLowerCase() == productGuid.toLocaleLowerCase()) {
+                            jsonItemList[i].GiftCount = giftCount;
+                            jsonItemList[i].SumAmount = (Number(jsonItemList[i].ProductCount)) * Number(jsonItemList[i].ProductPrice).toFixed(2);
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfProductData").val(JSON.stringify(jsonItemList));
+                    BindProduct();
+                }
+            });
+            $(".tbProductDiscount").live("change", function() {
+                var productGuid = $(this).parent().parent().children().eq(7).find("input[name='hfProductGuid']").val();
+                var dis = $(this).val();
+                if (isNaN(dis)) {
+                    dis = "1.00";
+                } else {
+                    if (Number(dis) <= 0 || Number(dis) > 1)
+                        dis = "1.00";
+                }
+                if ($("#hfProductData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfProductData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].ProductGuid.toLocaleLowerCase() == productGuid.toLocaleLowerCase()) {
+                            jsonItemList[i].Discount = dis;
+                            jsonItemList[i].SumAmount = (Number(jsonItemList[i].ProductCount)) * Number(jsonItemList[i].ProductPrice).toFixed(2);
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfProductData").val(JSON.stringify(jsonItemList));
+                    BindProduct();
+                }
+            });
+            $(".deleteProduct").live("click", function() {
+                var productGuid = $(this).parent().parent().children().eq(7).find("input[name='hfProductGuid']").val();
+                if ($("#hfProductData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfProductData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].ProductGuid.toLocaleLowerCase() == productGuid.toLocaleLowerCase()) {
+                            jsonItemList.splice(i, 1);
+                        }
+                    }
+                    $("#hfProductData").val(JSON.stringify(jsonItemList));
+                    BindProduct();
+                }
+            });
+        });
+
+        $(function() {
+            $("#txtDiscount").live("change", function() {
+                var dis = $(this).val();
+                if (isNaN(dis)) {
+                    dis = "1.00";
+                } else {
+                    if (Number(dis) <= 0 || Number(dis) > 1)
+                        dis = "1.00";
+                }
+                $(this).val(Number(dis).toFixed(2));
+                var jsonItemList;
+                if ($("#hfProductData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfProductData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        jsonItemList[i].Discount = Number(dis).toFixed(2);
+                        jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount) * (Number(jsonItemList[i].ProductCount))).toFixed(2);
+                    }
+                    $("#hfProductData").val(JSON.stringify(jsonItemList));
+                    BindProduct();
+                }
+
+                if ($("#hfLessonData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfLessonData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].IsDiscount == "True" || jsonItemList[i].IsDiscount == "true" || jsonItemList[i].IsDiscount == "1") {
+                            jsonItemList[i].Discount = Number(dis).toFixed(2);
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].SumAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfLessonData").val(JSON.stringify(jsonItemList));
+                    BindLesson();
+                }
+
+                if ($("#hfTuitionItemData").val() != "") {
+                    jsonItemList = jQuery.parseJSON($("#hfTuitionItemData").val());
+                    for (i = 0; i < jsonItemList.length; i++) {
+                        if (jsonItemList[i].IsDiscount == "True" || jsonItemList[i].IsDiscount == "true" || jsonItemList[i].IsDiscount == "1") {
+                            jsonItemList[i].Discount = Number(dis).toFixed(2);
+                            jsonItemList[i].ActualAmount = (Number(jsonItemList[i].ItemAmount) * Number(jsonItemList[i].Discount)).toFixed(2);
+                        }
+                    }
+                    $("#hfTuitionItemData").val(JSON.stringify(jsonItemList));
+                    BindItem();
+                }
+            });
+        });
+
+        $(function() {
+            if ($("#hfTuitionItemData") != "") {
+                BindItem();
+            }
+            if ($("#hfLessonData") != "") {
+                BindLesson();
+            }
+            if ($("#hfProductData") != "") {
+                BindProduct();
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        //点击设置，显示添加前缀
+        function setContractNum(obj) {
+            $("#Ta_fieldExport").css("display", "block");
+        }
+        //前缀保存后，隐藏修改编码
+        function SaveSet() {
+            $.ajaxMethod("Finance_PrefixAdd", {
+                    "PrefixCode": $("#txtFirst").val(),
+                    "Type": 1
+                },
+                function(data) {
+                    hideSet();
+                    if (data != null) {
+                        if (data.toLocaleLowerCase() != "false".toLocaleLowerCase()) {
+                            var codeNO = $("#PFBillNo").val();
+                            //原先 前缀
+                            var hftxtFirst = $("#hftxtFirst").val();
+                            if (hftxtFirst == "") {
+                                $("#PFBillNo").val(data + codeNO + "");
+                                $("#hftxtFirst").val(data);
+                            } else {
+                                var codeNOs = codeNO.substr(0, hftxtFirst.length);
+                                //判断 原先前缀 是否在 定金号前缀存在 有则 替换
+                                if (codeNOs.toLocaleLowerCase() == hftxtFirst.toLocaleLowerCase()) {
+                                    $("#PFBillNo").val(codeNO.replace(codeNOs, data));
+                                    $("#hftxtFirst").val(data);
+                                } else {
+                                    //$("#PFBillNo").val(codeNO.replace(codeNOs, data));
+                                    //$("#hftxtFirst").val(data);
+                                }
+                            }
+                        }
+                    }
+                }, false, "text");
+        }
+        //编码点击取消，隐藏
+        function hideSet() {
+            $("#Ta_fieldExport").css("display", "none")
+        }
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $(".mouseTips").bind({
+                mouseenter: function() {
+                    var $offset = $(this).position();
+                    $(this).next().css({
+                        "top": ($offset.top + 23) + "px",
+                        "left": ($offset.left - 80) + "px"
+                    }).show();
+                },
+                mouseleave: function() {
+                    $(this).next().hide();
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="TuitionIn_More.aspx?navId=7e815023-d4c4-47c7-87f4-cd3a5a71e01b" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNDI5MTIxOTA5D2QWAgIDD2QWCgIDDxBkEBUECeivt+mAieaLqQRkZW1vBuadjuaihQZ3YW5kb3UVBCQwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAkMzZiZGVlMjAtNjAxNi00ZjRlLWEyOTAtNTgyYzExNDNhNWI3JDY1NjcxZTczLWY5ZDAtNDU0NS05M2ZmLThiODE3Y2FkODgwZiRjNzEwYTBhZS0xZmRjLTQ1OGYtYTcwNS02NzY0ODFkY2IyZjAUKwMEZ2dnZ2RkAgUPEGQQFQMJ6K+36YCJ5oupG+W7uuihjCA2MjIyMDIyMCAxNTAwMTM3MDAxMhnnjrDph5HmlK/ku5gg546w6YeR5pSv5LuYFQMkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJDQ5YWFiNTU4LWIzMTAtNDIxOS05NmVkLWFiMTk5MTUxY2UxNSRmZTMwZWEzMi04MzQwLTRjMDYtYmRhYy1lYWVhMjg1NjQyNGIUKwMDZ2dnZGQCCA8QZBAVAgnor7fpgInmi6kM5Zyo5Zut5bm85YS/FQIkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJGY2NTYyNjkzLTY3N2EtNGQ2Mi1hMzAzLWEwNjMyMDg4M2M2MBQrAwJnZ2RkAhEPEGQQFQQJ6K+36YCJ5oupDTIwMTfkuIvlrabmnJ8NMjAxN+S4iuWtpuacnw0yMDE25LiL5a2m5pyfFQQkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJDk4ODBkZGRiLWQ4MjItNDY1Mi05NzZlLThkYjU1MDNhZTU0ZSQ2OWRiOGU2Mi1mYWU2LTQyNmQtOWJiMi04MDY5MzY3MTg5MGUkZDBlNTlmZDYtNjE3MS00YjhlLWFmNjgtMGVlZDk5ZjVkYjhlFCsDBGdnZ2dkZAIfDw8WAh4HVmlzaWJsZWdkZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBQUOY2tiVHVpdGlvblR5cGUFCmNrYkRlcG9zaXQFDHJkYlRpbWVTdGVwTQUMcmRiVGltZVN0ZXBUBQxyZGJUaW1lU3RlcFQR0s3xgBChQEO64+sJB4FyimGh27s5UcUDqE4l/y16pQ=="
+            />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="F7ADEB66" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdACEt+gL6xHnqXHYlVItY15Dp9jcZefH9/k8OaHJ+tw8UEjRt6CfC/1SggpSIeQm8fu3/V5/uRVUE0Fy/nSdrLpAEsNyIUDJYfWiHpstI/DHJfhQ+Jtey1lRA5tXTtVlXsecTrVu9JjtG4DL/OU9RMtbUduKg8OjMEzkEZdeI7GNgkrt+eAUYRrt0pBZb/DuqHw4iwasz+Vj8Sz8wc874dk5eMOaCMIpv1ztV3kfg7cmxcqE2uKG5b0yyE356kLGsj//xilq0Ru5aQc5TvsdR6nzeNn/rDe0BPnc8rP3Cnwp9050IQTmtbCYy3dwsEfamyUVQnrtVoOBxIMeRe7vpY/eYnTPp3thsLX+5vXV8f1U1N/KYEfo9OOGH7sdQDX0GZ4AIXUwnZZ5ZY9cMa/RSlzAEjkzo1uOKwfeZnATKYaq7+yufJrsj375WGMkeZIiZmnh2RZcWTt0eHc3KuYnLoOQBE6QVqhNnvub/ahEbDGKQ7Mqt/3ouI9iC4MiGYTc05dc68GJjngATDlpW+L54qdHteJCwqP/X+8yVMrtq0ufCdoV04pfeE60IAL92fxRXLbRqIzEyKTz8dHhl2t2L5wuQHenBj4F38DDySsDomsvcBO0rNsmnvossMpGXwpdm+nvTjdjjMxju2erG510zak193V6SPz+9gGZjc495Vpi545ZYgDymPir0Zp4mFYzbkIisW8Wlm6E/r70TVgaj/j6RiZbbL2+SrZSC07De2z9wpA=="
+            />
+        </div>
+        <table class="edit">
+            <tr>
+                <td class="textAlignRight">幼儿：</td>
+                <td colspan="5">
+                    <span id="lbMember"></span>
+                    <a onclick="selectMember('7e815023-d4c4-47c7-87f4-cd3a5a71e01b    ')" href="javascript:void(0)">
+                        <img alt="点击添加幼儿" title="点击添加幼儿" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+                    </a>&nbsp;<span class="words">*</span>
+                    <input type="hidden" name="hfMember" id="hfMember" />
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight" style="width: 80px;">收费日期：
+                </td>
+                <td class="borderRight" style="width: 205px;">
+                    <input name="tbChargeDate" type="text" value="2016-06-16" id="tbChargeDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,onpicked:function(dp){pickedFuncChar(dp.cal.getNewDateStr());}})" />
+                    <span class="words">&nbsp;*</span>
+                </td>
+                <td class="textAlignRight" style="width: 80px;">经办人：
+                </td>
+                <td class="borderRight" style="width: 205px;">
+                    <select name="ddlTransactor" id="ddlTransactor" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option selected="selected" value="36bdee20-6016-4f4e-a290-582c1143a5b7">demo</option>
+                        <option value="65671e73-f9d0-4545-93ff-8b817cad880f">李梅</option>
+                        <option value="c710a0ae-1fdc-458f-a705-676481dcb2f0">wandou</option>
+
+                    </select>&nbsp;<span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 80px">折扣：
+                </td>
+                <td>
+                    <input name="txtDiscount" type="text" id="txtDiscount" class="int" style="text-align: right;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">收费帐号：
+                </td>
+                <td class="borderRight">
+                    <select name="ddlAccount" id="ddlAccount" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="49aab558-b310-4219-96ed-ab199151ce15">建行 62220220 15001370012</option>
+                        <option value="fe30ea32-8340-4c06-bdac-eaea2856424b">现金支付 现金支付</option>
+
+                    </select>&nbsp;<span class="words">*</span>
+                </td>
+                <td class="textAlignRight">应收金额：
+                </td>
+                <td class="borderRight">
+                    <input name="tbTotalAmount" type="text" id="tbTotalAmount" class="int" style="text-align: right;" />&nbsp;<span class="words">*</span>
+                </td>
+                <td class="textAlignRight">实收金额：
+                </td>
+                <td class="borderRight">
+                    <input name="tbActualAmount" type="text" id="tbActualAmount" class="int" style="text-align: right;" />&nbsp;<span class="words">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">幼儿类型：
+                </td>
+                <td class="borderRight">
+                    <select name="ddlMemberType" id="ddlMemberType" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="f6562693-677a-4d62-a303-a06320883c60">在园幼儿</option>
+
+                    </select>&nbsp;<span class="words">*</span>&nbsp;<a href="javascript:void(0);" class="mouseTips">[?]</a>
+                    <div class="tips" style="display: none;">
+                        单据成交后，单据中的幼儿的类型修改成此类型
+                    </div>
+                </td>
+                <td class="textAlignRight">到期日期：</td>
+                <td class="borderRight">
+                    <input name="tbDueDate" type="text" id="tbDueDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" />
+                </td>
+                <td class="textAlignRight">代扣单：</td>
+                <td>
+                    <input id="ckbTuitionType" type="checkbox" name="ckbTuitionType" />&nbsp;<a href="javascript:void(0);" class="mouseTips">[?]</a>
+                    <div class="tips" style="display: none;">
+                        勾选后，单据将进入银行代扣的流程
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">编号前缀：</td>
+                <td class="borderRight">
+                    <input name="PFBillNo" type="text" value="NO" id="PFBillNo" class="int" />
+                    <a title="设置合同编号前缀" onclick="setContractNum(this);" href="javascript:void(0)">[设置]</a>
+                    <table id="Ta_fieldExport" class="list" style="position: fixed; z-index: 6; width: 340px; display: none" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td colspan="2" style="padding-bottom: 5px;">
+                                <div style="text-align: center; padding-top: 10px;">
+                                    编号前缀：
+                                    <input name="txtFirst" type="text" value="NO" id="txtFirst" class="int" style="width: 92px; text-align: center" />
+                                    <input type="hidden" name="hftxtFirst" id="hftxtFirst" value="NO" />
+                                </div>
+                                <div style="text-align: center; padding-top: 10px; margin-top: 7px;">
+                                    <input id="btnSaveSet" class="button" type="button" onclick="SaveSet()" value="保存">
+                                    <input id="btnChance" class="button" type="button" onclick="hideSet()" value="取消" style="cursor: default;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+                <td class="textAlignRight">使用定金：</td>
+                <td class="borderRight">
+                    <input id="ckbDeposit" type="checkbox" name="ckbDeposit" />
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">收费模式：</td>
+                <td colspan="5">
+                    <input id="rdbTimeStepM" type="radio" name="TimeStepGroup" value="rdbTimeStepM" checked="checked" onclick="rbCheck(&#39;M&#39;);" />按月
+                    <input id="rdbTimeStepT" type="radio" name="TimeStepGroup" value="rdbTimeStepT" onclick="rbCheck(&#39;T&#39;);" />按学期
+                    <span id="spanMonth">
+                        <input name="txtMonth" type="text" value="2016-06" id="txtMonth" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM&#39;})" style="width:70px;" />
+                    </span>
+                    <span id="spanTerm" class="hidden">
+                        <select name="ddlTerm" id="ddlTerm" class="int">
+	<option value="00000000-0000-0000-0000-000000000000">请选择</option>
+	<option value="9880dddb-d822-4652-976e-8db5503ae54e">2017下学期</option>
+	<option value="69db8e62-fae6-426d-9bb2-80693671890e">2017上学期</option>
+	<option value="d0e59fd6-6171-4b8e-af68-0eed99f5db8e">2016下学期</option>
+
+</select>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">备注：
+                </td>
+                <td colspan="5">
+                    <textarea name="tbNotes" rows="2" cols="20" id="tbNotes" class="int" style="width: 678px; height: 47px;">
+                    </textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="borderBottom"></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="padding-left: 20px;">才艺课程：
+                    <a onclick="selectLesson('7e815023-d4c4-47c7-87f4-cd3a5a71e01b    ')" href="javascript:void(0)">
+                        <img alt="点击添加课程" title="点击添加课程" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+                    </a>
+                    <input type="hidden" name="hfLessonData" id="hfLessonData" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table id="lessonList" class="list" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>课程名称</th>
+                                <th>价格</th>
+                                <th>折扣</th>
+                                <th>小计</th>
+                                <th>折后小计</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="text-align: right;">总计：</td>
+                                <td style="text-align: right;">
+                                    <span id="lbLessonTotal"></span></td>
+                                <td style="text-align: right;">
+                                    <span id="lbLessonDiscountTotal"></span></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="borderBottom"></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="padding-left: 20px;">收费科目：
+                    <a onclick="selectTuitionItem('7e815023-d4c4-47c7-87f4-cd3a5a71e01b    ')" href="javascript:void(0)">
+                        <img alt="点击添加收费科目" title="点击添加收费科目" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+                    </a>
+                    <input type="hidden" name="hfTuitionItemData" id="hfTuitionItemData" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table id="TuitionItemList" class="list" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>科目名称</th>
+                                <th>价格</th>
+                                <th>折扣</th>
+                                <th>小计</th>
+                                <th>折后小计</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td style="text-align: right;">总计：</td>
+                                <td style="text-align: right;">
+                                    <span id="lbTuitionItemTotal"></span></td>
+                                <td style="text-align: right;">
+                                    <span id="lbTuitionItemDiscountTotal"></span></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="borderBottom"></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="padding-left: 45px;">物料：
+                    <a onclick="selectProduct('7e815023-d4c4-47c7-87f4-cd3a5a71e01b    ')" href="javascript:void(0)">
+                        <img alt="点击添加物料" title="点击添加物料" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+                    </a>
+                    <input type="hidden" name="hfProductData" id="hfProductData" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table id="ProductList" class="list" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>物料名称</th>
+                                <th>价格</th>
+                                <th>购买数量</th>
+                                <th>赠送数量</th>
+                                <th>折扣</th>
+                                <th>小计</th>
+                                <th>折后小计</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" style="text-align: right;">总计：</td>
+                                <td style="text-align: right;">
+                                    <span id="lbProductTotal"></span></td>
+                                <td style="text-align: right;">
+                                    <span id="lbProductDiscountTotal"></span></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: center;">
+                    <input type="submit" name="btnSave" value="提 交" onclick="return checkData();" id="btnSave" class="button" />
+                </td>
+            </tr>
+        </table>
+        <script type="text/javascript">
+            function rbCheck(v) {
+                if (v == "M") {
+                    $("#spanMonth").removeClass("hidden");
+                    $("#spanTerm").addClass("hidden");
+                } else if (v == "T") {
+                    $("#spanMonth").addClass("hidden");
+                    $("#spanTerm").removeClass("hidden");
+                }
+            }
+
+            function checkData() {
+
+
+                if ($.trim($("#hfMember").val()) == "" || $.trim($("#hfMember").val()) == "[]") {
+                    alert("请选择幼儿");
+                    return false;
+                }
+                if ($.trim(("#tbBillNo").val()) == "") {
+                    alert("编号前缀不能为空");
+                    return false;
+                }
+                if ($("#ddlTransactor").val() == "00000000-0000-0000-0000-000000000000") {
+                    alert("请选择经办人");
+                    return false;
+                }
+                if ($.trim($("#tbChargeDate").val()) == "") {
+                    alert("请选择收费日期");
+                    return false;
+                }
+                if ($.trim($("#tbDueDate").val()) == "") {
+                    alert("请选择到期日期");
+                    return;
+                }
+                if ($("#ddlAccount").val() == "00000000-0000-0000-0000-000000000000") {
+                    alert("请选择收费账号");
+                    return false;
+                }
+                if ($("#rdbTimeStepM").is(':checked')) {
+                    if ($("#txtMonth").val() == "") {
+                        alert("请填写收费时段的月份");
+                        return false;
+                    }
+                }
+                if ($("#rdbTimeStepT").is(':checked')) {
+                    if ($("#ddlTerm").val() == "00000000-0000-0000-0000-000000000000") {
+                        alert("请填写收费时段的学期");
+                        return false;
+                    }
+                }
+                if ($("#ddlMemberType").val() == "00000000-0000-0000-0000-000000000000") {
+                    alert("请选择幼儿类型");
+                    return false;
+                }
+                return true;
+            }
+        </script>
+    </form>
+</body>
+
+</html>

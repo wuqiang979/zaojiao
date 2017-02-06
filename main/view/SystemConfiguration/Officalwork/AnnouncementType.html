@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=b75870e5-d6a5-4daa-b121-1dbb8f1e25e0', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="NewsCategory.aspx?isLeft=1&amp;navId=b75870e5-d6a5-4daa-b121-1dbb8f1e25e0" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNzYyNjE0MTczD2QWAgIDD2QWBAIBDxYCHgRUZXh0BZcMPHNjcmlwdCBzcmM9Ii4uLy4uL1NjcmlwdHMvalF1ZXJ5LmV0bVRhYnMuanMiPjwvc2NyaXB0PjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4kKGZ1bmN0aW9uICgpIHskKCIjcyIpLmV0bVRhYnMoe2l0ZW06IFt7IFRleHQ6ICLlhazlkYrnsbvliKsiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL05ld3NDYXRlZ29yeS5hc3B4P2lzTGVmdD0xJm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiB0cnVlIH0seyBUZXh0OiAi6K+35YGH57G75Z6LIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9MZWF2ZUNhdGVnb3J5LmFzcHg/aXNMZWZ0PTImbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5Zut5Yqh57G75Z6LIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9DYW1wdXNXb3JrQ2F0ZWdvcnkuYXNweD9pc0xlZnQ9MyZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLotLnnlKjnsbvlnosiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL0V4cGVuc2VBcHBseUNhdGVnb3J5LmFzcHg/aXNMZWZ0PTQmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5a6h5qC46K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9DaGVja1NldC5hc3B4P2lzTGVmdD01Jm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuivhOS7t+ihqOiuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvT0EvRXhhbWluZVRhYmxlLmFzcHg/aXNMZWZ0PTYmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5pWZ5biI6K+E5Lu36KGoIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9TdGFmZkV4YW1pbmVUYWJsZS5hc3B4P2lzTGVmdD04Jm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuaYn+e6p+iuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvT0EvU3RhclNldC5hc3B4P2lzTGVmdD03Jm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuiAg+WLpOinhOWImeiuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvT0EvV29ya1J1bGVMaXN0LmFzcHg/aXNMZWZ0PTkmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6L6+5qCH56iL5bqm6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9FeGFtaW5lQ29uZmlnLmFzcHg/aXNMZWZ0PTEwJm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiBmYWxzZSB9LF19KTt9KTs8L3NjcmlwdD48ZGl2IGlkPSdzJz48L2Rpdj5kAgkPZBYCAgEPFgIeC18hSXRlbUNvdW50AgIWBGYPZBYKAgEPDxYCHgtDb21tYW5kTmFtZQUkMzBkMWNiMjgtYmJjMS00MzJmLWI0ZDktYmFkMzQ0YmU0ZjM0ZGQCAw8PFgIfAgUkMzBkMWNiMjgtYmJjMS00MzJmLWI0ZDktYmFkMzQ0YmU0ZjM0ZGQCBA8VAQzooYzmlL/nrqHnkIZkAgUPDxYEHwIFJDMwZDFjYjI4LWJiYzEtNDMyZi1iNGQ5LWJhZDM0NGJlNGYzNB4HVmlzaWJsZWhkZAIHDw8WAh8CBSQzMGQxY2IyOC1iYmMxLTQzMmYtYjRkOS1iYWQzNDRiZTRmMzRkZAIBD2QWCgIBDw8WAh8CBSQxMzZhZmJjMS02YjMwLTQ2YzYtOGQ2Yy05Y2FiZWEzYmQyYmNkZAIDDw8WAh8CBSQxMzZhZmJjMS02YjMwLTQ2YzYtOGQ2Yy05Y2FiZWEzYmQyYmNkZAIEDxUBDOaVmeW4iOmAmuefpWQCBQ8PFgIfAgUkMTM2YWZiYzEtNmIzMC00NmM2LThkNmMtOWNhYmVhM2JkMmJjZGQCBw8PFgQfAgUkMTM2YWZiYzEtNmIzMC00NmM2LThkNmMtOWNhYmVhM2JkMmJjHwNoZGRkFNCFgrzIgar6xT6l7dBu6m4cVIRVZSrKueYHOYOg5d8=" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C94139C2" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAmtGw1vNMqh/Vw3e3OGF8RzSxxrLY/DwqZzviv8jOgGpZNcQtnKtb31hEtbT6bWJ986+2p6qQ3HSoK4kWuo9EQw5B6Igccj92ScFK0dwlM1113YmZ2tUfgQFwqpx/Z4NSeE+Y63ZK2Ivys9SS/WgaWPL2igA70trjDvPDc0ADZlfpjR3gs0iflOLVEZCsEGBE8B1Wmt7upjYS29nIjkLcsLRheAU5CHgdUrcBylu3gu8g==" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "公告类别",
+                    Url: "<?php echo arU('SystemConfiguration/AnnouncementType'); ?>",
+                    Selected: true
+                }, {
+                    Text: "请假类型",
+                    Url: "<?php echo arU('SystemConfiguration/AskVacationType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "园务类型",
+                    Url: "<?php echo arU('SystemConfiguration/WorkType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "费用类型",
+                    Url: "<?php echo arU('SystemConfiguration/CostType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "审核设置",
+                    Url: "<?php echo arU('SystemConfiguration/CheckSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "评价表设置",
+                    Url: "<?php echo arU('SystemConfiguration/ratedSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "教师评价表",
+                    Url: "<?php echo arU('SystemConfiguration/TeacherratedList'); ?>",
+                    Selected: false
+                }, {
+                    Text: "星级设置",
+                    Url: "<?php echo arU('SystemConfiguration/CounterStarSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "考勤规则设置",
+                    Url: "<?php echo arU('SystemConfiguration/CheckAttendanceSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "达标程度设置",
+                    Url: "<?php echo arU('SystemConfiguration/ReachDegreeSets'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:78">
+                    公告类别：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbCategoryName" type="text" id="tbCategoryName" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align:center;">
+                <thead>
+                    <tr>
+                        <td style="width:100px">操作</td>
+                        <td>公告类别</td>
+                        <td>排序</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td style="text-align:left;">行政管理</td>
+                        <td>
+                            <a id="rptCategory_lnkDown_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td style="text-align:left;">教师通知</td>
+                        <td>
+                            <a id="rptCategory_lnkUp_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("tbCategoryName").value == '') {
+                alert("公告类别名称不能为空！");
+                return false;
+            } else
+                return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

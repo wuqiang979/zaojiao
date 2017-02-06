@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.etmTabs.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#tab").etmTabs({
+                item: [{
+                    Url: "<?php echo arU('Baby/babyFileManage');?>",
+                    Selected: false,
+                    Text: "档案管理"
+                }, {
+                    Url: "<?php echo arU('Baby/classFile');?>",
+                    Selected: true,
+                    Text: "班级档案"
+                }]
+            });
+        });
+        $(function() {
+            $("#mainTd").height($(window).height() - 90);
+            $("#mainTd div:first").css("border-top-width", "0px");
+
+        });
+
+        function pickedFunc() {
+            var selectDate = $("#tbClassYear").val();
+            var url = "../../Modules/Teach/ClassFile.aspx?MN=" + $("#tbMemberName").val() + "&navId=be8c6973-1713-427c-a64d-26d18285ca0b&selectDate=" + selectDate + "&classType=0&Year=" + $('#tbClassYear').val();
+            window.location.href = url;
+        }
+
+        function ShowEdit(memberGuid) {
+            window.parent.showDialog("修改幼儿资料", "../Modules/CRM/MemberEdit.aspx?sc=btn&navId=be8c6973-1713-427c-a64d-26d18285ca0b&memberGuid=" + memberGuid, "1100px", "610px");
+        }
+
+        function showInfo(memberGuid) {
+            window.parent.showDialog("幼儿资料查看", "../Modules/CRM/MemberInfo.aspx?memberGuid=" + memberGuid + "&navId=be8c6973-1713-427c-a64d-26d18285ca0b", "976px", "510px");
+        }
+    </script>
+    <style>
+        .tree {}
+
+        .gradeDiv {
+            font-weight: bold;
+            height: 29px;
+            line-height: 29px;
+            padding-left: 10px;
+        }
+
+        .classDiv {
+            font-weight: bold;
+            height: 29px;
+            line-height: 29px;
+            padding-left: 10px;
+        }
+
+        .classList {
+            list-style: none;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .selected {
+            width: 120px;
+            overflow: hidden;
+        }
+
+        .list {
+            margin-left: 0px;
+        }
+
+        .selected a {
+            color: white;
+        }
+
+        .tree div {
+            border-top: 1px solid #dad8d4;
+            background: url("/Images/ArrowDown.png") no-repeat 140px center;
+        }
+
+        .classTree div {
+            border-top: 1px solid #dad8d4;
+            background: url("/Images/ArrowRight.png") no-repeat 140px center;
+        }
+
+        .classList a {
+            display: inline-block;
+            width: 115px;
+            margin: 0px auto;
+            height: 23px;
+            line-height: 23px;
+        }
+
+        .classList li {
+            height: 23px;
+            line-height: 23px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        #mainTd {
+            width: 160px;
+            vertical-align: top;
+            background: white;
+        }
+    </style>
+    <style type="text/css">
+        #followContainer {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .spanMark {
+            border: solid 1px #ccc;
+            background-color: #fff;
+            padding: 0 3px 0 3px;
+            margin: 1px;
+            display: inline-block;
+            height: 20px;
+            line-height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="post" action="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&amp;ClassType=0" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMjYzMTk0NDUxD2QWAgIDD2QWBgIBDxBkEBURCeivt+mAieaLqQkyMDA2fjIwMDcJMjAwN34yMDA4CTIwMDh+MjAwOQkyMDA5fjIwMTAJMjAxMH4yMDExCTIwMTF+MjAxMgkyMDEyfjIwMTMJMjAxM34yMDE0CTIwMTR+MjAxNQkyMDE1fjIwMTYJMjAxNn4yMDE3CTIwMTd+MjAxOAkyMDE4fjIwMTkJMjAxOX4yMDIwCTIwMjB+MjAyMQkyMDIxfjIwMjIVESQwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAJMjAwNn4yMDA3CTIwMDd+MjAwOAkyMDA4fjIwMDkJMjAwOX4yMDEwCTIwMTB+MjAxMQkyMDExfjIwMTIJMjAxMn4yMDEzCTIwMTN+MjAxNAkyMDE0fjIwMTUJMjAxNX4yMDE2CTIwMTZ+MjAxNwkyMDE3fjIwMTgJMjAxOH4yMDE5CTIwMTl+MjAyMAkyMDIwfjIwMjEJMjAyMX4yMDIyFCsDEWdnZ2dnZ2dnZ2dnZ2dnZ2dnZGQCBQ8WAh4EVGV4dAWkCTxkaXYgY2xhc3M9InRyZWUiPjxkaXYgY2xhc3M9ImdyYWRlRGl2Ij7miZjnrqHnj608L2Rpdj48dWwgY2xhc3M9ImNsYXNzTGlzdCI+PGxpIGNsYXNzPSdzZWxlY3RlZCc+PGEgY2xhc3M9ImFOb3JtYWwiIGhyZWY9IkNsYXNzRmlsZS5hc3B4P25hdklkPWJlOGM2OTczLTE3MTMtNDI3Yy1hNjRkLTI2ZDE4Mjg1Y2EwYiZjbGFzc0d1aWQ9NjAzNDJlNmQtMDNiYi00MzZhLWE0NGQtOTEwOTRhMGE4ODA2JkNsYXNzVHlwZT0wJlllYXI9MjAxNX4yMDE2Ij7miZjnrqEx54+tPGE+PC9saT48bGk+PGEgY2xhc3M9ImFOb3JtYWwiIGhyZWY9IkNsYXNzRmlsZS5hc3B4P25hdklkPWJlOGM2OTczLTE3MTMtNDI3Yy1hNjRkLTI2ZDE4Mjg1Y2EwYiZjbGFzc0d1aWQ9YzQxMDZiNDQtYWU2MS00NGE0LTgzNzQtNzA4OWNmZmEzZTYzJkNsYXNzVHlwZT0wJlllYXI9MjAxNX4yMDE2Ij7miZjnrqEy54+tPGE+PC9saT48L3VsPjxkaXYgY2xhc3M9ImdyYWRlRGl2Ij7lsI/nj608L2Rpdj48dWwgY2xhc3M9ImNsYXNzTGlzdCI+PGxpPjxhIGNsYXNzPSJhTm9ybWFsIiBocmVmPSJDbGFzc0ZpbGUuYXNweD9uYXZJZD1iZThjNjk3My0xNzEzLTQyN2MtYTY0ZC0yNmQxODI4NWNhMGImY2xhc3NHdWlkPTVhNGMwNGZmLTViMmMtNDNmZC1iZWYzLTlhNGYzYmY5NjczZSZDbGFzc1R5cGU9MCZZZWFyPTIwMTV+MjAxNiI+5bCP54+tMeePrTxhPjwvbGk+PC91bD48ZGl2IGNsYXNzPSJncmFkZURpdiI+5Lit54+tPC9kaXY+PHVsIGNsYXNzPSJjbGFzc0xpc3QiPjxsaT48YSBjbGFzcz0iYU5vcm1hbCIgaHJlZj0iQ2xhc3NGaWxlLmFzcHg/bmF2SWQ9YmU4YzY5NzMtMTcxMy00MjdjLWE2NGQtMjZkMTgyODVjYTBiJmNsYXNzR3VpZD0yNDcwMGY4Mi02MzQwLTQ0MGMtYmY0Ni05YmZkOWM4YjU3ZWMmQ2xhc3NUeXBlPTAmWWVhcj0yMDE1fjIwMTYiPuS4reePrTLnj608YT48L2xpPjwvdWw+PGRpdiBjbGFzcz0iZ3JhZGVEaXYiPuWkp+ePrTwvZGl2Pjx1bCBjbGFzcz0iY2xhc3NMaXN0Ij48bGk+PGEgY2xhc3M9ImFOb3JtYWwiIGhyZWY9IkNsYXNzRmlsZS5hc3B4P25hdklkPWJlOGM2OTczLTE3MTMtNDI3Yy1hNjRkLTI2ZDE4Mjg1Y2EwYiZjbGFzc0d1aWQ9MjQ5ZGIzMTctMzU4MS00MjNkLTgwODUtOTY0MjI0NDkyYzUwJkNsYXNzVHlwZT0wJlllYXI9MjAxNX4yMDE2Ij7lpKfnj60x54+tPGE+PC9saT48L3VsPjwvZGl2PmQCCQ8WAh4LXyFJdGVtQ291bnQCARYCZg9kFggCAQ8WAh8ABX08YSBzdHlsZT0iY3Vyc29yOiBwb2ludGVyOyIgIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKTsiIG9uY2xpY2s9U2hvd0VkaXQoJzg5YjRjOGNjLTRlZDQtNDU5ZS05MDRhLTdjNWE2ODJkNWUyZicpPlvkv67mlLldPC9hPmQCAg8VBCQ4OWI0YzhjYy00ZWQ0LTQ1OWUtOTA0YS03YzVhNjgyZDVlMmYG5byg54aZCTIwMTV+MjAxNgzlnKjlm63lubzlhL9kAgMPFgIfAAV3PHNwYW4gY2xhc3M9InNwYW5NYXJrIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojRkZGRkZGO2NvbG9yOmU5YmNjMGM1LTc0ZWItNDY3NS04ODEwLWQwN2FlNDliY2JiYjsiPuS9k+W8sSA8L3NwYW4+Jm5ic3BkAgQPFQQKMjAxNC0wMy0wNhLlvKDmiLTvvIjniLjniLjvvIkLMTg5MjQyNjQ2NzELMDIwLTI4NjU5MzdkZGsnh8Kpzj8b8HDJYKQSIGvy5iHfkh209X0nQFRnTmCi"
+            />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="3607BBD4" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABOrvfP5+G/6nISu9HltE4Zl4Skt+1Vu4Y0RlOKT07lnOI/lgbJsbnyR1bRZn8ryLj6dIiINJ73jbYyA7HNBnNoWuxYCp2Tl2x42qZAEHJnh4ypiZsvLbCCxTn2RbIf4NQESV3lBlKB3XbnN51ZXhK2Sx18IBE58mBAWexlhdiBZX6BxBSbvNCxFUwl4c+QOZQfw7nTibHaMF/YxdcSBzUNpslPYojK+8VXwhcxkSZYI/ImPpEK0eSXvU6o5qGYmztWDuTW0BkTCb6T2m9Rr9rkq2C0RA2cVtdQGcj2brRKZNe5a8JwcGO7GLzOuvJITMSeq9hmqtw6gg6+mbjfw0nJ7PYS2Urq9iKYvr5HB1yHh1fT6KFPAiHNGyyY+CGEEGY2t/IclOmRcKVdzQYNTIMIRZkAhqrLI1CR6LX7bv9VJCRDlkui1LrFu/Tz1QilBwwU="
+            />
+        </div>
+        <div id="tab"></div>
+        <table class="edit">
+            <tr>
+                <td class="textAlignRight" style="width: 54px;">学年：</td>
+                <td class="borderRight" style="width: 105px;padding-right: 3px;">
+                    <select name="ddlClassYear" id="ddlClassYear" class="int" style="width:90px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="2006~2007">2006~2007</option>
+                        <option value="2007~2008">2007~2008</option>
+                        <option value="2008~2009">2008~2009</option>
+                        <option value="2009~2010">2009~2010</option>
+                        <option value="2010~2011">2010~2011</option>
+                        <option value="2011~2012">2011~2012</option>
+                        <option value="2012~2013">2012~2013</option>
+                        <option value="2013~2014">2013~2014</option>
+                        <option value="2014~2015">2014~2015</option>
+                        <option selected="selected" value="2015~2016">2015~2016</option>
+                        <option value="2016~2017">2016~2017</option>
+                        <option value="2017~2018">2017~2018</option>
+                        <option value="2018~2019">2018~2019</option>
+                        <option value="2019~2020">2019~2020</option>
+                        <option value="2020~2021">2020~2021</option>
+                        <option value="2021~2022">2021~2022</option>
+
+                    </select>
+                </td>
+
+                <td class="textAlignRight" style="width: 78px;">幼儿姓名：</td>
+                <td class="borderRight" style="width: 90px;padding-right: 20px;">
+                    <input name="tbMemberName" type="text" id="tbMemberName" class="int" />
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="button" class="button" value="搜 索" onclick="pickedFunc()" id="btnSearch" />
+                </td>
+            </tr>
+        </table>
+        <table style="margin: 0; padding: 0;" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="mainTd" class="borderRight">
+                    <div class="tree">
+                        <div class="gradeDiv">托管班</div>
+                        <ul class="classList">
+                            <li class='selected'><a class="aNormal" href="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&classGuid=60342e6d-03bb-436a-a44d-91094a0a8806&ClassType=0&Year=2015~2016">托管1班<a></li><li><a class="aNormal" href="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&classGuid=c4106b44-ae61-44a4-8374-7089cffa3e63&ClassType=0&Year=2015~2016">托管2班<a></li></ul><div class="gradeDiv">小班</div><ul class="classList"><li><a class="aNormal" href="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&classGuid=5a4c04ff-5b2c-43fd-bef3-9a4f3bf9673e&ClassType=0&Year=2015~2016">小班1班<a></li></ul><div class="gradeDiv">中班</div><ul class="classList"><li><a class="aNormal" href="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&classGuid=24700f82-6340-440c-bf46-9bfd9c8b57ec&ClassType=0&Year=2015~2016">中班2班<a></li></ul><div class="gradeDiv">大班</div><ul class="classList"><li><a class="aNormal" href="ClassFile.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b&classGuid=249db317-3581-423d-8085-964224492c50&ClassType=0&Year=2015~2016">大班1班<a></li></ul></div>
+                </td>
+                <td style="vertical-align: top;">
+
+                    <table class="list" id="proinfoid" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">操作</th>
+                                <th style="border-left-width: 0px;">幼儿姓名</th>
+                                <th>学年</th>
+                                <th>幼儿类型</th>
+                                <th style="">标签</th>
+                                <th style="width: 120px;">生日</th>
+                                <th style="width: 120px;">家长姓名</th>
+                                <th style="width: 120px;">手机号码</th>
+                                <th style="width: 120px;">固定电话</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                                    <tr>
+                                        <td>
+                                            <a style="cursor: pointer;"  href="javascript:void(0);" onclick=ShowEdit('89b4c8cc-4ed4-459e-904a-7c5a682d5e2f')>[修改]</a></td>
+                <td><a href="javascript:void(0);" onclick="showInfo('89b4c8cc-4ed4-459e-904a-7c5a682d5e2f')">张熙</a></td>
+                <td>2015~2016</td>
+                <td>在园幼儿</td>
+                <td style="text-align: left;">
+                    <span class="spanMark" style="background-color:#FFFFFF;color:e9bcc0c5-74eb-4675-8810-d07ae49bcbbb;">体弱 </span>&nbsp
+                </td>
+                <td>
+                    2014-03-06
+                </td>
+                <td>张戴（爸爸）</td>
+                <td>18924264671</td>
+                <td>020-2865937</td>
+            </tr>
+
+            </tbody>
+        </table>
+        </td>
+        </tr>
+        </table>
+    </form>
+</body>
+
+</html>

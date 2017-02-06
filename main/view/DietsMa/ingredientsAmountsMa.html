@@ -1,0 +1,113 @@
+<!-- 食材用量 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <span>取材日期：</span>
+    <input type="text" class="int" name="searchtext" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})">
+    <input type="button" class="button" value="搜 索" onclick="return search();">
+    <!-- <input type="button" class="button" value="添 加" onclick="return add();"> -->
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <!-- <td style="width: 80px;">操作</td> -->
+                <td>食材名称</td>
+                <td>食材用量(g)</td>
+                <td>取材日期</td>
+                <td>备注</td>
+                <td>取材人</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(isset($res)):foreach($res as $k=>$v): ?>
+            <tr>
+               <!--  <td>
+                    
+                </td> -->
+                <td>
+                    <?php arEcho($v['food']['food_name']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['use']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d H:i',$v['use_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['note'],'-'); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['man']['realname']); ?>
+                </td>
+            </tr>
+            <?php endforeach;endif; ?>
+        </tbody>
+    </table>
+</div>
+<!-- bottom -->
+<div>
+    <?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="" method="post" style="display: none;">
+</form>
+<!-- js内容 -->
+<script>
+function add() {
+    $(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加食材库存',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").attr('value', data[i]);
+    }
+
+    layer.open({
+        title: '修改食材库存',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(fiid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('foodInventoryDel ') ?>', {
+                fiid: fiid
+            },
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext;
+}
+</script>
+<!-- 输出测试 -->
+<pre>
+<?php 
+
+ ?>
+</pre>

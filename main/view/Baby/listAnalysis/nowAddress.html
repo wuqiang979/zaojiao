@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.etmTabs.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jsAddress.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=85a7fc69-258e-4d03-9dc5-6736bf4e54f7', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#tab").etmTabs({
+                item: [{
+                    Url: "<?php echo arU('Baby/babySex');?>",
+                    Selected: false,
+                    Text: "幼儿性别分布"
+                }, {
+                    Url: "<?php echo arU('Baby/censusRegister');?>",
+                    Selected: false,
+                    Text: "户籍数据统计"
+                }, {
+                    Url: "<?php echo arU('Baby/nowAddress');?>",
+                    Selected: true,
+                    Text: "现住址数据统计"
+                }, {
+                    Url: "<?php echo arU('Baby/babyAge');?>",
+                    Selected: false,
+                    Text: "幼儿年龄分布"
+                }, {
+                    Url: "<?php echo arU('Baby/familyIncome');?>",
+                    Selected: false,
+                    Text: "家庭收入情况"
+                }, ]
+            });
+            addressInit('SProvinces', 'SCitys', 'SAreas', '', '', ''); //现住址 省市区域
+        });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="CaddressRpt_0.aspx?navId=85a7fc69-258e-4d03-9dc5-6736bf4e54f7" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMzMyNjc5MDc1ZGTdp4xpD0HArb24zmsQy3QiGWd/j8YFxKcf4xGmWGD1Yw==" />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="4E356C49" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAKfpTxp4MMzq41KJhRFcb7qjtTdVzRZn7DFyWrI8V/OY/E1L6zjydy2w+1+z/mSTmbXMXP2TP7nvn3mRjgjXLvK" />
+        </div>
+        <div id="tab"></div>
+        <table>
+            <tr>
+                <td class="textAlignRight" style="width: 76px;">现住地址：
+                </td>
+                <td>
+                    <select id="SProvinces" name="SProvinces" class="int">
+                    </select>
+                    <span style="padding-left: 16px;">
+                        <select id="SCitys" name="SCitys" style="width: 90px;" class="int">
+                        </select></span>&nbsp;&nbsp;
+                    <select id="SAreas" name="SAreas" style="display: none;" class="int" name="SAreas">
+                    </select>
+                    <span style="padding-left: 10px;">
+                        <input type="submit" name="btnSearch" value="搜 索" id="btnSearch" class="button" />
+                    </span>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td class="td_3">
+                    <div id="chartdiv" align="center">
+                        加载中...
+                    </div>
+                    <script type="text/javascript">
+                        function getdata(fun) {
+                            var chart = new FusionCharts("../../flash/Pie3D.swf", "ChartId", "100%", "552", "0", "0");
+
+                            chart.setDataXML(fun);
+                            chart.render("chartdiv");
+                        }
+                        getdata(
+                            "<chart caption='' subcaption='' outCnvBaseFontSize='12' baseFontSize='12' lineThickness='1' showValues='1' formatNumberScale='0' anchorRadius='2'   divLineAlpha='20' divLineColor='a1a0a0' divLineIsDashed='1' showAlternateHGridColor='1' alternateHGridAlpha='5' alternateHGridColor='6d7072' shadowAlpha='40' labelStep='1' numvdivlines='5' chartRightMargin='35' bgColor='F4F4F4' bgAngle='270' bgAlpha='100' showBorder='1' BorderColor='F4F4F4'><set label='广东' value='1' /> <set label='其它' value='0' /> </chart>"
+                        )
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

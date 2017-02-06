@@ -1,0 +1,86 @@
+<!-- 考勤明细查看 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <?php
+    // 调用用html seg 直接输出 select标签
+    arSeg(
+        array(
+        'segKey' => 'Html/select',
+        'name' => 'cid',
+        'mapbundle' => array($cls, 'cid', 'SY'),
+        )
+    );
+?>
+        <input type="text" class="int" value="<?php echo(date('Y-m',time())) ?>" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM&#39;})" name="sdate">
+        <input type="button" class="button" value="搜 索" onclick="return search();">
+        <!-- <input type="button" class="button" value="添 加" onclick="return add();"> -->
+        <?php echo(' 当前班级：') ?>
+        <?php if(isset($classInfo)){echo($classInfo['class_name']);} ?>
+</div>
+<!-- content -->
+<div>
+    <!-- <?php
+    // echo cal_days_in_month(CAL_GREGORIAN, 2, 2010); // 2010年1月份的天数
+?> -->
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td>姓名</td>
+                <?php for($i=1;$i<=$date['days'];$i++): ?>
+                <td>
+                    <?php echo($i); ?>
+                </td>
+                <?php endfor; ?>
+                <td>应到天数</td>
+                <td>实到天数</td>
+                <td>缺勤天数</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($list): foreach($list as $value):?>
+                    <tr>
+                        <td><?php echo $value['name'];?></td>
+                        <?php foreach($value['month'] as $k=>$m):?>
+                        <td>
+                            <?php
+                                if(isset($m['status']) && $m['status']==3):
+                                    echo '<span style="background-color: yellow">休</span>';
+                                elseif(isset($m['status']) && $m['status']==1):
+                                    echo '<span style="width: 60px;">√</span>';
+                                elseif(isset($m['status']) && $m['status']==2):
+                                    echo '<span style="width: 60px; background-color: pink;">假</span>';
+                                endif;
+                            ?>
+                        </td>
+                        <?php endforeach;?>
+                        <td><?php echo $date['trueDays'];?></td>
+                        <td><?php echo @$value['workDays'];?></td>
+                        <td><?php echo $date['trueDays']-@$value['workDays'];?></td>
+                    </tr>
+                <?php endforeach;endif;?>
+        </tbody>
+    </table>
+</div>
+<!-- end -->
+<div>
+    <?php echo($page->show()); ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="<?php echo arU(''); ?>" method="post" style="display: none;">
+</form>
+<!-- js内容 -->
+<script>
+// 搜索
+function search() {
+    var cid = $("[name='cid']").val();
+    var sdate = $("[name='sdate']").val();
+    window.location.href = JSV.PATH_CURRENT + '?cid=' + cid + '&sdate=' + sdate;
+}
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+// var_dump($list);
+ ?> 
+</pre>

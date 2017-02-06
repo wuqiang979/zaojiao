@@ -1,0 +1,55 @@
+<form action="<?php echo arU(''); ?>" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="pid" id="many" value="<?php echo arRequest('pid'); ?>">
+    <input type="file" name="pic0">
+    <a href="javascript:(0)" id="add" >增加</a>
+    <div id="addfile">
+        <div id="addmore"></div>
+    </div>
+    <input type="submit" value="添加" class="button" />
+</form>
+<div>
+    <form action="<?php echo arU();?>" method="post">
+
+        <input type="hidden" name="pid" value="<?php echo arRequest('pid'); ?>">
+        <input type="hidden" name="sign" id="many" value="del">
+    <?php if(isset($pics) && $pics):foreach($pics as $pic):?>
+        <input type="checkbox" name="del[]" value="<?php echo $pic; ?>">
+        <img style="height: 40px; width: 40px;" src="<?php echo arComp('url.route')->host().'/Upload/'.$pic; ?>">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+    <?php endforeach;endif;?>
+        <?php if($pics):?>
+            <input type="submit" value="删除" class="button" />
+        <?php endif;?>
+    </form>
+</div>
+<script>
+    $(function(){
+        $('#add').click(function(){
+            var pid = $('#many').val();
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data:{
+                    'sign':'more',
+                    'pid': pid
+                },
+                datatype: 'json',
+                success: function(data) {
+                    data=JSON.parse(data);
+//                    alert(data);
+                    if(data == 0){
+                        alert('不能添加');
+                    }else{
+                        var par = $('#addfile');
+                        var del = $('#addmore');
+//                        par.empty($(del));
+                        var str = '<input type="file" name="pic'+Math.random()+'">';
+                        par.append($(str));
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=ac80a375-7d4d-4abb-9c45-e63962c2384d', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <style type="text/css">
+    ul {
+        list-style: none;
+        padding-left: 18px;
+    }
+
+    ul li {
+        float: left;
+        padding: 1px 2px 1px 5px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+    }
+    </style>
+    <script type="text/javascript">
+    function show(TimeNodeGuid, navId) {
+        window.parent.showDialog("餐点设置", "../Modules/Food/TimeNodeEdit.aspx?isLeft=2&navId=" + navId + "&TimeNodeGuid=" + TimeNodeGuid, "600px", "260px");
+    }
+
+    function showNode(ConfigGuid, navId) {
+        window.parent.showDialog("膳食设置", "../Modules/Food/FoodConfigEdit.aspx?isLeft=2&navId=" + navId + "&ConfigGuid=" + ConfigGuid, "990px", "420px");
+    }
+    $(function() {
+        $("#divList").height($(window).height - 50).niceScroll({
+            cursorcolor: '#75A801'
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="TimeNodeList.aspx?isLeft=2&amp;navId=ac80a375-7d4d-4abb-9c45-e63962c2384d" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTU3NTkyNzU2Nw9kFgICAQ9kFggCAQ8WAh4EVGV4dAXIBDxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi6aOf5p2Q57G75Z6LIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Gb29kL0NfRm9vZENhdGVnb3J5LmFzcHg/aXNMZWZ0PTEmbmF2SWQ9YWM4MGEzNzUtN2Q0ZC00YWJiLTljNDUtZTYzOTYyYzIzODRkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6aSQ54K5566h55CGIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Gb29kL1RpbWVOb2RlTGlzdC5hc3B4P2lzTGVmdD0yJm5hdklkPWFjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCIsIFNlbGVjdGVkOiB0cnVlIH0seyBUZXh0OiAi5bi46KeE6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Gb29kL0Zvb2ROb3JtYWxDb25maWdTZXQuYXNweD9pc0xlZnQ9MyZuYXZJZD1hYzgwYTM3NS03ZDRkLTRhYmItOWM0NS1lNjM5NjJjMjM4NGQiLCBTZWxlY3RlZDogZmFsc2UgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAIDDw8WAh8ABQQyLjAwZGQCCQ9kFgICAQ8WAh4LXyFJdGVtQ291bnQCBBYIZg9kFgQCAQ8WAh8ABcoCPGEgc3R5bGU9ImN1cnNvcjogcG9pbnRlcjsiICBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCk7IiBvbmNsaWNrPXNob3coJzliMTljNWU4LTFkZjUtNGM4Mi05ZDNmLTQwZjA5ZWRkYzUxMScsJ2FjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCcpPlvkv67mlLldPC9hPiZuYnNwOzxhIHN0eWxlPSJjdXJzb3I6IHBvaW50ZXI7IiBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCk7IiBvbmNsaWNrPSJEZWwoJzliMTljNWU4LTFkZjUtNGM4Mi05ZDNmLTQwZjA5ZWRkYzUxMScsJ2FjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCcsJzInKSI+W+WIoOmZpF08L2E+ZAICDxUFBuaXqemkkAUwNzowMAUwNzozMAUyMC4wMBMyMDE0LTEwLTE1IDA1OjMxOjA5ZAIBD2QWBAIBDxYCHwAFygI8YSBzdHlsZT0iY3Vyc29yOiBwb2ludGVyOyIgIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKTsiIG9uY2xpY2s9c2hvdygnMjhhODdhMzItZmY4Yi00NzFiLTgzOTgtNTNiNGZjODNkZTczJywnYWM4MGEzNzUtN2Q0ZC00YWJiLTljNDUtZTYzOTYyYzIzODRkJyk+W+S/ruaUuV08L2E+Jm5ic3A7PGEgc3R5bGU9ImN1cnNvcjogcG9pbnRlcjsiIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKTsiIG9uY2xpY2s9IkRlbCgnMjhhODdhMzItZmY4Yi00NzFiLTgzOTgtNTNiNGZjODNkZTczJywnYWM4MGEzNzUtN2Q0ZC00YWJiLTljNDUtZTYzOTYyYzIzODRkJywnMicpIj5b5Yig6ZmkXTwvYT5kAgIPFQUG5Lit6aSQBTEyOjAwBTEzOjAwBTMwLjAwEzIwMTQtMTAtMTUgMDY6MTA6NDBkAgIPZBYEAgEPFgIfAAXKAjxhIHN0eWxlPSJjdXJzb3I6IHBvaW50ZXI7IiAgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApOyIgb25jbGljaz1zaG93KCcwMzIyMDNjYy1jZWNmLTQxYTItODhiZi00MTRkMzRlM2IwNTcnLCdhYzgwYTM3NS03ZDRkLTRhYmItOWM0NS1lNjM5NjJjMjM4NGQnKT5b5L+u5pS5XTwvYT4mbmJzcDs8YSBzdHlsZT0iY3Vyc29yOiBwb2ludGVyOyIgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApOyIgb25jbGljaz0iRGVsKCcwMzIyMDNjYy1jZWNmLTQxYTItODhiZi00MTRkMzRlM2IwNTcnLCdhYzgwYTM3NS03ZDRkLTRhYmItOWM0NS1lNjM5NjJjMjM4NGQnLCcyJykiPlvliKDpmaRdPC9hPmQCAg8VBQbljYjngrkFMTU6MzAFMTU6NTUFMjAuMDATMjAxNS0xMS0wMyAwNzoxMToxN2QCAw9kFgQCAQ8WAh8ABcoCPGEgc3R5bGU9ImN1cnNvcjogcG9pbnRlcjsiICBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCk7IiBvbmNsaWNrPXNob3coJzdiYWNjYWFiLWFjNGItNDkzZC05NDg3LWY0ZWM3NTU4OTNiYicsJ2FjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCcpPlvkv67mlLldPC9hPiZuYnNwOzxhIHN0eWxlPSJjdXJzb3I6IHBvaW50ZXI7IiBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCk7IiBvbmNsaWNrPSJEZWwoJzdiYWNjYWFiLWFjNGItNDkzZC05NDg3LWY0ZWM3NTU4OTNiYicsJ2FjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCcsJzInKSI+W+WIoOmZpF08L2E+ZAICDxUFBuaZmumkkAUxNzo1MAUxODozMAUzMC4wMBMyMDE1LTExLTI0IDA1OjIxOjMxZAINDxYCHwECARYCZg9kFgQCAQ8WAh8ABfwCPHNwYW4gc3R5bGU9IndpZHRoOjQ1cHg7Ij48YSBzdHlsZT0iY3Vyc29yOiBwb2ludGVyOyIgaHJlZj0iamF2YXNjcmlwdDpzaG93Tm9kZSgnMTcwOWRjMmQtZjMyYy00NzUzLWJhMDUtZTliNTJkNGNiMzNiJywgJ2FjODBhMzc1LTdkNGQtNGFiYi05YzQ1LWU2Mzk2MmMyMzg0ZCcpOyI+W+S/ruaUuV08L2E+PC9zcGFuPiZuYnNwOzxzcGFuIHN0eWxlPSJ3aWR0aDo0NXB4OyI+PGEgc3R5bGU9ImN1cnNvcjogcG9pbnRlcjt3aWR0aDo0NXB4OyIgY2xhc3M9ImxpbmtEZWwiICBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCk7Im9uY2xpY2s9IkZvb2REZWwoJzEnLCdhYzgwYTM3NS03ZDRkLTRhYmItOWM0NS1lNjM5NjJjMjM4NGQnLCcyJykiPlvliKDpmaRdPC9hPjwvc3Bhbj5kAgIPFRcBMQQxMi4wBjQ1MzQuMAU0NTMuMAMwLjADMC4wAzAuMAMwLjADMC4wAzAuMAMwLjADMC4wAzAuMAMwLjADMC4wAzAuMAMwLjADMC4wAzAuMAMwLjADMC4wAzAuMAMwLjBkZAgNXOe1dGjEjaFiK/erEvAQPtJOltgV4vrTrGJ2EYsJ" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <script src="/WebResource.axd?d=vNXb2FjjBPDATZ87O7vB1EA20K3bJS97r3quTp7s1g--mTbiXb4Dqi8IBF662E113L2b8N9dHrk4OapqfOdTg-T0wl9UC9E6ap1fTvYe_HA1&amp;t=635375563334701695" type="text/javascript"></script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="77F6B984" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAQFAzaz6LDypJjRRJ1CQ0UO0BPvSKCu4mMe1cdQJrsZ5pNcQtnKtb31hEtbT6bWJ9/jX0zYdtmTLhES8T2TimMdon/wYjRKE9QUh3Wile75jHNN+/LwqT+b9Tlq1VMxfR0=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                 item: [{
+                    Text: "食材类型",
+                    Url: "<?php echo arU('SystemConfiguration/foodType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "餐点管理",
+                    Url: "<?php echo arU('SystemConfiguration/mealManagement'); ?>",
+                    Selected: true
+                }, {
+                    Text: "常规设置",
+                    Url: "<?php echo arU('SystemConfiguration/regularSets'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <p style="padding-left: 20px;padding-bottom:15px; text-align: left;" class="borderBottom">设置老师食谱的用量为学生的&nbsp;
+            <input name="tbForMemberMultipe" type="text" value="2.00" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;tbForMemberMultipe\&#39;,\&#39;\&#39;)&#39;, 0)" onkeypress="if (WebForm_TextBoxKeyHandler(event) == false) return false;return strNoOnly(event)" id="tbForMemberMultipe" class="int" style="width:40px;text-align: right;" />&nbsp;倍</p>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 20px;"></td>
+                <td>
+                    <input type="submit" name="btnAdd" value="添加餐点" onclick="return timeAdd();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 90px;">操作</td>
+                        <td style="width: 90px;">餐点名称</td>
+                        <td style="width: 250px;">时间段</td>
+                        <td style="width: 250px;">各餐摄入比</td>
+                        <td style="width: 250px;">录入时间</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a style="cursor: pointer;" href="javascript:void(0);" onclick=show( '9b19c5e8-1df5-4c82-9d3f-40f09eddc511', 'ac80a375-7d4d-4abb-9c45-e63962c2384d')>[修改]</a>&nbsp;<a style="cursor: pointer;" href="javascript:void(0);" onclick="Del('9b19c5e8-1df5-4c82-9d3f-40f09eddc511','ac80a375-7d4d-4abb-9c45-e63962c2384d','2')">[删除]</a>
+                        </td>
+                        <td>早餐</td>
+                        <td>07:00 至 07:30</td>
+                        <td>20.00%</td>
+                        <td>2014-10-15 05:31:09</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a style="cursor: pointer;" href="javascript:void(0);" onclick=show( '28a87a32-ff8b-471b-8398-53b4fc83de73', 'ac80a375-7d4d-4abb-9c45-e63962c2384d')>[修改]</a>&nbsp;<a style="cursor: pointer;" href="javascript:void(0);" onclick="Del('28a87a32-ff8b-471b-8398-53b4fc83de73','ac80a375-7d4d-4abb-9c45-e63962c2384d','2')">[删除]</a>
+                        </td>
+                        <td>中餐</td>
+                        <td>12:00 至 13:00</td>
+                        <td>30.00%</td>
+                        <td>2014-10-15 06:10:40</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a style="cursor: pointer;" href="javascript:void(0);" onclick=show( '032203cc-cecf-41a2-88bf-414d34e3b057', 'ac80a375-7d4d-4abb-9c45-e63962c2384d')>[修改]</a>&nbsp;<a style="cursor: pointer;" href="javascript:void(0);" onclick="Del('032203cc-cecf-41a2-88bf-414d34e3b057','ac80a375-7d4d-4abb-9c45-e63962c2384d','2')">[删除]</a>
+                        </td>
+                        <td>午点</td>
+                        <td>15:30 至 15:55</td>
+                        <td>20.00%</td>
+                        <td>2015-11-03 07:11:17</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a style="cursor: pointer;" href="javascript:void(0);" onclick=show( '7baccaab-ac4b-493d-9487-f4ec755893bb', 'ac80a375-7d4d-4abb-9c45-e63962c2384d')>[修改]</a>&nbsp;<a style="cursor: pointer;" href="javascript:void(0);" onclick="Del('7baccaab-ac4b-493d-9487-f4ec755893bb','ac80a375-7d4d-4abb-9c45-e63962c2384d','2')">[删除]</a>
+                        </td>
+                        <td>晚餐</td>
+                        <td>17:50 至 18:30</td>
+                        <td>30.00%</td>
+                        <td>2015-11-24 05:21:31</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="padding-left: 23px;">
+            <span>
+
+                 <input type="submit" name="btnSaves" value="添加基数" onclick="return Add();" id="btnSaves" class="button" />
+            </span>
+        </p>
+        <div style="width: 100%;padding-bottom:10px; overflow: auto;" id="divList">
+            <table class="list" style="text-align: center; width: 2000px;">
+                <thead>
+                    <tr>
+                        <td style="width: 90px;">操作</td>
+                        <td style="width: 70px;">年龄(岁)</td>
+                        <td>能量</td>
+                        <td>蛋白质</td>
+                        <td>脂肪</td>
+                        <td>碳水化合物</td>
+                        <td>钙</td>
+                        <td>铁</td>
+                        <td>锌</td>
+                        <td>硒</td>
+                        <td>钠</td>
+                        <td>磷</td>
+                        <td>维生素A</td>
+                        <td>硫胺素</td>
+                        <td>核黄素</td>
+                        <td>抗坏血酸</td>
+                        <td>尼克酸</td>
+                        <td>膳食纤维</td>
+                        <td>胆固醇</td>
+                        <td>胡萝卜素</td>
+                        <td>维生素C</td>
+                        <td>维生素E</td>
+                        <td>钾</td>
+                        <td>视黄醇当量</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span style="width:45px;"><a style="cursor: pointer;" href="javascript:showNode('1709dc2d-f32c-4753-ba05-e9b52d4cb33b', 'ac80a375-7d4d-4abb-9c45-e63962c2384d');">[修改]</a></span>&nbsp;<span style="width:45px;"><a style="cursor: pointer;width:45px;" class="linkDel"  href="javascript:void(0);"onclick="FoodDel('1','ac80a375-7d4d-4abb-9c45-e63962c2384d','2')">[删除]</a></span>
+                        </td>
+                        <td>1</td>
+                        <td>12.0</td>
+                        <td>4534.0</td>
+                        <td>453.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</body>
+
+</html>
+<script type="text/javascript">
+function timeAdd() {
+    show('', 'ac80a375-7d4d-4abb-9c45-e63962c2384d');
+    return false;
+}
+
+function Add() {
+    showNode('', 'ac80a375-7d4d-4abb-9c45-e63962c2384d')
+    return false;
+}
+
+function Del(TimeNodeGuid, navId, isLeft) {
+    if (confirm("确认要删除吗")) {
+        $.ajaxMethod("Food_TimeNodeDelete", {
+                "TimeNodeGuid": TimeNodeGuid
+            },
+            function(data) {
+                alert(data);
+                window.location.href = "../Food/TimeNodeList.aspx?isLeft=" + isLeft + "&navId=" + navId;
+            },
+            true, "text");
+    }
+}
+
+function FoodDel(AgeSection, navId, isLeft) {
+    if (confirm("确认要删除吗")) {
+        $.ajaxMethod("Food_ConfigDelete", {
+                "AgeSection": AgeSection
+            },
+            function(data) {
+                alert(data);
+                window.location.href = "../Food/TimeNodeList.aspx?isLeft=" + isLeft + "&navId=" + navId;
+            },
+            true, "text");
+    }
+}
+
+
+function WebForm_PostBackOptions(eventTarget, eventArgument, validation, validationGroup, actionUrl, trackFocus, clientSubmit) {
+    this.eventTarget = eventTarget;
+    this.eventArgument = eventArgument;
+    this.validation = validation;
+    this.validationGroup = validationGroup;
+    this.actionUrl = actionUrl;
+    this.trackFocus = trackFocus;
+    this.clientSubmit = clientSubmit;
+}
+
+function WebForm_DoPostBackWithOptions(options) {
+    var validationResult = true;
+    if (options.validation) {
+        if (typeof(Page_ClientValidate) == 'function') {
+            validationResult = Page_ClientValidate(options.validationGroup);
+        }
+    }
+    if (validationResult) {
+        if ((typeof(options.actionUrl) != "undefined") && (options.actionUrl != null) && (options.actionUrl.length > 0)) {
+            theForm.action = options.actionUrl;
+        }
+        if (options.trackFocus) {
+            var lastFocus = theForm.elements["__LASTFOCUS"];
+            if ((typeof(lastFocus) != "undefined") && (lastFocus != null)) {
+                if (typeof(document.activeElement) == "undefined") {
+                    lastFocus.value = options.eventTarget;
+                } else {
+                    var active = document.activeElement;
+                    if ((typeof(active) != "undefined") && (active != null)) {
+                        if ((typeof(active.id) != "undefined") && (active.id != null) && (active.id.length > 0)) {
+                            lastFocus.value = active.id;
+                        } else if (typeof(active.name) != "undefined") {
+                            lastFocus.value = active.name;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (options.clientSubmit) {
+        __doPostBack(options.eventTarget, options.eventArgument);
+    }
+}
+var __pendingCallbacks = new Array();
+var __synchronousCallBackIndex = -1;
+
+function WebForm_DoCallback(eventTarget, eventArgument, eventCallback, context, errorCallback, useAsync) {
+    var postData = __theFormPostData +
+        "__CALLBACKID=" + WebForm_EncodeCallback(eventTarget) +
+        "&__CALLBACKPARAM=" + WebForm_EncodeCallback(eventArgument);
+    if (theForm["__EVENTVALIDATION"]) {
+        postData += "&__EVENTVALIDATION=" + WebForm_EncodeCallback(theForm["__EVENTVALIDATION"].value);
+    }
+    var xmlRequest, e;
+    try {
+        xmlRequest = new XMLHttpRequest();
+    } catch (e) {
+        try {
+            xmlRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (e) {}
+    }
+    var setRequestHeaderMethodExists = true;
+    try {
+        setRequestHeaderMethodExists = (xmlRequest && xmlRequest.setRequestHeader);
+    } catch (e) {}
+    var callback = new Object();
+    callback.eventCallback = eventCallback;
+    callback.context = context;
+    callback.errorCallback = errorCallback;
+    callback.async = useAsync;
+    var callbackIndex = WebForm_FillFirstAvailableSlot(__pendingCallbacks, callback);
+    if (!useAsync) {
+        if (__synchronousCallBackIndex != -1) {
+            __pendingCallbacks[__synchronousCallBackIndex] = null;
+        }
+        __synchronousCallBackIndex = callbackIndex;
+    }
+    if (setRequestHeaderMethodExists) {
+        xmlRequest.onreadystatechange = WebForm_CallbackComplete;
+        callback.xmlRequest = xmlRequest;
+        // e.g. http:
+        var action = theForm.action || document.location.pathname,
+            fragmentIndex = action.indexOf('#');
+        if (fragmentIndex !== -1) {
+            action = action.substr(0, fragmentIndex);
+        }
+        if (!__nonMSDOMBrowser) {
+            var queryIndex = action.indexOf('?');
+            if (queryIndex !== -1) {
+                var path = action.substr(0, queryIndex);
+                if (path.indexOf("%") === -1) {
+                    action = encodeURI(path) + action.substr(queryIndex);
+                }
+            } else if (action.indexOf("%") === -1) {
+                action = encodeURI(action);
+            }
+        }
+        xmlRequest.open("POST", action, true);
+        xmlRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+        xmlRequest.send(postData);
+        return;
+    }
+    callback.xmlRequest = new Object();
+    var callbackFrameID = "__CALLBACKFRAME" + callbackIndex;
+    var xmlRequestFrame = document.frames[callbackFrameID];
+    if (!xmlRequestFrame) {
+        xmlRequestFrame = document.createElement("IFRAME");
+        xmlRequestFrame.width = "1";
+        xmlRequestFrame.height = "1";
+        xmlRequestFrame.frameBorder = "0";
+        xmlRequestFrame.id = callbackFrameID;
+        xmlRequestFrame.name = callbackFrameID;
+        xmlRequestFrame.style.position = "absolute";
+        xmlRequestFrame.style.top = "-100px"
+        xmlRequestFrame.style.left = "-100px";
+        try {
+            if (callBackFrameUrl) {
+                xmlRequestFrame.src = callBackFrameUrl;
+            }
+        } catch (e) {}
+        document.body.appendChild(xmlRequestFrame);
+    }
+    var interval = window.setInterval(function() {
+        xmlRequestFrame = document.frames[callbackFrameID];
+        if (xmlRequestFrame && xmlRequestFrame.document) {
+            window.clearInterval(interval);
+            xmlRequestFrame.document.write("");
+            xmlRequestFrame.document.close();
+            xmlRequestFrame.document.write('<html lang="zh-cmn-Hans"><body><form method="post"><input type="hidden" name="__CALLBACKLOADSCRIPT" value="t"></form></body></html>');
+            xmlRequestFrame.document.close();
+            xmlRequestFrame.document.forms[0].action = theForm.action;
+            var count = __theFormPostCollection.length;
+            var element;
+            for (var i = 0; i < count; i++) {
+                element = __theFormPostCollection[i];
+                if (element) {
+                    var fieldElement = xmlRequestFrame.document.createElement("INPUT");
+                    fieldElement.type = "hidden";
+                    fieldElement.name = element.name;
+                    fieldElement.value = element.value;
+                    xmlRequestFrame.document.forms[0].appendChild(fieldElement);
+                }
+            }
+            var callbackIdFieldElement = xmlRequestFrame.document.createElement("INPUT");
+            callbackIdFieldElement.type = "hidden";
+            callbackIdFieldElement.name = "__CALLBACKID";
+            callbackIdFieldElement.value = eventTarget;
+            xmlRequestFrame.document.forms[0].appendChild(callbackIdFieldElement);
+            var callbackParamFieldElement = xmlRequestFrame.document.createElement("INPUT");
+            callbackParamFieldElement.type = "hidden";
+            callbackParamFieldElement.name = "__CALLBACKPARAM";
+            callbackParamFieldElement.value = eventArgument;
+            xmlRequestFrame.document.forms[0].appendChild(callbackParamFieldElement);
+            if (theForm["__EVENTVALIDATION"]) {
+                var callbackValidationFieldElement = xmlRequestFrame.document.createElement("INPUT");
+                callbackValidationFieldElement.type = "hidden";
+                callbackValidationFieldElement.name = "__EVENTVALIDATION";
+                callbackValidationFieldElement.value = theForm["__EVENTVALIDATION"].value;
+                xmlRequestFrame.document.forms[0].appendChild(callbackValidationFieldElement);
+            }
+            var callbackIndexFieldElement = xmlRequestFrame.document.createElement("INPUT");
+            callbackIndexFieldElement.type = "hidden";
+            callbackIndexFieldElement.name = "__CALLBACKINDEX";
+            callbackIndexFieldElement.value = callbackIndex;
+            xmlRequestFrame.document.forms[0].appendChild(callbackIndexFieldElement);
+            xmlRequestFrame.document.forms[0].submit();
+        }
+    }, 10);
+}
+
+function WebForm_CallbackComplete() {
+    for (var i = 0; i < __pendingCallbacks.length; i++) {
+        callbackObject = __pendingCallbacks[i];
+        if (callbackObject && callbackObject.xmlRequest && (callbackObject.xmlRequest.readyState == 4)) {
+            if (!__pendingCallbacks[i].async) {
+                __synchronousCallBackIndex = -1;
+            }
+            __pendingCallbacks[i] = null;
+            var callbackFrameID = "__CALLBACKFRAME" + i;
+            var xmlRequestFrame = document.getElementById(callbackFrameID);
+            if (xmlRequestFrame) {
+                xmlRequestFrame.parentNode.removeChild(xmlRequestFrame);
+            }
+            WebForm_ExecuteCallback(callbackObject);
+        }
+    }
+}
+
+function WebForm_ExecuteCallback(callbackObject) {
+    var response = callbackObject.xmlRequest.responseText;
+    if (response.charAt(0) == "s") {
+        if ((typeof(callbackObject.eventCallback) != "undefined") && (callbackObject.eventCallback != null)) {
+            callbackObject.eventCallback(response.substring(1), callbackObject.context);
+        }
+    } else if (response.charAt(0) == "e") {
+        if ((typeof(callbackObject.errorCallback) != "undefined") && (callbackObject.errorCallback != null)) {
+            callbackObject.errorCallback(response.substring(1), callbackObject.context);
+        }
+    } else {
+        var separatorIndex = response.indexOf("|");
+        if (separatorIndex != -1) {
+            var validationFieldLength = parseInt(response.substring(0, separatorIndex));
+            if (!isNaN(validationFieldLength)) {
+                var validationField = response.substring(separatorIndex + 1, separatorIndex + validationFieldLength + 1);
+                if (validationField != "") {
+                    var validationFieldElement = theForm["__EVENTVALIDATION"];
+                    if (!validationFieldElement) {
+                        validationFieldElement = document.createElement("INPUT");
+                        validationFieldElement.type = "hidden";
+                        validationFieldElement.name = "__EVENTVALIDATION";
+                        theForm.appendChild(validationFieldElement);
+                    }
+                    validationFieldElement.value = validationField;
+                }
+                if ((typeof(callbackObject.eventCallback) != "undefined") && (callbackObject.eventCallback != null)) {
+                    callbackObject.eventCallback(response.substring(separatorIndex + validationFieldLength + 1), callbackObject.context);
+                }
+            }
+        }
+    }
+}
+
+function WebForm_FillFirstAvailableSlot(array, element) {
+    var i;
+    for (i = 0; i < array.length; i++) {
+        if (!array[i]) break;
+    }
+    array[i] = element;
+    return i;
+}
+var __nonMSDOMBrowser = (window.navigator.appName.toLowerCase().indexOf('explorer') == -1);
+var __theFormPostData = "";
+var __theFormPostCollection = new Array();
+var __callbackTextTypes = /^(text|password|hidden|search|tel|url|email|number|range|color|datetime|date|month|week|time|datetime-local)$/i;
+
+function WebForm_InitCallback() {
+    var formElements = theForm.elements,
+        count = formElements.length,
+        element;
+    for (var i = 0; i < count; i++) {
+        element = formElements[i];
+        var tagName = element.tagName.toLowerCase();
+        if (tagName == "input") {
+            var type = element.type;
+            if ((__callbackTextTypes.test(type) || ((type == "checkbox" || type == "radio") && element.checked)) && (element.id != "__EVENTVALIDATION")) {
+                WebForm_InitCallbackAddField(element.name, element.value);
+            }
+        } else if (tagName == "select") {
+            var selectCount = element.options.length;
+            for (var j = 0; j < selectCount; j++) {
+                var selectChild = element.options[j];
+                if (selectChild.selected == true) {
+                    WebForm_InitCallbackAddField(element.name, element.value);
+                }
+            }
+        } else if (tagName == "textarea") {
+            WebForm_InitCallbackAddField(element.name, element.value);
+        }
+    }
+}
+
+function WebForm_InitCallbackAddField(name, value) {
+    var nameValue = new Object();
+    nameValue.name = name;
+    nameValue.value = value;
+    __theFormPostCollection[__theFormPostCollection.length] = nameValue;
+    __theFormPostData += WebForm_EncodeCallback(name) + "=" + WebForm_EncodeCallback(value) + "&";
+}
+
+function WebForm_EncodeCallback(parameter) {
+    if (encodeURIComponent) {
+        return encodeURIComponent(parameter);
+    } else {
+        return escape(parameter);
+    }
+}
+var __disabledControlArray = new Array();
+
+function WebForm_ReEnableControls() {
+    if (typeof(__enabledControlArray) == 'undefined') {
+        return false;
+    }
+    var disabledIndex = 0;
+    for (var i = 0; i < __enabledControlArray.length; i++) {
+        var c;
+        if (__nonMSDOMBrowser) {
+            c = document.getElementById(__enabledControlArray[i]);
+        } else {
+            c = document.all[__enabledControlArray[i]];
+        }
+        if ((typeof(c) != "undefined") && (c != null) && (c.disabled == true)) {
+            c.disabled = false;
+            __disabledControlArray[disabledIndex++] = c;
+        }
+    }
+    setTimeout("WebForm_ReDisableControls()", 0);
+    return true;
+}
+
+function WebForm_ReDisableControls() {
+    for (var i = 0; i < __disabledControlArray.length; i++) {
+        __disabledControlArray[i].disabled = true;
+    }
+}
+
+function WebForm_SimulateClick(element, event) {
+    var clickEvent;
+    if (element) {
+        if (element.click) {
+            element.click();
+        } else {
+            clickEvent = document.createEvent("MouseEvents");
+            clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            if (!element.dispatchEvent(clickEvent)) {
+                return true;
+            }
+        }
+        event.cancelBubble = true;
+        if (event.stopPropagation) {
+            event.stopPropagation();
+        }
+        return false;
+    }
+    return true;
+}
+
+function WebForm_FireDefaultButton(event, target) {
+    if (event.keyCode == 13) {
+        var src = event.srcElement || event.target;
+        if (src &&
+            ((src.tagName.toLowerCase() == "input") &&
+                (src.type.toLowerCase() == "submit" || src.type.toLowerCase() == "button")) ||
+            ((src.tagName.toLowerCase() == "a") &&
+                (src.href != null) && (src.href != "")) ||
+            (src.tagName.toLowerCase() == "textarea")) {
+            return true;
+        }
+        var defaultButton;
+        if (__nonMSDOMBrowser) {
+            defaultButton = document.getElementById(target);
+        } else {
+            defaultButton = document.all[target];
+        }
+        if (defaultButton) {
+            return WebForm_SimulateClick(defaultButton, event);
+        }
+    }
+    return true;
+}
+
+function WebForm_GetScrollX() {
+    if (__nonMSDOMBrowser) {
+        return window.pageXOffset;
+    } else {
+        if (document.documentElement && document.documentElement.scrollLeft) {
+            return document.documentElement.scrollLeft;
+        } else if (document.body) {
+            return document.body.scrollLeft;
+        }
+    }
+    return 0;
+}
+
+function WebForm_GetScrollY() {
+    if (__nonMSDOMBrowser) {
+        return window.pageYOffset;
+    } else {
+        if (document.documentElement && document.documentElement.scrollTop) {
+            return document.documentElement.scrollTop;
+        } else if (document.body) {
+            return document.body.scrollTop;
+        }
+    }
+    return 0;
+}
+
+function WebForm_SaveScrollPositionSubmit() {
+    if (__nonMSDOMBrowser) {
+        theForm.elements['__SCROLLPOSITIONY'].value = window.pageYOffset;
+        theForm.elements['__SCROLLPOSITIONX'].value = window.pageXOffset;
+    } else {
+        theForm.__SCROLLPOSITIONX.value = WebForm_GetScrollX();
+        theForm.__SCROLLPOSITIONY.value = WebForm_GetScrollY();
+    }
+    if ((typeof(this.oldSubmit) != "undefined") && (this.oldSubmit != null)) {
+        return this.oldSubmit();
+    }
+    return true;
+}
+
+function WebForm_SaveScrollPositionOnSubmit() {
+    theForm.__SCROLLPOSITIONX.value = WebForm_GetScrollX();
+    theForm.__SCROLLPOSITIONY.value = WebForm_GetScrollY();
+    if ((typeof(this.oldOnSubmit) != "undefined") && (this.oldOnSubmit != null)) {
+        return this.oldOnSubmit();
+    }
+    return true;
+}
+
+function WebForm_RestoreScrollPosition() {
+    if (__nonMSDOMBrowser) {
+        window.scrollTo(theForm.elements['__SCROLLPOSITIONX'].value, theForm.elements['__SCROLLPOSITIONY'].value);
+    } else {
+        window.scrollTo(theForm.__SCROLLPOSITIONX.value, theForm.__SCROLLPOSITIONY.value);
+    }
+    if ((typeof(theForm.oldOnLoad) != "undefined") && (theForm.oldOnLoad != null)) {
+        return theForm.oldOnLoad();
+    }
+    return true;
+}
+
+function WebForm_TextBoxKeyHandler(event) {
+    if (event.keyCode == 13) {
+        var target;
+        if (__nonMSDOMBrowser) {
+            target = event.target;
+        } else {
+            target = event.srcElement;
+        }
+        if ((typeof(target) != "undefined") && (target != null)) {
+            if (typeof(target.onchange) != "undefined") {
+                target.onchange();
+                event.cancelBubble = true;
+                if (event.stopPropagation) event.stopPropagation();
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function WebForm_TrimString(value) {
+    return value.replace(/^\s+|\s+$/g, '')
+}
+
+function WebForm_AppendToClassName(element, className) {
+    var currentClassName = ' ' + WebForm_TrimString(element.className) + ' ';
+    className = WebForm_TrimString(className);
+    var index = currentClassName.indexOf(' ' + className + ' ');
+    if (index === -1) {
+        element.className = (element.className === '') ? className : element.className + ' ' + className;
+    }
+}
+
+function WebForm_RemoveClassName(element, className) {
+    var currentClassName = ' ' + WebForm_TrimString(element.className) + ' ';
+    className = WebForm_TrimString(className);
+    var index = currentClassName.indexOf(' ' + className + ' ');
+    if (index >= 0) {
+        element.className = WebForm_TrimString(currentClassName.substring(0, index) + ' ' +
+            currentClassName.substring(index + className.length + 1, currentClassName.length));
+    }
+}
+
+function WebForm_GetElementById(elementId) {
+    if (document.getElementById) {
+        return document.getElementById(elementId);
+    } else if (document.all) {
+        return document.all[elementId];
+    } else return null;
+}
+
+function WebForm_GetElementByTagName(element, tagName) {
+    var elements = WebForm_GetElementsByTagName(element, tagName);
+    if (elements && elements.length > 0) {
+        return elements[0];
+    } else return null;
+}
+
+function WebForm_GetElementsByTagName(element, tagName) {
+    if (element && tagName) {
+        if (element.getElementsByTagName) {
+            return element.getElementsByTagName(tagName);
+        }
+        if (element.all && element.all.tags) {
+            return element.all.tags(tagName);
+        }
+    }
+    return null;
+}
+
+function WebForm_GetElementDir(element) {
+    if (element) {
+        if (element.dir) {
+            return element.dir;
+        }
+        return WebForm_GetElementDir(element.parentNode);
+    }
+    return "ltr";
+}
+
+function WebForm_GetElementPosition(element) {
+    var result = new Object();
+    result.x = 0;
+    result.y = 0;
+    result.width = 0;
+    result.height = 0;
+    if (element.offsetParent) {
+        result.x = element.offsetLeft;
+        result.y = element.offsetTop;
+        var parent = element.offsetParent;
+        while (parent) {
+            result.x += parent.offsetLeft;
+            result.y += parent.offsetTop;
+            var parentTagName = parent.tagName.toLowerCase();
+            if (parentTagName != "table" &&
+                parentTagName != "body" &&
+                parentTagName != "html" &&
+                parentTagName != "div" &&
+                parent.clientTop &&
+                parent.clientLeft) {
+                result.x += parent.clientLeft;
+                result.y += parent.clientTop;
+            }
+            parent = parent.offsetParent;
+        }
+    } else if (element.left && element.top) {
+        result.x = element.left;
+        result.y = element.top;
+    } else {
+        if (element.x) {
+            result.x = element.x;
+        }
+        if (element.y) {
+            result.y = element.y;
+        }
+    }
+    if (element.offsetWidth && element.offsetHeight) {
+        result.width = element.offsetWidth;
+        result.height = element.offsetHeight;
+    } else if (element.style && element.style.pixelWidth && element.style.pixelHeight) {
+        result.width = element.style.pixelWidth;
+        result.height = element.style.pixelHeight;
+    }
+    return result;
+}
+
+function WebForm_GetParentByTagName(element, tagName) {
+    var parent = element.parentNode;
+    var upperTagName = tagName.toUpperCase();
+    while (parent && (parent.tagName.toUpperCase() != upperTagName)) {
+        parent = parent.parentNode ? parent.parentNode : parent.parentElement;
+    }
+    return parent;
+}
+
+function WebForm_SetElementHeight(element, height) {
+    if (element && element.style) {
+        element.style.height = height + "px";
+    }
+}
+
+function WebForm_SetElementWidth(element, width) {
+    if (element && element.style) {
+        element.style.width = width + "px";
+    }
+}
+
+function WebForm_SetElementX(element, x) {
+    if (element && element.style) {
+        element.style.left = x + "px";
+    }
+}
+
+function WebForm_SetElementY(element, y) {
+    if (element && element.style) {
+        element.style.top = y + "px";
+    }
+}
+</script>

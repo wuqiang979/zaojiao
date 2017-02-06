@@ -1,0 +1,92 @@
+
+                    <div id="shortcut" class="hidden" unselectable="on" style="-moz-user-select: none; -webkit-user-select: none;" onselectstart="return false;">
+                        <a class="item" href="uploadfile/etmprocess/process.html" target="content">
+                            <div class="icon">
+                                <img src="<?php echo arCfg('PATH.PUBLIC'); ?>img/Index/cangjing.png" />
+                            </div>
+                            <div class="description aWhite">应用场景</div>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <!--<script type="text/javascript">
+        $(function() {
+            var $schoolList = $("#orgList div");
+            $schoolList.last().removeClass("borderBottom");
+            var count = $schoolList.size();
+            if (count > 10) {
+                $("#orgList").height($schoolList.eq(0).height() * 10).niceScroll({
+                    cursorcolor: '#D7420A'
+                });
+            }
+            $("#orgList .schoolItem").click(function() {
+                if ($(this).attr("guid").length == 36) {
+                    var schoolGuid = $(this).attr("guid");
+                    $.ajaxMethod("ToSchool", {
+                        "SchoolGuid": schoolGuid
+                    }, function(result) {
+                        if (result == "1") {
+                            if (false) {
+                                //alert(schoolGuid);
+                                ETM.showTips("小精灵即将重新启动");
+                                ETM.login.changeSchool(schoolGuid);
+                            } else {
+                                window.location.href = window.location.href;
+                            }
+                        } else {
+                            alert("切换园区失败");
+                        }
+                    }, false, "text");
+                }
+            });
+        });
+        </script>-->
+        <!-- <div id="orgList" class="hidden borderRight borderLeft borderBottom">
+            <div class='companyName borderBottom'>广州TT幼教</div>
+            <div guid='d8ce5227-fc3d-49bc-a601-af6e2d43dd99' class='schoolItem borderBottom orgSelected'>越秀东方园区</div>
+        </div> -->
+        <!--<style type="text/css">
+        #orgList {
+            position: absolute;
+            right: 158px;
+            top: 60px;
+            background: white;
+        }
+
+        #orgList .schoolItem,
+        #orgList .companyName {
+            padding-left: 10px;
+            padding-right: 10px;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        #orgList .companyName {
+            background-color: #F4F4F4;
+        }
+
+        #orgList .schoolItem:hover {
+            cursor: pointer;
+        }
+
+        #orgList .orgSelected,
+        #orgList .schoolItem:hover {
+            background: #D7420A;
+            color: white;
+        }
+    </style>-->
+    </form>
+    <div id="lockScreenPage">
+        <div id="unlock">
+            <div class="form-item">
+                <span class="lock-label">密码：</span>
+				<input class="lock-control" name="password" type="password" id="password">
+                <label class="lock-tips" for="password">请输入正确的密码</label>
+			</div>
+            <div class="unlockBtn icon-arrow-right2"></div>
+        </div>
+    </div>
+</body>
+<?php /**必须加载的 js seg*/ include arCfg('DIR.SEG') . 'Sys/js.seg'; ?>
+</html>

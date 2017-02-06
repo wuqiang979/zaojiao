@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=6038c5c1-4064-4105-bc24-3b711165f4da', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function ShowInfo(memberGuid, navId) {
+        window.parent.showDialog("名单资料查看", "../Modules/CRM/MemberInfo.aspx?memberGuid=" + memberGuid + "&navId=" + navId, "976px", "450px");
+    }
+
+    function Delete(LeaveGuid, MemberName) {
+        if (confirm("确定要删除吗？")) {
+            $.ajaxMethod("Teach_AppLeaveDelete", {
+                    "LeaveGuid": LeaveGuid,
+                    "MemberName": MemberName
+                },
+                function(data) {
+                    alert(data);
+                },
+                true, "text");
+        }
+    }
+
+    function Check(LeaveGuid, navId) {
+        window.parent.showDialog("App请假审核", "../Modules/Teach/AppLeaveCheck.aspx?LeaveGuid=" + LeaveGuid + "&navId=" + navId, "976px", "450px");
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="AppLeaveList.aspx?navId=6038c5c1-4064-4105-bc24-3b711165f4da" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUINzI0NTc1MDBkZPOBZ5P+W5BO1d2Dxfx/wEBjJgCu93y1Am9Pweo+PxPM" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="436769EA" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAT/EMufZIk8gO6iJy6ENiGJNZt2i+SQBAbJOuxugMuy8cU886FfEFAEXcgesEpsnRfT/TAmYgiVBxlInoliHa2/XnmD5tM65QrHrd40rUbAmKNNfbZzSL6RODP3NW6Qz1A=" />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:78px;">
+                    幼儿姓名：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbStaffName" type="text" id="tbStaffName" class="int" />
+                </td>
+                <td class="textAlignRight" style="width:78px;">
+                    登记时间：
+                </td>
+                <td class="borderRight" style="width:172px;">
+                    <input name="tbStartDate" type="text" id="tbStartDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px" /> -
+                    <input name="tbEndDate" type="text" id="tbEndDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px" />
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="button" class="button" value="搜 索" id="btnSearch" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"LeaveAct","Display":"操作","Name":"LeaveGuid,MemberName,MemberGuid,StartTime,CheckStatus","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"幼儿姓名","Name":"MemberName","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":true,"LinkStrForamtBindColumn":"MemberGuid","LinkStrForamt":"javascript:ShowInfo(\"{0}\")","LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"请假类型","Name":"LeaveTypeName","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"LeaveTime","Display":"请假时间","Name":"StartTime,EndTime","Width":180,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"请假天数","Name":"LeaveDays","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"请假事由","Name":"LeaveReason","Width":320,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"备注","Name":"Notes","Width":180,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"CheckConvert","Display":"状态","Name":"CheckStatus","Width":60,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd HH:mm","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"登记时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]' />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"6038c5c1-4064-4105-bc24-3b711165f4da"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Teach/AppLeaveList.aspx?navId=6038c5c1-4064-4105-bc24-3b711165f4da' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='AppLeaveList' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='AppLeaveListAppLeaveList' />
+        <script type='text/javascript'>
+        var etmFormId = 'form1';
+
+        function fixIE9() {
+            if ($.browser.msie && $.browser.version == 9) {
+                $('#form1 select').each(function() {
+                    var name = $(this).attr('name');
+                    if (name != undefined && name.length > 0) {
+                        var value = $(this).val();
+                        if (value == null) {
+                            value = $(this).find('option:first').attr('value');
+                            $(this).val(value);
+                        }
+                    }
+                });
+            }
+        }
+
+        function RefreshGrid() {
+            $('#Test').flexOptions().flexReload();
+        };
+
+        function addFormData() {
+            fixIE9();
+            var dt = $('#form1').serializeArray();
+            $('#Test').flexOptions({
+                params: dt
+            });
+            return true;
+        }
+        $(function() {
+            $('#btnSearch').click(function() {
+                $('#Test').flexOptions({
+                    newp: 1
+                }).flexReload();
+                return false;
+            });
+        });
+        $('#Test').flexigrid({
+            url: 'http://vip.yj.etmcn.com/Ajax/AppLeaveList',
+            sortname: 'CreateTime',
+            sortorder: 'desc',
+            usepager: true,
+            useRp: true,
+            rpOptions: [20, 30, 50, 100, 200],
+            rp: 30,
+            colModel: [{
+                display: '操作',
+                name: 'LeaveGuid,MemberName,MemberGuid,StartTime,CheckStatus',
+                etmname: 'LeaveAct',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '幼儿姓名',
+                name: 'MemberName',
+                etmname: 'MemberName',
+                width: 100,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: true,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '请假类型',
+                name: 'LeaveTypeName',
+                etmname: 'LeaveTypeName',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '请假时间',
+                name: 'StartTime,EndTime',
+                etmname: 'LeaveTime',
+                width: 180,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '请假天数',
+                name: 'LeaveDays',
+                etmname: 'LeaveDays',
+                width: 80,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '请假事由',
+                name: 'LeaveReason',
+                etmname: 'LeaveReason',
+                width: 320,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '备注',
+                name: 'Notes',
+                etmname: 'Notes',
+                width: 180,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '状态',
+                name: 'CheckStatus',
+                etmname: 'CheckConvert',
+                width: 60,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '登记时间',
+                name: 'CreateTime',
+                etmname: 'CreateTime',
+                width: 120,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: 'yyyy-MM-dd HH:mm',
+                ColumnType: 'DateTime',
+                IsJsAddColumn: false
+            }],
+            width: $(window).width(),
+            height: $(window).height() - 180 + 60,
+            onSubmit: addFormData
+        });
+        </script>
+    </form>
+</body>
+
+</html>

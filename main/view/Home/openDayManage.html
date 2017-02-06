@@ -1,0 +1,267 @@
+<!-- 开放日管理 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <span>班级：</span>
+    <?php
+        // 调用用html seg 直接输出 select标签
+        arSeg(
+            array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'scid',
+            // 适配器数据 数组
+            // 'map' => EduClassroomModel::$TYPE_CLASS,
+            // map 多维数组适配器
+            'mapbundle' => array($cs, 'cid', 'SY'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+            )
+        );
+    ?>
+        <span>类型：</span>
+        <?php
+            // 调用用html seg 直接输出 select标签
+            arSeg(
+                array(
+                'segKey' => 'Html/select',
+                'name' => 'sopen_type',
+                'map' => ActivityOpenDayModel::$TYPE_ACTIVITY_OPEN,
+                // 'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+                )
+            );
+        ?>
+        <span>负责人：</span>
+        <?php
+            arSeg(
+                array(
+                'segKey' => 'Html/select',
+                'name' => 'smid',
+                // 'map' => EduClassroomModel::$TYPE_CLASS,
+                'mapbundle' => array($teachers, 'mid', 'teacher'),
+                )
+            );
+        ?>
+        <input type="button" class="button" value="搜 索" onclick="return search();">
+        <input type="button" class="button" value="添 加" onclick="return add();">
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <th style="width: 80px;">操作</th>
+                <th>班级名称</th>
+                <th>开放日期</th>
+                <th>开放课程</th>
+                <th>类型</th>
+                <th>家长反馈</th>
+                <th>老师总结</th>
+                <th>状态</th>
+                <th>负责人</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($res as $k=>$v): ?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['odid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['class']['school_year']['first_school_year'].'~'.$v['class']['school_year']['last_school_year']); ?>
+                    <?php arEcho($v['class']['class_name']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$v['open_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['open_course']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['open_type'],ActivityOpenDayModel::$TYPE_ACTIVITY_OPEN); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['res_from_parents']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['summary_from_teacher']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['status'],ActivityOpenDayModel::$STATUS_ACTIVITY_OPEN); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['leader']['realname']); ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<!-- buttom -->
+<div>
+    <?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="<?php echo arU(''); ?>" method="post" style="width: 868px;display: none;" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>班级名称：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select',
+                        // <select name="name">
+                        'name' => 'cid',
+                        // 适配器数据 数组
+                        // 'map' => EduClassroomModel::$TYPE_CLASS,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                ?>
+            </td>
+            <td>开放日期</td>
+            <td>
+                <input type="text" class="int" name="open_time" onclick="laydate({istoday: true})">
+            </td>
+            <td>开放课程</td>
+            <td>
+                <input type="text" class="int" name="open_course">
+            </td>
+        </tr>
+        <tr>
+            <td>类型：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'open_type',
+                        'map' => ActivityOpenDayModel::$TYPE_ACTIVITY_OPEN,
+                        // 'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+                        )
+                    );
+                ?>
+            </td>
+            <td>家长反馈</td>
+            <td>
+                <input type="text" class="int" name="res_from_parents">
+            </td>
+            <td>老师总结</td>
+            <td>
+                <input type="text" class="int" name="summary_from_teacher">
+            </td>
+        </tr>
+        <tr>
+            <td>负责人：</td>
+            <td>
+                <?php
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'mid_leader',
+                        // 'map' => EduClassroomModel::$TYPE_CLASS,
+                        'mapbundle' => array($teachers, 'mid', 'teacher'),
+                        )
+                    );
+                ?>
+            </td>
+            <td>状态：</td>
+            <td>
+                <?php
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'status',
+                        'map' => ActivityOpenDayModel::$STATUS_ACTIVITY_OPEN,
+                        // 'mapbundle' => array($teachers, 'mid', 'teacher'),
+                        )
+                    );
+                ?>
+            </td>
+            <td></td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="hidden" name="type">
+                <input type="hidden" name="odid">
+
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- js内容 -->
+<script>
+function add() {
+    $(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加班级',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+        if (i == 'open_time') {
+            $("[name='" + i + "']").val(timetostr(data[i]));
+        }
+    }
+
+    layer.open({
+        title: '修改菜式',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(odid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('activityOpenDayDel') ?>', {odid: odid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+// 搜索
+function search() {
+    var scid = $("[name='scid']").val();
+    var sopen_type = $("[name='sopen_type']").val();
+    var smid = $("[name='smid']").val();
+    window.location.href = JSV.PATH_CURRENT+'?scid='+scid+'&sopen_type='+sopen_type+'&smid='+smid;
+}
+
+function timetostr(time) {
+    var date = new Date(time * 1000);
+    return date.toLocaleDateString().replace('/', '-').replace('/', '-');
+}
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+    // var_dump($res);
+// print_r($res);
+?>
+</pre>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <style>
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+    </style>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>乐育谷云平台</title>
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/main.css">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <script type="text/javascript" src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery/jquery-1.12.4.min.js"></script>
+     <script type="text/javascript" src="<?php echo arCfg('PATH.PUBLIC');?>js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body style="font-size: 12px;">
+<div class="mdgj-title">
+    名单跟进
+</div>
+
+<div class="mdgj-secondline">
+    <span class="mdgj-lineOneAndOne">
+        跟进方式：<select name="" id="" class="mdgj-select">
+                        <option value="">walk in</option>
+                        <option value="">call in</option>
+                        <option value="">call out</option>
+                        <option value="">短信</option>
+                  </select>&nbsp;
+        跟进时间：<input autocomplete="off" class="mdgj-input" type="text" name="name" value="" class="ints" onclick="WdatePicker();">&nbsp;
+        下次跟进时间：<input autocomplete="off" class="mdgj-input" type="text" name="name" value="" class="ints" onclick="WdatePicker();">&nbsp;
+        <textarea name="tbFollowContent" rows="2" cols="20" id="tbFollowContent" class="etm-int mdgj-textarea"></textarea>
+        <div class="mdgj-yelx">
+        幼儿类型：<select name="" id="" class="mdgj-select">
+                                            <option value="">定金幼儿</option>
+                                            <option value="">新来了解</option>
+                                        </select>
+        </div>
+    </span>
+
+    <span class="mdgj-thirdline">
+
+        <span style="margin:10px; ">
+            <a href="javascript: ">
+                    <img src="<?php echo arCfg('PATH.PUBLIC'); ?>img/phone.png" alt="">
+                    打电话
+            </a>&nbsp;
+            <a href="javascript: ">
+                    <img src="<?php echo arCfg('PATH.PUBLIC'); ?>img/message.png" alt="">
+                    发短信
+            </a>&nbsp;
+            <a href="javascript: ">
+                    <img src="<?php echo arCfg('PATH.PUBLIC'); ?>img/info.png" alt="">
+                    幼儿资料
+            </a>&nbsp;
+
+        </span>
+
+            <span class="add-tag" style="padding: 10px 0  0 15px; ">
+                            添加标签:&nbsp;
+                            <a href="javascript: " id="yedadj-addtag">
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/add.png" alt="">
+                            </a>&nbsp;
+
+                            <span class="yedadj-tag" id="1">体弱
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt="" onclick="$('#1').css('display','none');">
+                            </span>
+                            <span class="yedadj-tag" style="background-color: #52FFCB;" id="2">顽皮
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt=""  onclick="$('#2').css('display','none');">
+                            </span>
+                            <span class="yedadj-tag" style="background-color: #FFC34D;" id="3">好动
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt=""  onclick="$('#3').css('display','none');">
+                            </span>
+                            <span class="yedadj-tag" style="background-color: #6666FF;" id="4">爱哭
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt=""  onclick="$('#4').css('display','none');">
+                            </span>
+                            <span class="yedadj-tag" style="background-color: black;width: 80px;" id="5">不爱说话
+                                <img style="vertical-align: -1px;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt=""  onclick="$('#5').css('display','none');">
+                            </span>
+                            <div class="yedadj-addtag">
+                                <div>
+                                    <img style="float: right;" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/del.png" alt="">
+                                </div>
+                                <span style="background-color: pink;" onclick="$('#1').css('display','inline-block');">体弱</span>
+                                <span style="background-color: #52FFCB;" onclick="$('#2').css('display','inline-block');">顽皮</span>
+                                <span style="background-color: #FFC34D;" onclick="$('#3').css('display','inline-block');">好动</span>
+                                <span style="background-color: #6666FF;" onclick="$('#4').css('display','inline-block');">爱哭</span>
+                                <span style="background-color: black;" onclick="$('#5').css('display','inline-block');">不爱说话</span>
+                            </div>
+            </span>
+
+
+
+
+
+
+
+    </span>
+    <span style="padding:10px;vertical-align: 50px; ">
+        <input type="button" class="etm-button" value="全部保存">
+    </span>
+
+</div>
+
+
+<div name="表格">
+                    <table cellspacing="0" class="etm-Tab" cellpadding="0">
+                        <tr>
+                            <td>操作</td>
+                            <td>次数</td>
+                            <td>方式</td>
+                            <td>跟进内容</td>
+                            <td>下次跟进时间</td>
+                            <td>跟进时间</td>
+                            <td>跟进人</td>
+                            <td>状态</td>
+                        </tr>
+                        <tr class="for-hover">
+                            <td>
+                                <a href="javascript: " style="color: #FF6600;">[确认完成]</a>
+
+                            </td>
+                            <td>
+                                <a href="javascript: " style="color: #FF6600;">2</a>
+                            </td>
+                            <td>walk in</td>
+                            <td>跟进孩子是否今天</td>
+                            <td>2016-04-08 16:57</td>
+                            <td>2016-04-08 10:57</td>
+                            <td>管理员</td>
+                            <td>未处理</td>
+                        </tr>
+                        <tr class="for-hover">
+                            <td>
+                                <a href="javascript: " style="color: #FF6600;">[确认完成]</a>
+
+                            </td>
+                            <td>
+                                <a href="javascript: " style="color: #FF6600;">2</a>
+                            </td>
+                            <td>walk in</td>
+                            <td>跟进孩子是否今天</td>
+                            <td>2016-04-08 16:57</td>
+                            <td>2016-04-08 10:57</td>
+                            <td>管理员</td>
+                            <td>未处理</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+</body>
+
+</html>
+
+<script>
+
+    $("#yedadj-addtag").click(function() {
+        $(".yedadj-addtag").css("display", "block");
+    });
+
+    $(".yedadj-addtag  img").click(function() {
+        $(".yedadj-addtag").css("display", "none");
+    });
+
+    $("#parents-info").click(function() {
+        $(".parents-info").css("display", "block");
+    });
+
+    $(".parents-info  a img").click(function() {
+        $(".parents-info").css("display", "none");
+    });
+
+</script>

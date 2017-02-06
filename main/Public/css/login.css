@@ -1,0 +1,124 @@
+body {
+    font-family: 'Microsoft Yahei', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #3f3f3f;
+    background-color: #fff;
+    -webkit-text-size-adjust: none;
+}
+body, dd, dl, dt, form, h1, h2, h3, h4, input, li, ol, p, ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    vertical-align: middle;
+    font-weight: 400;
+}
+* {
+    box-sizing: border-box;
+}
+img {
+    vertical-align: middle;
+}
+a {
+    text-decoration: none;
+}
+html, body {
+    height: 100%;
+    width: 100%;
+}
+body {
+    background-image: url("../../Public/img/8.jpg");
+    background-size: cover;
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../../Public>/img/8.jpg', sizingMethod='scale')";
+    position: relative;
+    line-height: normal;
+    padding: 0;
+    margin: 0;
+}
+.lh-form-login {
+    position: absolute;
+    height: 300px;
+    width: 400px;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -150px;
+}
+.lh-form-title {
+    text-align: center;
+    font-size: 30px;
+    line-height: 80px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    position: relative;
+}
+.lh-form-title .errorTip{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    font-size: 14px;
+    line-height: normal;
+    color: red;
+    display: none;
+}
+.lh-form-item {
+    display: table;
+    margin-bottom: 25px;
+    margin-left: 52px;
+}
+.lh-form-item span {
+    display: table-cell;
+    width: 35px;
+    border: 1px solid #0078d7;
+    border-right: 0;
+    vertical-align: middle;
+    text-align: center;
+    border-radius: 5px 0 0 5px;
+}
+.lh-form-item input {
+    width: 250px;
+    height: 35px;
+    text-indent: 5px;
+    line-height: 35px;
+    border: 1px solid #0078d7;
+    color: #333;
+    display: table-cell;
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0 5px 5px 0;
+}
+.lh-btn-wrap {
+    text-align: center;
+}
+.lh-btn-wrap .btnSign {
+    display: inline-block;
+    background-color: #75A801;
+    width: 200px;
+    height: 35px;
+    line-height: 35px;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    /*letter-spacing: 5px;*/
+}
+::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #3f3f3f;
+}
+:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #3f3f3f;
+}
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #3f3f3f;
+}
+:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #3f3f3f;
+}
+.no{
+    border: 1px solid red !important;
+}

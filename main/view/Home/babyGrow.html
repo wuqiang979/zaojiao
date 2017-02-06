@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/Validator.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=3ed8afff-61df-419c-9602-8d93a91572f0', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function showExamine(MemberExamineGuid, MemberGuid) {
+
+            window.location.href = "../CRM/MemberExamineItem_0.aspx?sc=btn&navId=3ed8afff-61df-419c-9602-8d93a91572f0&MemberGuid=" + MemberGuid + "&MemberExamineGuid=" + MemberExamineGuid + "&classGuid=" + $("#ddlClass").val() + "&TermWeek=" + $(
+                "#ddlWeek").val() + "&TermGuid=" + $("#ddlTerm").val() + "&TermName=" + $("#ddlTerm").find("option:selected").text() + "&Week=" + $("#ddlWeek").find("option:selected").text();
+        }
+
+        function show(MemberGuid, TermWeek) {
+            // alert($("#ddlTerm").find("option:selected").text());
+            var url = "../CRM/MemberExamineItem_0.aspx?sc=btn&navId=3ed8afff-61df-419c-9602-8d93a91572f0&MemberGuid=" + MemberGuid + "&classGuid=" + $("#ddlClass").val() + "&TermWeek=" + $("#ddlWeek").val() + "&TermGuid=" + $("#ddlTerm").val() +
+                "&TermName=" + $("#ddlTerm").find("option:selected").text() + "&Week=" + $("#ddlWeek").find("option:selected").text();
+            //alert(url);
+            //alert(encodeURI(url));
+            window.location.href = encodeURI(url);
+        }
+
+        function LookExamineRpt(MemberGuid) {
+            window.location.href = "../CRM/MemberExamineReport.aspx?sc=btn&navId=3ed8afff-61df-419c-9602-8d93a91572f0&MemberGuid=" + MemberGuid + "&classGuid=" + $("#ddlClass").val() + "&TermWeek=" + $("#ddlWeek").val() + "&TermGuid=" + $("#ddlTerm")
+                .val();
+        }
+
+        function BatchExamine() {
+            var memberGuidList = "";
+            var flag = false;
+            $("input[name='selVal']").each(function() {
+                if ($(this).is(":checked")) {
+                    flag = true;
+                    memberGuidList += $(this).val() + ",";
+                }
+            });
+            if (!flag) {
+                alert("请选择幼儿");
+            } else {
+                if (memberGuidList != "") {
+                    var url = "../CRM/MemberExamineItem.aspx?sc=btn&navId=3ed8afff-61df-419c-9602-8d93a91572f0&memberGuidList=" + memberGuidList + "&TermWeek=" + $("#ddlWeek").val() + "&classGuid=" + $("#ddlClass").val() + "&TermGuid=" + $(
+                        "#ddlTerm").val() + "&TermName=" + $("#ddlTerm").find("option:selected").text() + "&Week=" + $("#ddlWeek").find("option:selected").text();
+                    window.location.href = encodeURI(url);
+                }
+            }
+        }
+
+        //单个删除
+        function DelExamine(MemberExamineGuid) {
+            if (confirm("确定要删除吗？")) {
+                $.ajaxMethod("CRM_MemberExamineDelete", {
+                        "MemberExamineGuid": MemberExamineGuid
+                    },
+                    function(data) {
+                        alert(data);
+                        window.location.href = "/Modules/CRM/MemberExamineList.aspx?sc=btn&navId=3ed8afff-61df-419c-9602-8d93a91572f0&TermWeek=" + $("#ddlWeek").val() + "&classGuid=" + $("#ddlClass").val() + "&TermGuid=" + $("ddlTerm").val();
+                    },
+                    true, "text");
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="MemberExamineList.aspx?navId=3ed8afff-61df-419c-9602-8d93a91572f0" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTE2MjA5NTQ0MQ9kFgICAw9kFgwCAQ8QZBAVABUAFCsDABYAZAIDDxBkZBYAZAIFDxBkZBYAZAILDw8WAh4HVmlzaWJsZWhkZAINDw8WAh8AZ2RkAg8PDxYCHwBoZGRkEONmt6xSdnvWvgs4y/I5m14XaVP7T+uHuCTv1JqE7oU=" />
+        </div>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            var theForm = document.forms['form1'];
+            if (!theForm) {
+                theForm = document.form1;
+            }
+
+            function __doPostBack(eventTarget, eventArgument) {
+                if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                    theForm.__EVENTTARGET.value = eventTarget;
+                    theForm.__EVENTARGUMENT.value = eventArgument;
+                    theForm.submit();
+                }
+            }
+            //]]>
+        </script>
+
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="CC765226" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAa5MVhK0efSK4eu5pu+jw8e3aJvDuFb/2p1hCWCRrS5YgDaTiGYq6SYDDaqZtJQTJFg8SlXqZ+l/8u7eRkONenDAOGY0qiXCn7zZfEEbbruU4FjpILoFgeQqvXWA+7aEDQ3NwNQjvH8NvwTFf7oD5fLTE3cuRINOGWvJ9w06KN/ig=="
+            />
+        </div>
+
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 54px;"> 班级：</td>
+                <td class="borderRight" style="width: 162px;">
+                    <select name="ddlClass" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ddlClass\&#39;,\&#39;\&#39;)&#39;, 0)" id="ddlClass" class="int" style="margin-right: 10px;">
+
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 78px;"> 点评时间：</td>
+                <td class="borderRight" style="width: 322px;">
+                    <select name="ddlTerm" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ddlTerm\&#39;,\&#39;\&#39;)&#39;, 0)" id="ddlTerm" class="int" style="margin-right: 10px;">
+
+                    </select>
+                    &nbsp;
+                    <select name="ddlWeek" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ddlWeek\&#39;,\&#39;\&#39;)&#39;, 0)" id="ddlWeek" class="int">
+
+                    </select>
+                </td>
+                <td class="borderRight" style="width: 165px;padding-left:20px;" colspan="3">
+                    <input type="submit" name="btnPre" value="本 周" id="btnPre" class="button" />&nbsp;&nbsp;
+                    <input type="submit" name="btnNext" value="下 周" id="btnNext" class="button" />&nbsp;&nbsp;
+
+                </td>
+            </tr>
+            <//table>
+            <div id="P_NoData" class="nodata" style="margin-top: 7px;">
+
+                <img src="../../images/none.gif" /> 暂无相关数据...
+
+            </div>
+
+    </form>
+</body>
+
+</html>

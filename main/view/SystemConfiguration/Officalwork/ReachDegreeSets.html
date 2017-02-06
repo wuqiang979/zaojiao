@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+
+    <body>
+        <form method="post" action="ExamineConfig.aspx?isLeft=10&amp;navId=b75870e5-d6a5-4daa-b121-1dbb8f1e25e0" id="form1">
+            <div class="aspNetHidden">
+                <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTUwNDQ4Mzc2Mg9kFgICAw9kFgYCAQ8WAh4EVGV4dAWXDDxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5YWs5ZGK57G75YirIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9OZXdzQ2F0ZWdvcnkuYXNweD9pc0xlZnQ9MSZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor7flgYfnsbvlnosiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL0xlYXZlQ2F0ZWdvcnkuYXNweD9pc0xlZnQ9MiZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlm63liqHnsbvlnosiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL0NhbXB1c1dvcmtDYXRlZ29yeS5hc3B4P2lzTGVmdD0zJm5hdklkPWI3NTg3MGU1LWQ2YTUtNGRhYS1iMTIxLTFkYmI4ZjFlMjVlMCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIui0ueeUqOexu+WeiyIsIFVybDogIi4uLy4uL01vZHVsZXMvT0EvRXhwZW5zZUFwcGx5Q2F0ZWdvcnkuYXNweD9pc0xlZnQ9NCZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlrqHmoLjorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL0NoZWNrU2V0LmFzcHg/aXNMZWZ0PTUmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K+E5Lu36KGo6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9FeGFtaW5lVGFibGUuYXNweD9pc0xlZnQ9NiZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmlZnluIjor4Tku7fooagiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL1N0YWZmRXhhbWluZVRhYmxlLmFzcHg/aXNMZWZ0PTgmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5pif57qn6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9TdGFyU2V0LmFzcHg/aXNMZWZ0PTcmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6ICD5Yuk6KeE5YiZ6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9PQS9Xb3JrUnVsZUxpc3QuYXNweD9pc0xlZnQ9OSZuYXZJZD1iNzU4NzBlNS1kNmE1LTRkYWEtYjEyMS0xZGJiOGYxZTI1ZTAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLovr7moIfnqIvluqborr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL09BL0V4YW1pbmVDb25maWcuYXNweD9pc0xlZnQ9MTAmbmF2SWQ9Yjc1ODcwZTUtZDZhNS00ZGFhLWIxMjEtMWRiYjhmMWUyNWUwIiwgU2VsZWN0ZWQ6IHRydWUgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAIJDw8WAh4HVmlzaWJsZWdkZAILDw8WAh8BaGRkZHQUYXMCRC9mu94YzuOza1h5z28rAp8/0udrTRuhpnFj" />
+            </div>
+            <div class="aspNetHidden">
+                <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="A60813A9" />
+                <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAARyOXi9UTIj/CIFEZNV8dOjtQzMRd7fydcRVWyTDFBVXLXLnvpbGwfjS6xTr5wvucaTXELZyrW99YRLW0+m1iffdkb0agCRP56vvWDjSKCG871Vae9q5exxDij/U9+v0ik=" />
+            </div>
+            <script src="../../Scripts/jQuery.etmTabs.js"></script>
+            <script type="text/javascript">
+            $(function() {
+                $("#s").etmTabs({
+                    item: [{
+                    Text: "公告类别",
+                    Url: "<?php echo arU('SystemConfiguration/AnnouncementType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假类型",
+                    Url: "<?php echo arU('SystemConfiguration/AskVacationType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "园务类型",
+                    Url: "<?php echo arU('SystemConfiguration/WorkType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "费用类型",
+                    Url: "<?php echo arU('SystemConfiguration/CostType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "审核设置",
+                    Url: "<?php echo arU('SystemConfiguration/CheckSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "评价表设置",
+                    Url: "<?php echo arU('SystemConfiguration/ratedSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "教师评价表",
+                    Url: "<?php echo arU('SystemConfiguration/TeacherratedList'); ?>",
+                    Selected: false
+                }, {
+                    Text: "星级设置",
+                    Url: "<?php echo arU('SystemConfiguration/CounterStarSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "考勤规则设置",
+                    Url: "<?php echo arU('SystemConfiguration/CheckAttendanceSets'); ?>",
+                    Selected: false
+                }, {
+                    Text: "达标程度设置",
+                    Url: "<?php echo arU('SystemConfiguration/ReachDegreeSets'); ?>",
+                    Selected: true
+                }, ]
+                });
+            });
+            </script>
+            <div id='s'></div>
+            <table class="search">
+                <tr>
+                    <td class="textAlignRight" style="width: 54px;">名称：
+                    </td>
+                    <td class="borderRight" style="width: 160px;">
+                        <input name="tbConfigName" type="text" id="tbConfigName" class="int" />
+                    </td>
+                    <td class="textAlignRight" style="width: 66px;">权重比：
+                    </td>
+                    <td class="borderRight" style="width: 160px;">
+                        <input name="tbConfigValue" type="text" id="tbConfigValue" class="int" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        <input type="button" class="button" id="btnSearch" value="搜 索" />&nbsp;
+                        <input type="submit" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+                    </td>
+                </tr>
+            </table>
+            <div id="P_NoData" class="nodata">
+                <img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/none.gif" /> 暂无相关数据
+            </div>
+        </form>
+    </body>
+
+</html>

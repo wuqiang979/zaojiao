@@ -1,0 +1,128 @@
+<?php
+/*
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select_area',
+            // <select name="name">
+            'namekey' => array('ancestral_province_id', 'ancestral_city_id'),
+            // 适配器数据 数组 选中 四川成都
+            'namevalue' => array('26', '322'),
+      );
+*/
+?>
+        <?php
+        // 获取所有省份
+        $regionProvinces = RegionModel::model()->getAllreginByPid(1, false);
+
+        if (!$province_id = $namevalue[0]) :
+            $province_id = $regionProvinces[0]['rid'];
+        endif;
+        $regionCitys = RegionModel::model()->getAllreginByPid($province_id, false);
+
+        if (!$city_id = $namevalue[1]) :
+            $city_id = $regionCitys[0]['rid'];
+        endif;
+        $regionCountys = RegionModel::model()->getAllreginByPid($city_id, false);
+
+      // 省份 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => $namekey[0],
+            // 适配器数据 数组
+            // 'map' => AdModel::$TYPE_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array($regionProvinces, 'rid', 'name'),
+            // 选中的value selected = selected
+            'selected' => $province_id,
+         )
+      );
+
+      if (isset($namekey[1])) :
+          // 市区 调用用html seg 直接输出 select标签
+          arSeg(
+             array(
+                // seg文件
+                'segKey' => 'Html/select',
+                // <select name="name">
+                'name' => $namekey[1],
+                // 适配器数据 数组
+                // 'map' => AdModel::$TYPE_MAP,
+                // map 多维数组适配器
+                'mapbundle' => array($regionCitys, 'rid', 'name'),
+                // 选中的value selected = selected
+                'selected' => $city_id,
+             )
+          );
+      endif;
+
+      if (isset($namekey[2])) :
+          // 市区 调用用html seg 直接输出 select标签
+          arSeg(
+             array(
+                // seg文件
+                'segKey' => 'Html/select',
+                // <select name="name">
+                'name' => $namekey[2],
+                // 适配器数据 数组
+                // 'map' => AdModel::$TYPE_MAP,
+                // map 多维数组适配器
+                'mapbundle' => array($regionCountys, 'rid', 'name'),
+                // 选中的value selected = selected
+                'selected' => $namevalue[2],
+             )
+          );
+      endif;
+
+?>
+
+
+<script>
+<?php if (isset($namekey[1])): ?>
+$("[name='<?php echo $namekey[0]; ?>']").change(function () {
+    var rid = $(this).val();
+    $.get('<?php echo arU('api/getAllregionByPid') ?>', {pid: rid}, function (res) {
+        var optstr = '';
+        for (var i in res.data) {
+            if (i == 0) {
+                var select_city_id = res.data[i]['rid'];
+            }
+            optstr += '<option value="'+res.data[i]['rid']+'">'+res.data[i]['name']+'</option>';
+        }
+        $("[name='<?php echo $namekey[1]; ?>']").html(optstr);
+
+        <?php if (isset($namekey[2])): ?>
+        $.get('<?php echo arU('api/getAllregionByPid') ?>', {pid: select_city_id}, function (res) {
+            var optstr = '';
+            for (var i in res.data) {
+                optstr += '<option value="'+res.data[i]['rid']+'">'+res.data[i]['name']+'</option>';
+            }
+            $("[name='<?php echo $namekey[2]; ?>']").html(optstr);
+        }, 'json');
+
+        <?php
+            endif;
+        ?>
+
+
+    }, 'json');
+});
+<?php endif ?>
+
+<?php if (isset($namekey[2])): ?>
+$("[name='<?php echo $namekey[1]; ?>']").change(function () {
+    var rid = $(this).val();
+    $.get('<?php echo arU('api/getAllregionByPid') ?>', {pid: rid}, function (res) {
+        var optstr = '';
+        for (var i in res.data) {
+            optstr += '<option value="'+res.data[i]['rid']+'">'+res.data[i]['name']+'</option>';
+        }
+        $("[name='<?php echo $namekey[2]; ?>']").html(optstr);
+    }, 'json');
+});
+<?php endif ?>
+</script>

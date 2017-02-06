@@ -1,0 +1,113 @@
+<div class="etm-tabs">
+    <a href="<?php echo arU('ChainManagement/ZoneManagement');?>" style="margin-left:10px;" class="" id="hdgl">园区管理</a>|
+    <a href="javascript: " class="etm-tabSelected" id="hdqd">申请园区</a>
+</div>
+
+
+<div style="background-color: #F4F4F4;padding-left:20px;font-size: 12px;">
+    <span style="display: inline-block;width: 250px;padding:10px;">
+                        <span style="display: inline-block;padding:10px;border-right: 1px #DAD8D4 solid;">
+                            园区名称:&nbsp;
+                                        <input class="table-secondline-input" type="text">
+                        </span>
+    </span>
+    <span style="vertical-align: baseline;vertical-align: middle;">
+
+            <input style="margin:0px 20px 0 20px; " class="etm-button" type="button" value="搜素">
+            <input class="etm-button" type="button" value="添加">
+
+    </span>
+</div>
+<div name="表格" style="position: relative;">
+    <table cellspacing="0" class="etm-Tab" cellpadding="0">
+        <tr>
+            <td>园区名称</td>
+            <td>园区简码</td>
+            <td>公司名称</td>
+            <td>所属公司</td>
+            <td>联系人</td>
+            <td>联系电话</td>
+            <td>园区固话</td>
+            <td>地址</td>
+            <td>状态</td>
+            <td>创建时间</td>
+            <td>备注</td>
+        </tr>
+        <tr  class="for-hover">
+            <td colspan="11">暂无相关数据··</td>
+        </tr>
+    </table>
+</div>
+<!-- 后台添加的部分 -->
+<!-- 后台添加的部分 -->
+<div style="font-size: 12px;background-color: #F4F4F4;height: 30px;line-height: 30px;position: fixed;width:100%;border-bottom:1px #DAD8D4 solid;border-top:1px #DAD8D4 solid;bottom: 0px;padding-bottom: 35px;">
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px ;">
+                            <span style="margin:0px 5px 0px 25px;">显示</span>
+    <select name="" id="">
+        <option value="">10</option>
+        <option value="">20</option>
+        <option value="">30</option>
+    </select>
+    <span>条/页</span>
+    </span>
+    <a href="../../main/view/index.html" style="color: #46626A;margin-left:10px; ">首页</a>
+    <span style="border-right: 1px #DAD8D4 solid;padding-right: 10px;">
+                        <a href="../../main/view/index.html" style="color: #46626A;margin-left:10px; ">上一页</a>
+                    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;">
+
+                        第 <input style="width: 50px;height: 15px;vertical-align: baseline;" placeholder="1" type="text"> 页
+
+                        <input style="vertical-align: baseline;" type="button" class="etm-button" value="转 到">
+                    <!-- 页数更改 -->
+                         <span style="font-size: 12px;">共 <span>1</span> 页</span>
+    <!-- 页数更改 -->
+    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;">
+                            <a href="javascript: "  style="color: #46626A;margin-right:10px;">下一页</a>
+                            <a href="javascript: "  style="color: #46626A;">末尾页</a>
+                    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;margin-right: 10px;">
+                        <input style="vertical-align: baseline;" type="button" class="etm-button" value="刷 新">
+                    </span>
+    <!--  -->
+    显示从 <span>1</span>条数据 到 <span>1</span>条数据 共 <span>1</span> 数据
+    <!--  -->
+</div>
+<script>
+
+$(function() {
+    $("#hdgl").hover(function() {
+        $(this).addClass("etm-tabSelected");
+    }, function() {
+        $(this).removeClass("etm-tabSelected");
+    });
+})
+
+
+function addCategory() {
+    layer.open({
+        type: 2,
+        title: '',
+        shadeClose: true,
+        shade: 0.8,
+        area: ['1000px', '510px'],
+        content: '/zaojiao/Api/djxmzs' //iframe的url
+    });
+
+}
+
+function modifyinfo() {
+    layer.open({
+        type: 2,
+        title: '',
+        shadeClose: true,
+        shade: 0.8,
+        area: ['1000px', '510px'],
+        content: '/zaojiao/Api/yedadj' //iframe的url
+    });
+
+}
+
+
+</script>

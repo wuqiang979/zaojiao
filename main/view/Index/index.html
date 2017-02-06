@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+<meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <link href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css" rel="stylesheet" type="text/css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <!--<script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/highcharts/highcharts.js" type="text/javascript"></script>-->
+    <!--<script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/highcharts/modules/funnel.js" type="text/javascript"></script>-->
+    <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE">
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#0767c8',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#0767c8',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#0767c8',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <style type="text/css">
+    .tit {
+        width: 100%;
+        font-weight: bolder;
+    }
+
+    .con {
+        width: 100%;
+        font-weight: bolder;
+        font-size: 12px;
+    }
+
+    .bot {
+        color: #ff6600;
+    }
+
+    .it_show1 {
+        padding-left: 10px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        margin-right: 12px;
+        border: solid;
+        border-width: 1px;
+        border-color: #DAD8D4;
+        background-color: white;
+    }
+
+    .it_show2 {
+        padding-left: 10px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        margin-right: 12px;
+        border: solid;
+        border-width: 1px;
+        border-color: #DAD8D4;
+        background-color: white;
+    }
+
+    .div_Chart {
+        border: 1px solid #DAD8D4;
+        height: 254px;
+        text-align: center;
+        vertical-align: middle;
+        margin-right: 12px;
+    }
+
+    .item1 {
+        position: relative;
+        height: 157px;
+        border: 1px solid #DAD8D4;
+        background-color: white;
+        margin-top: 0px;
+    }
+
+    .item1 .item_title {
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #DAD8D4;
+        width: 100%;
+        font-weight: bolder;
+        background-color: #F4F4F4;
+    }
+
+    .item1 .item_title .itemBtn {
+        position: absolute;
+        top: 4px;
+        right: 10px;
+        font-weight: normal;
+    }
+
+    .item1 .item_title .itemBtn1 {
+        position: absolute;
+        top: 0px;
+        right: 10px;
+        font-weight: normal;
+    }
+
+    .item1 .item_title span {
+        margin-left: 10px;
+    }
+
+    .item1 .item_title .itemBtn img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .item1 table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .item1 table td {
+        height: 26px;
+    }
+
+    .btnChangeSkin img {
+        width: 77px;
+        height: 60px;
+    }
+
+    #txtMemberInfo {
+        padding-left: 10px;
+        margin-top: 20px;
+        margin-left: 18%;
+        margin-bottom: 6px;
+        height: 49px;
+        width: 60%;
+        line-height: 49px;
+        font-size: 12px;
+        border-color: #75A801;
+    }
+
+    #txtMemberInfo:focus {
+        outline: none;
+    }
+    /*#txtMemberInfo {
+            padding-left: 10px;
+            margin-top: 20px;
+            margin-left: 200px;
+            margin-bottom: 6px;
+            height: 49px;
+            width: 60%;
+            line-height: 49px;
+            font-size: 40px;
+            border-color: #75A801;
+        }
+
+            #txtMemberInfo:focus {
+                outline: none;
+            }*/
+
+    #btnCardSign {
+        position: absolute;
+        top: 40px;
+        right: 19%;
+        height: 53px;
+        width: 100px;
+    }
+
+    .achange a {
+        color: #75A801;
+    }
+
+    .achange a:hover {
+        color: #46626a;
+    }
+
+    .list tbody td {
+        line-height: none !important;
+        height: auto;
+    }
+
+    .list {
+        background-color: #DAD8D4;
+        border-bottom: 0px;
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+
+    .list tbody td,
+    .list thead td {
+        border: 0px;
+    }
+
+    .calendar .day {
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        font-size: 12px;
+        font-weight: bold;
+        /*font-size: 28px;
+        font-weight: bold;
+       line-height: 70px;*/
+    }
+
+    .calendar .dayhascontent {
+        font-size: 12px;
+        font-weight: bold;
+        /* left: 5px;
+        position: absolute;
+        top: 0;*/
+    }
+
+    .calendar .calendarContent {
+        /* width: 99%;
+        word-wrap:break-word;
+        word-break:break-all;
+        position: absolute;
+        top: 32px;
+        left: 0px;
+        padding-left: 5px;
+        text-align:left;
+        font-size: 13px;
+        text-align: center;*/
+    }
+
+    .calendar .numday {}
+
+    .calendar .cnday {
+        position: absolute;
+        right: 1px;
+        top: 1px;
+        /*  font-size: 13px;
+       position: absolute;
+        right: 5px;
+        text-align: right;
+        top: 0;
+        width: 70px;*/
+    }
+
+    .setCalendar {
+        /* position: relative;*/
+    }
+
+    .calendar .datestr {
+        font-size: 12px;
+    }
+
+    .dayList {
+        height: 99%;
+        position: relative;
+        width: 99%;
+    }
+
+    .listFrist {
+        text-align: left;
+    }
+
+    .listNotFrist {
+        text-align: left;
+    }
+
+    .dayinfo {
+        width: 99%;
+        height: 23px;
+        /*
+           font-size: 13px;*/
+        position: relative;
+    }
+
+    .btnAdd {
+        width: 99%;
+        text-align: center;
+    }
+
+    .add {
+        color: darkgrey;
+    }
+
+    .icon {
+        font-size: 10px;
+        color: darkgrey;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    .minHeight {
+        height: 46px;
+    }
+
+    td {
+        position: relative;
+    }
+
+    .cndatestr {
+        /*margin-left: 30px;*/
+    }
+
+    .cndatestr:hover {
+        text-decoration: none;
+    }
+
+    html {
+        -webkit-text-size-adjust: none;
+    }
+    /*fix*/
+
+    .td_4 {
+        height: 9px\9;
+    }
+    /* Opera */
+
+    @media all and (-webkit-min-device-pixel-ratio:10000),
+    not all and (-webkit-min-device-pixel-ratio:0) {
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 10px;
+        }
+    }
+    /* Safari chrome */
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        .icon {
+            font-size: 5px;
+        }
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 9px;
+        }
+    }
+    /* tip */
+
+    #tips {
+        font-size: 12px;
+        position: absolute;
+        top: 0;
+        z-index: 9999;
+        color: #000;
+        display: none;
+        background-color: white;
+        width: 150px;
+        /*height: 120px;*/
+        /*border: 2px solid #CAD3E2;*/
+        border: 1px solid #CAD3E2\9;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -moz-box-shadow: 5px 5px 10px #000;
+        -webkit-box-shadow: 5px 5px 10px #000;
+        box-shadow: 5px 5px 10px #000;
+        /*filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius=Ǝ', MakeShadow='true',ShadowOpacity=Ɔ.20');*/
+        filter: progid: DXImageTransform.Microsoft.Shadow(color='#969696', Direction=135, Strength=5);
+        word-wrap: break-word;
+        word-break: break-all;
+        padding: 10px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .dropdown-divider {
+        border-bottom: 1px solid #DDDDDD;
+        margin: 5px 1px 6px;
+        padding-top: 1px;
+    }
+
+    .text {
+        padding-left: 10px;
+    }
+
+    #buttons {
+        position: absolute;
+        right: 10px;
+        top: 107px;
+    }
+
+    .list td:hover {
+        background-color: #FFFCD3;
+    }
+    /*#noteList {
+        height:217px;
+        overflow:auto;
+        scrollbar-3dlight-color:red;
+  scrollbar-highlight-color:red;
+  scrollbar-face-color:red;
+  scrollbar-arrow-color:red;
+  scrollbar-shadow-color:red;
+  scrollbar-darkshadow-color:red;
+  scrollbar-track-color:red;
+        }*/
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        $("#noteList").height(217).niceScroll({
+            cursorcolor: '#0767c8',
+            horizrailenabled: false
+        });
+    });
+    $(function() {
+        if ($("#txtMemberInfo").val() == "") {
+            $("#txtMemberInfo").val("幼儿姓名/手机号/卡号");
+            $("#txtMemberInfo").css("color", "#DAD8D4");
+            $("#txtMemberInfo").css("font-size", "24px");
+        }
+
+        $("#div_MemberInfo").height(210).niceScroll({
+            cursorcolor: '#0767c8',
+            horizrailenabled: false
+        });
+
+    });
+
+    function signEnter() {
+        var e = e || window.event;
+        if (e.keyCode == 13) {
+            document.getElementById("btnCardSign").click();
+        }
+    }
+
+    function check() {
+        if ($("#txtMemberInfo").val() == "幼儿姓名/手机号/卡号" || $("#txtMemberInfo").val() == "") {
+            return false;
+        } else
+            return true;
+    }
+
+    function txtMemberInfroBlur() {
+        if ($("#txtMemberInfo").val() == "") {
+            $("#txtMemberInfo").val("幼儿姓名/手机号/卡号");
+            $("#txtMemberInfo").css("color", "#DAD8D4");
+            $("#txtMemberInfo").css("font-size", "12px");
+        }
+    }
+
+    function txtMemberInfroFocus() {
+        $("#txtMemberInfo").val("");
+    }
+
+
+    function show(title, url, width, height) {
+        window.parent.showDialog(title, url, width, height);
+    }
+
+    function Search() {
+        document.location.href = "SearchResult.aspx?Search=" + $("#txtMemberInfo").val();
+    }
+    </script>
+</head>
+
+<body style="font-size: 12px!important;">
+    <form tabindex="5000" style="height: 542px; overflow-y: hidden;" method="post" action="MyIndex.aspx?navId=" id="form1">
+        <div class="aspNetHidden">
+            <input name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTM3NzA5NzQzNA9kFgICAw9kFgQCCw8QZA8WDGYCAQICAgMCBAIFAgYCBwIIAgkCCgILFgwQBQIwMQUCMDFnEAUCMDIFAjAyZxAFAjAzBQIwM2cQBQIwNAUCMDRnEAUCMDUFAjA1ZxAFAjA2BQIwNmcQBQIwNwUCMDdnEAUCMDgFAjA4ZxAFAjA5BQIwOWcQBQIxMAUCMTBnEAUCMTEFAjExZxAFAjEyBQIxMmdkZAIPDxYCHgRUZXh0BY1XPHRyPjx0ZCB2YWxpZ249J3RvcCc+PC90ZD48dGQgdmFsaWduPSd0b3AnPjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/lha08L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QnPjxhIGNsYXNzPSJoYXNjb250ZW50IiBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJ2EzYmQ2YzRkLWVjMDQtNDRmZS1iNDY0LWI1MTFiZWRmNjgzNicsJycpIiBzdHlsZT0nY29sb3I6I2ZmMDAwMCc+cXc8L2E+PHNwYW4+PC9zcGFuPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTAxJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+S4gzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTAyJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+WFqzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4zPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTAzJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+S5nTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz40PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTA0JykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PC90cj48dHI+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPjxmb250IGNvbG9yPScjMzJDRDMyJz7oipLnp408L2ZvbnQ+PC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjU8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMDUnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LqMPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjY8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMDYnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LiJPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjc8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMDcnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5ZubPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjg8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMDgnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LqUPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjk8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMDknKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5YWtPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjEwPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTEwJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWIneS4gzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xMTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0xMScpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjwvdHI+PHRyPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7liJ3lhas8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTI8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMTInKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LmdPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjEzPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTEzJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWIneWNgTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xNDwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0xNCcpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjx0ZCBhbHQ9J2V4Y2VwdCcgc3R5bGU9J2JhY2tncm91bmQtY29sb3I6I0ZGRkNEMzsnIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0JyBpZD0ndGRfc2VsZWN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWNgeS4gDwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xNTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0xNScpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHkuow8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTY8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMTYnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Y2B5LiJPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjE3PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTE3JykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWNgeWbmzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xODwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0xOCcpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjwvdHI+PHRyPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHkupQ8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTk8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMTknKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Y2B5YWtPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjIwPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTIwJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPjxmb250IGNvbG9yPScjMzJDRDMyJz7lpI/oh7M8L2ZvbnQ+PC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjIxPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTIxJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWNgeWFqzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yMjwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0yMicpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHkuZ08L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MjM8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMjMnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5LqM5Y2BPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjI0PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTI0JykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+S4gDwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yNTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0yNScpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjwvdHI+PHRyPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/kuow8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MjY8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMjYnKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5bu/5LiJPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjI3PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTI3JykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+Wbmzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yODwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3QgbWluSGVpZ2h0Jz48L2Rpdj48ZGl2PjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0iYWRkV29ya0xvZygnJywnMjAxNi0wNi0yOCcpIj48aW1nIHN0eWxlPSIgYm9yZGVyOm5vbmUiIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiPjwvYT48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/kupQ8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+Mjk8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IG1pbkhlaWdodCc+PC9kaXY+PGRpdj48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIG9uY2xpY2s9ImFkZFdvcmtMb2coJycsJzIwMTYtMDYtMjknKSI+PGltZyBzdHlsZT0iIGJvcmRlcjpub25lIiBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIj48L2E+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5bu/5YWtPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjMwPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCBtaW5IZWlnaHQnPjwvZGl2PjxkaXY+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiBvbmNsaWNrPSJhZGRXb3JrTG9nKCcnLCcyMDE2LTA2LTMwJykiPjxpbWcgc3R5bGU9IiBib3JkZXI6bm9uZSIgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCI+PC9hPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PC90ZD48L3RyPmRkPCGaW3SFEoiFwhh5x9wjp2ZyDJ2gj4TfInvLJC1rdRE=" type="hidden">
+        </div>
+        <div class="aspNetHidden">
+            <input name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="4218C75F" type="hidden">
+            <input name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABI9Fk+oVs1bgVupEMOnjK/NbGPsK6nXohzpYtjqVmi738t+xgON/PNB0HX1o1ywXuUanNkTRRTzW7ADAzd9q7ecA9fNzMLN7aVXOur9Xo7s8GrOEs1nWQJKRfiX6F5v+4mjTg+46WaUvfHyrteMuuOec1D1WsCFydCTzvp9f6v7vjiEY2GU901GcfvpygZo/uGoq96Q4bJZTrO3qls+MM0pJgGLd0annSAXb3HBBEClp7KuMtNTYDR1B1YXEjbzgHoKS895/UBfIdVVOvuT2B6CnXSlQ24WLQoNjQ7VZAF0dKciKpqrARr6Lz/DJ9JgANSO1N1XNFmfsMXJasjxX85jAOGY0qiXCn7zZfEEbbruU4FjpILoFgeQqvXWA+7aEDRXUxulTtCQE6KirtY1LEuN3hb1KpAO3A+FYgvyfHmD4A==" type="hidden">
+        </div>
+        <div style="position: relative; height: 100px; padding-top: 20px">
+            <input style="color: rgb(218, 216, 212); font-size: 24px;" name="txtMemberInfo" id="txtMemberInfo" class="int" onblur="txtMemberInfroBlur();" onfocus="txtMemberInfroFocus();" onkeydown="signEnter();" type="text">
+            <input value="搜一下" id="btnCardSign" tabindex="0" class="button" onclick="Search()" type="button">
+        </div>
+        <div style="border-bottom: 1px solid #DAD8D4;">&nbsp;</div>
+        <div style="margin-bottom: 10px; margin-top: 10px; margin-right: 11px;">
+            <table style="margin-top: 3px; border-collapse: collapse;" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <td class="width3 table_hide" style="padding-top: 0px; padding-right: 5px;">
+                            <div class="item1">
+                                <div class="item_title">
+                                    <span>工作任务</span>
+                                    <div class="itemBtn">
+                                        <a href="javascript:void(0)" onclick="getTask('flash')">
+                                            <img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/refresh.png"></a>
+                                    </div>
+                                </div>
+                                <div id="p_myCheckContract">
+                                </div>
+                                <div id="p_myCheckBankDeduction">
+                                </div>
+                                <div id="p_myCheckAttendance">
+                                </div>
+                                <div id="p_myCheckRefund">
+                                </div>
+                                <table style="margin-left: 10px;" class="bDiv">
+                                    <tbody>
+                                        <tr>
+                                            <td class="padding2">未审核的单据</td>
+                                            <td style="width: 40px;"><a href="javascript:void(0)" class="hightlight2" onclick="javascript:void(0);"><span class="span_task" id="span_NeedCheckContract">0</span></a></td>
+                                            <td style="width: 40px;" class="textright">单</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">未审核的代扣单</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="javascript:void(0);"><span class="span_task" id="span_NeedCheckBankDeduction">0</span></a></td>
+                                            <td class="textright">单</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">未审核的出勤结算</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="javascript:void(0);"><span class="span_task" id="span_NeedAttendance">0</span></a></td>
+                                            <td class="textright">个</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">未审核的退费单据</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="javascript:void(0);"><span class="span_task" id="span_NeedCheckRefund">0</span></a></td>
+                                            <td class="textright">单</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <script type="text/ecmascript">
+                                function getTask(arg) {
+                                    $(".span_task").html("<img src=\"<?php echo arCfg('PATH.PUBLIC'); ?>/img/loading.gif\" style=\"width:12px;height:12px;\" />");
+                                    $.ajaxMethod("GetTaskData", {
+                                        "type": arg
+                                    }, function(result) {
+                                        $("#span_NeedCheckContract").html(result.MyCheckContractCount);
+                                        $("#span_NeedCheckBankDeduction").html(result.MyCheckBankDeductionCount);
+                                        $("#span_NeedAttendance").html(result.MyCheckAttendanceCount);
+                                        $("#span_NeedCheckRefund").html(result.MyCheckRefundCount);
+                                    }, "json");
+                                }
+                                getTask('');
+                                </script>
+                            </div>
+                        </td>
+                        <td class="width3 table_hide" style="padding-left: 5px; padding-top: 0px;">
+                            <div class="item1">
+                                <div class="item_title">
+                                    <span>系统预警</span>
+                                    <div class="itemBtn">
+                                        <a href="javascript:void(0)" onclick="getwarning('flash')">
+                                            <img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/refresh.png"></a>
+                                    </div>
+                                </div>
+                                <div id="p_contractremind">
+                                </div>
+                                <div id="p_memberclasshours">
+                                </div>
+                                <div id="p_nonefollow">
+                                </div>
+                                <div id="p_newassign" class="div_hide" style="display: none">
+                                </div>
+                                <table style="margin-left: 10px;" class="bDiv">
+                                    <tbody>
+                                        <tr>
+                                            <td class="padding2">物品库存预警</td>
+                                            <td style="width: 40px;"><a href="javascript:void(0)" class="hightlight2" onclick="show('物品库存预警', '../../Modules/Index/ProductInventoryYuJing.aspx', '860px', '450px')"><span class="span_getwarning" id="span_inventory">1</span></a></td>
+                                            <td style="width: 40px;" class="textright">个</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">食材库存预警</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="show('食材库存预警', '../../Modules/Index/MaterialInventoryYuJing.aspx', '860px', '450px')"><span class="span_getwarning" id="span_material">0</span></a></td>
+                                            <td class="textright">个</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">本月到期的单据</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="show('本月到期的单据', '../../Modules/Index/ContractRemind.aspx', '860px', '450px')"><span class="span_getwarning" id="span_contract">0</span></a></td>
+                                            <td class="textright">个</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="padding2">欠费名单</td>
+                                            <td><a href="javascript:void(0)" class="hightlight2" onclick="show('欠费名单', '../../Modules/Index/ReconciliationRemind.aspx', '860px', '450px')"><span class="span_getwarning" id="span_reconciliation">0</span></a></td>
+                                            <td class="textright">人</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <script type="text/ecmascript">
+                                function getwarning(arg) {
+                                    $(".span_getwarning").html("<img src=\"<?php echo arCfg('PATH.PUBLIC'); ?>/img/loading.gif\" style=\"width:12px;height:12px;\" />");
+                                    $.ajaxMethod("GetWarningData", {
+                                        "type": arg
+                                    }, function(result) {
+                                        $("#span_inventory").html(result.ProductInventoryCount);
+                                        $("#span_material").html(result.MaterialInventoryCount);
+                                        $("#span_contract").html(result.ContractEndDateCount);
+                                        $("#span_reconciliation").html(result.ReconciliationCount);
+                                    }, "json");
+                                }
+
+                                getwarning('');
+                                </script>
+                            </div>
+                        </td>
+                        <td class="width3 table_hide" rowspan="2" style="padding-left: 11px; padding-right: 5px;">
+                            <div class="item1" style="height: 330px; margin-top: 0px;">
+                                <div class="item_title">
+                                    <span>全园出勤率：<span id="span_campusADLv">0.00%</span></span>
+                                    <div class="itemBtn">
+                                        <a href="javascript:void(0)" onclick="getAttendance('flash')">
+                                            <img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/refresh.png"></a>
+                                    </div>
+                                </div>
+                                <div class="bDiv">
+                                    <div id="divChart" align="center">
+                                        <embed type="application/x-shockwave-flash" src="../../Flash/Pie3D.swf" id="ChartId" name="ChartId" quality="high" wmode="transparent" allowscriptaccess="always" flashvars="chartWidth=100%&amp;chartHeight=299&amp;debugMode=0&amp;DOMId=ChartId&amp;registerWithJS=0&amp;scaleMode=noScale&amp;lang=EN&amp;dataXML=<chart caption='全园缺勤情况' subcaption='' showPercentValues='1' outCnvBaseFontSize='12' baseFontSize='12' lineThickness='1' showValues='1' formatNumberScale='0' anchorRadius='2'   divLineAlpha='20' divLineColor='a1a0a0' divLineIsDashed='1' showAlternateHGridColor='1' alternateHGridAlpha='5' alternateHGridColor='6d7072' shadowAlpha='40' labelStep='1' numvdivlines='5' chartRightMargin='35' bgColor='F4F4F4' bgAngle='270' bgAlpha='100' showBorder='1' BorderColor='F4F4F4'><set label='未知' value='0.01' /> </chart>" height="299" width="100%">
+                                    </div>
+                                    <script type="text/javascript">
+                                    function getAttendance(arg) {
+                                        $("#span_campusADLv").html("<img src=\"<?php echo arCfg('PATH.PUBLIC'); ?>/img/loading.gif\" style=\"width:12px;height:12px;\" />");
+                                        $.ajaxMethod("GetgetAttendance", {
+                                            "type": arg
+                                        }, function(result) {
+                                            $("#span_campusADLv").html(result.CampusLv);
+                                            getdata(result.ChartString);
+                                        }, "json");
+                                    }
+
+                                    function getdata(fun) {
+
+                                        var chart = new FusionCharts("../../Flash/Pie3D.swf", "ChartId", "100%", "299", "0", "0");
+
+                                        chart.setDataXML(fun);
+                                        chart.render("divChart");
+                                    }
+                                    getAttendance('');
+                                    </script>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="width3 table_hide" style="padding-top: 14px; width:350px; padding-right: 5px;">
+                            <div class="item1">
+                                <div class="item_title">
+                                    <span>通知公告</span>
+                                    <div class="itemBtn bDiv">
+                                        <a href="../../Modules/Index/NewsList.aspx?navId=>">更多</a>
+                                    </div>
+                                </div>
+                                <table style="margin-left: 10px; " class="bDiv" id="taNews">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:120px;"><a class="padding2" title="测试1" href="javascript: window.parent.showDialog('通知公告查看', '../Modules/Index/NewsPage.aspx?newsGuid=33269fd5-8ef5-4bbd-ba8c-6519181f8a61', '890px', '470px')">测试1</a></td>
+                                            <td style="padding-left:80px;">2016-05-13 19:38:07</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <script type="text/ecmascript">
+                                function GetOaNewsData(arg) {
+                                    //  $(".span_task").html("<img src=\"<?php echo arCfg('PATH.PUBLIC'); ?>/img/loading.gif\" style=\"width:12px;height:12px;\" />");
+                                    $.ajaxMethod("GetOaNewsData", {
+                                        "type": arg
+                                    }, function(result) {
+                                        // alert(result.HtmlStr);
+                                        $("#taNews").append(result.HtmlStr);
+                                    }, "json");
+                                }
+                                GetOaNewsData('');
+                                </script>
+                            </div>
+                        </td>
+                        <td class="width3 table_hide" style="padding-left: 5px; width:350px;  padding-top: 14px;">
+                            <div class="item1">
+                                <div class="item_title">
+                                    <span>教学培训</span>
+                                    <div class="itemBtn bDiv">
+                                        <a href="../../Modules/Teach/TrainList.aspx?navId=>">更多</a>
+                                    </div>
+                                </div>
+                                <table style="margin-left: 10px;" class="bDiv" id="tabTrain">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:120px;"><a class="padding2" title="芒果" href="javascript: window.parent.showDialog('教学培训查看', '../Modules/Teach/TrainInfo.aspx?TrainGuid=f24358b0-c640-4d0d-aa44-2b48a77860b5', '750px', '400px')">芒果</a></td>
+                                            <td style="padding-left:80px;">2016-05-13 19:17:51</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <script type="text/ecmascript">
+                                function GetTrainDatas(arg) {
+                                    //  $(".span_task").html("<img src=\"<?php echo arCfg('PATH.PUBLIC'); ?>/img/loading.gif\" style=\"width:12px;height:12px;\" />");
+                                    $.ajaxMethod("GetTrainsData", {
+                                        "type": arg
+                                    }, function(result) {
+                                        // alert(result.HtmlStr);
+                                        $("#tabTrain").append(result.HtmlStr);
+                                    }, "json");
+                                }
+                                GetTrainDatas('');
+                                </script>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div style="padding-left:1px;">
+                                <div style="text-align: left;">
+                                    <div style="text-align: left;">
+                                        <div class="tabsBottomBar"></div>
+                                        <div style="padding-top: 7px; padding-left: 10px;">
+                                            月份：
+                                            <input name="txtYear" value="2016" id="txtYear" class="int" onfocus="WdatePicker({dateFmt:'yyyy'})" style="width:50px;text-align: center" type="text">年
+                                            <select name="ddlDate" id="ddlDate">
+                                                <option value="01">01</option>
+                                                <option value="02">02</option>
+                                                <option value="03">03</option>
+                                                <option value="04">04</option>
+                                                <option value="05">05</option>
+                                                <option selected="selected" value="06">06</option>
+                                                <option value="07">07</option>
+                                                <option value="08">08</option>
+                                                <option value="09">09</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
+                                            </select>月 &nbsp;
+                                            <input onclick="proxyExecuteFun();" name="btnSearch" value="转 向" id="btnSearch" class="button" type="submit">
+                                            <input onclick="proxyExecuteFun();" name="btnPre" value="本 月" id="btnPre" class="button" type="submit">
+                                            <input onclick="proxyExecuteFun();" name="btnNext" value="下 月" id="btnNext" class="button" type="submit">
+                                        </div>
+                                    </div>
+                                </div>
+                                <table class="list calendar" style="margin:0;margin-top:6px;">
+                                    <thead>
+                                        <tr class="list_th" style="text-align: center;">
+                                            <td style="width: 15%;">星期日</td>
+                                            <td style="width: 14%;">星期一</td>
+                                            <td style="width: 14%;">星期二</td>
+                                            <td style="width: 14%;">星期三</td>
+                                            <td style="width: 14%;">星期四</td>
+                                            <td style="width: 14%;">星期五</td>
+                                            <td style="width: 15%;">星期六</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td valign="top"></td>
+                                            <td valign="top"></td>
+                                            <td valign="top"></td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿六</span><span class="day">1</span><span class="clear"></span></div>
+                                                    <div class="listFrist"><a class="hascontent" href="javascript:void(0)" onclick="addWorkLog('a3bd6c4d-ec04-44fe-b464-b511bedf6836','')" style="color:#ff0000">qw</a><span></span></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-01')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿七</span><span class="day">2</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-02')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿八</span><span class="day">3</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-03')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿九</span><span class="day">4</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-04')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday"><font color="#32CD32">芒种</font></span><span class="day">5</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-05')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初二</span><span class="day">6</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-06')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初三</span><span class="day">7</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-07')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初四</span><span class="day">8</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-08')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初五</span><span class="day">9</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-09')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初六</span><span class="day">10</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-10')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初七</span><span class="day">11</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-11')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初八</span><span class="day">12</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-12')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初九</span><span class="day">13</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-13')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">初十</span><span class="day">14</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-14')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td alt="except" style="background-color:#FFFCD3;" valign="top">
+                                                <div class="dayList" id="td_select">
+                                                    <div class="dayinfo"><span class="cnday">十一</span><span class="day">15</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-15')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十二</span><span class="day">16</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-16')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十三</span><span class="day">17</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-17')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十四</span><span class="day">18</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-18')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十五</span><span class="day">19</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-19')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十六</span><span class="day">20</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-20')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday"><font color="#32CD32">夏至</font></span><span class="day">21</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-21')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十八</span><span class="day">22</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-22')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">十九</span><span class="day">23</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-23')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">二十</span><span class="day">24</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-24')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="background-color: rgb(248, 248, 248);" valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿一</span><span class="day">25</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-25')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿二</span><span class="day">26</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-26')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿三</span><span class="day">27</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-27')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿四</span><span class="day">28</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-28')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿五</span><span class="day">29</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-29')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top">
+                                                <div class="dayList">
+                                                    <div class="dayinfo"><span class="cnday">廿六</span><span class="day">30</span><span class="clear"></span></div>
+                                                    <div class="listFrist minHeight"></div>
+                                                    <div>
+                                                        <a href="javascript:void(0)" onclick="addWorkLog('','2016-06-30')"><img style=" border:none" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加"></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td valign="top"></td>
+                                            <td valign="top"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+    <script type="text/ecmascript">
+    function addWorkLog(WorkLogGuid, LogDate) {
+        window.parent.showDialog("待办事务", "../Modules/Index/WorkLogEdit.aspx?WorkLogGuid=" + WorkLogGuid + "&LogDate=" + LogDate, "600px", "300px");
+    }
+    </script>
+    <div style="width: 10px; z-index: auto; cursor: default; position: absolute; top: 0px; left: 1210px; height: 542px; opacity: 1;" class="nicescroll-rails" id="ascrail2000">
+    </div>
+</body>
+
+</html>

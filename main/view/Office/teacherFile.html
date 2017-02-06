@@ -1,0 +1,595 @@
+
+    <div class="top" style="margin:10px">
+    <form action="<?php echo arU(); ?>" method="get">
+    员工姓名：
+        <input name="realname" type="text" value="<?php echo arRequest('realname');?>" class="int" />
+    系统账号：
+        <input name="account_name" value="<?php echo arRequest('account_name');?>" type="text"  class="int" />
+    手机：
+        <input name="telephone" type="text" value="<?php echo arRequest('telephone');?>" class="int" />
+    员工状态：
+        <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'isonjob',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$ISONJOB_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['isonjob'] )? $auth['isonjob'] :''
+                            'selected' => arRequest('isonjob'),
+                        )
+                    );
+                ?>
+
+        <input type="submit" value="搜索"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </form>
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>登录账号</td>
+                        <td>教师姓名</td>
+                        <td>部门</td>
+                        <td>岗位</td>
+                        <td>性别</td>
+                        <td>手机</td>
+                        <td>QQ</td>
+                        <td>Email</td>
+                        <td>入职日期</td>
+                        <td>录入时间</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if($list):foreach($list as $auth):?>
+                    <tr>
+                        <td class="caozuo">
+                            <a href='javascript:modify(<?php echo json_encode($auth); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $auth['tid'] ?>')">删除</a></td>
+                        <td><?php arEcho($auth['account_name'],'-'); ?></td>
+                        <td><?php arEcho($auth['realname'],'-'); ?></td>
+                        <!-- <td><?php arEcho($auth['department'],'-'); ?></td> -->
+                        <td>
+                            <a href="javascript:loadurl('<?php echo arU('departmentsAssign', array('mid' => $auth['mid'])); ?>', '分配部门')">
+                            <?php if (isset($auth['member']['profile']['departs'])): ?>
+
+                            <?php foreach ($auth['member']['profile']['departs'] as $departs): ?>
+                                <?php echo $departs['name'] ?>|
+                            <?php endforeach ?>
+                            <?php else :?>
+                                未分配
+                            <?php endif ?>
+                            </a>
+                        </td>
+                        <!-- <td><?php arEcho($auth['job'],'-'); ?></td> -->
+                        <td>
+                            <a href="javascript:loadurl('<?php echo arU('postsAssign', array('mid' => $auth['mid'])); ?>', '分配岗位')">
+                            <?php if (isset($auth['member']['profile']['posts'])): ?>
+
+                            <?php foreach ($auth['member']['profile']['posts'] as $posts): ?>
+                                <?php echo $posts['name'] ?>|
+                            <?php endforeach ?>
+                            <?php else :?>
+                                未分配
+                            <?php endif ?>
+                            </a>
+                        </td>
+                        <!-- <td><?php //arEcho(date('Y-m-d H:i', $auth['createtime']),'-'); ?></td> -->
+                        <td><?php arEcho($auth['sexhan'], '-'); ?></td>
+                        <td><?php arEcho($auth['telephone'],'-'); ?></td>
+                        <td><?php arEcho($auth['QQ'],'-'); ?></td>
+                        <td><?php arEcho($auth['email'],'-'); ?></td>
+                        <td><?php arEcho($auth['postdate'],'-'); ?></td>
+                        <td><?php arEcho(date('Y-m-d H:i', $auth['recordtime']),'-'); ?></td>
+
+                    </tr>
+                <?php endforeach;endif; ?>
+                </tbody>
+                <tr>
+                    <td colspan="13"><?php echo $pagelist; ?></td>
+                </tr>
+            </table>
+
+        </div>
+
+<!--弹出框-->
+<form enctype="multipart/form-data" action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+               <!--  <td style="width: 228px;float:left">学校:
+                <?php
+                  // 调用用html seg 直接输出 select标签
+                  // arSeg(
+                  //   array(
+                        // seg文件
+                  //      'segKey' => 'Html/select',
+                        // <select name="name">
+                  //       'name' => 'sid',
+                        // 适配器数据 数组
+                        // 'map' => ,
+                        // map 多维数组适配器
+                  //      'mapbundle' => array($school, 'sid', 'name'),
+                        // 选中的value selected = selected
+                        // 'selected' => $auth['sid']
+                  //   )
+                 // );
+                ?>
+                    <input name="sid" type="text"/>
+                </td> -->
+                <td style="width: 228px;float:left">
+                    登录代号：
+                    <input name="account_name" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">
+                    密码：<input name="account_pwd" type="password"/>
+                    <input name="tid" type="hidden" value="" />
+                </td>
+
+                <td style="float:left">
+                    确认密码：<input name="account_pwd2" type="password"/>
+                </td>
+
+                <td style="width: 228px;float:left">教师姓名 ：
+                    <input name="realname" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">工号:
+                    <input name="worknum" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">性别：
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'sex',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$SEX_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset($auth['sex'])?$auth['sex']:''
+                            //'selected' => $auth['sex']
+
+                        )
+                    );
+                ?>
+                    <!-- <input name="sex" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">身份证号码 ：
+                    <input name="IDcard" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">婚否:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'marrageed',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$MARRAGEED_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset($auth['marrageed'])?$auth['marrageed']:''
+                            // 'selected' => $auth['marrageed']
+                        )
+                    );
+                ?>
+                    <!-- <input name="marrageed" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">所属班级:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'belongclass',
+                            // 适配器数据 数组
+                            //'map' => U_company_school_member_recordModel::$MARRAGEED_MAP,
+                            // map 多维数组适配器
+                              'mapbundle' => array($classRoom, 'cid', 'class_name'),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                            // 'selected' => $auth['belongclass']
+                        )
+                    );
+                ?>
+                    <!-- <input name="belongclass" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">在职标志:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'isonjob',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$ISONJOB_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['isonjob'] )? $auth['isonjob'] :''
+                            //'selected' => $auth['isonjob']
+                        )
+                    );
+                ?>
+                    <!-- <input name="isonjob" type="text"/> -->
+                </td>
+                <td style="width: 228px;float:left">组别:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'group',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$GROUP_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['group'] )? $auth['group'] :''
+                            //  'selected' => $auth['group']
+                        )
+                    );
+                ?>
+                    <!-- <input name="group" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">发卡银行:
+                    <input name="fakabank" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">工资卡号：
+                    <input name="Wagescardnumber" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">档案号 ：
+                    <input name="recordnum" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">保险办理:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'isinsurance',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$ISINSERANCE_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['isinsurance'] )? $auth['isinsurance'] :''
+                            // 'selected' => $auth['isinsurance']
+                        )
+                    );
+                ?>
+                    <!-- <input name="isinsurance" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">社保卡号:
+                    <input name="socialsecuritynum" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">公积金账号:
+                    <input name="reservenum" type="text"/>
+                </td>
+
+                <td style="width: 308px;float:left">就业失业登记证号:
+                    <input name="isemploymentnum" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">参加工作日期:
+                    <input name="worktodate" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">上岗时间 ：
+                    <input name="postdate" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">合同日期:
+                    <input name="contractdate" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">转正日期 ：
+                    <input name="positivedate" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">职务定级:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'jobgrading',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$JOBGRADING_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['jobgrading'] )? $auth['jobgrading'] :''
+                            // 'selected' => $auth['jobgrading']
+                        )
+                    );
+                ?>
+                    <!-- <input name="jobgrading" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">聘用方式:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'hiringway',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$HIRINGWAY_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['hiringway'] )? $auth['hiringway'] :''
+                            // 'selected' => $auth['hiringway']
+                        )
+                    );
+                ?>
+                    <!-- <input name="hiringway" type="text"/> -->
+                </td>
+                <td style="width: 228px;float:left">职称:
+                    <input name="jobtitle" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">籍贯:
+                    <input name="nativeplace" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">民族:
+                    <input name="nation" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">政治面貌 ：
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'politicsstatus',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$POLITICSSTATUS_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['politicsstatus'] )? $auth['politicsstatus'] :''
+                            // 'selected' => $auth['politicsstatus']
+                        )
+                    );
+                ?>
+                    <!-- <input name="politicsstatus" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">家庭电话:
+                    <input name="hometelephone" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">移动电话：
+                    <input name="telephone" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">家庭住址 ：
+                    <input name="homeadd" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">资格证:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'certification',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$CERTIFICATION_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['certification'] )? $auth['certification'] :''
+                            // 'selected' => $auth['certification']
+                        )
+                    );
+                ?>
+                    <!-- <input name="certification" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">资格证号:
+                    <input name="certificationnum" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">普通话:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'mandarin',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$MANDARIN_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['mandarin'] )? $auth['mandarin'] :''
+                            // 'selected' => $auth['mandarin']
+                        )
+                    );
+                ?>
+                    <!-- <input name="mandarin" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">年度考评情况:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'Annualappraisalsituation',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$YEAR_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['Annualappraisalsituation'] )? $auth['Annualappraisalsituation'] :''
+                            // 'selected' => $auth['Annualappraisalsituation']
+                        )
+                    );
+                ?>
+                    <!-- <input name="Annualappraisalsituation" type="text"/> -->
+                </td>
+                <td style="width: 228px;float:left">培训情况:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'training',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$TRAINING_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['training'] )? $auth['training'] :''
+                            // 'selected' => $auth['training']
+                        )
+                    );
+                ?>
+                    <!-- <input name="training" type="text"/> -->
+                </td>
+                <td style="width: 228px;float:left">学历 ：
+                 <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'education',
+                            // 适配器数据 数组
+                            'map' => U_company_school_member_recordModel::$EDUCATION_MAP,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['education'] )? $auth['education'] :''
+                            // 'selected' => $auth['education']
+                        )
+                    );
+                ?>
+                    <!-- <input name="education" type="text"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">专业:
+                    <input name="profession" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">毕业学校：
+                    <input name="SchoolTag" type="text"/>
+                </td>
+
+                <td style="width: 400px;float:left">照片：
+                <input type="file" name="picture" />
+                    <!-- <input name="picture" type="file"/> -->
+                </td>
+
+                <td style="width: 228px;float:left">生日:
+                    <input name="birthday" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">QQ：
+                    <input name="QQ" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">Email ：
+                    <input name="email" type="text"/>
+                </td>
+
+
+
+                <td style="width: 228px;float:left">
+                    <input type="submit"  value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='rid']").attr('value', '');
+        layer.open({
+            title:'添加教师档案',
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(nid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('delTeacherRecord') ?>', {tid:nid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+
+</script>

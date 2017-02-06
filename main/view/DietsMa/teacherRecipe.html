@@ -1,0 +1,482 @@
+<!-- 教师食谱 -->
+<style>
+.c1{
+    color: blue;
+}
+</style>
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <span>学期：</span>
+    <?php
+        // 调用用html seg 直接输出 select标签
+        arSeg(
+            array(
+            'segKey' => 'Html/select',
+            'name' => 'yid',
+            'mapbundle' => array($schoolyear, 'yid', 'school_year'),
+            )
+        );
+    ?>
+    <span>周数：</span>
+    <input type="text" class="int" name="week">
+    <input type="button" class="button" value="搜 索" onclick="return search();">
+    <input type="button" class="button" value="添 加" onclick="return add();">
+    <?php 
+        arEcho('　　学期：'.$res['school_year']);
+        arEcho('　　周数：'.$res['week']);
+        arEcho('　　创建时间：'.date('Y-m-d H:i',$res['created_time']));
+     ?>
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td rowspan="2" style="width: 80px;">
+                    <a href='javascript:modify(<?php echo json_encode($res); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $res['trid'] ?>')">删除</a>
+                </td>
+                <td colspan="2">周一</td>
+                <td colspan="2">周二</td>
+                <td colspan="2">周三</td>
+                <td colspan="2">周四</td>
+                <td colspan="2">周五</td>
+            </tr>
+            <tr>
+                <td>菜式</td>
+                <td>食材</td>
+                <td>菜式</td>
+                <td>食材</td>
+                <td>菜式</td>
+                <td>食材</td>
+                <td>菜式</td>
+                <td>食材</td>
+                <td>菜式</td>
+                <td>食材</td>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>早餐</td>
+                <td class="c1"><?php arEcho($res['cuisine_a1']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_a1']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_a2']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_a2']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_a3']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_a3']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_a4']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_a4']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_a5']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_a5']['cuisine_include']); ?></td>
+            </tr>
+            <tr>
+                <td>中餐</td>
+                <td class="c1"><?php arEcho($res['cuisine_b1']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_b1']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_b2']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_b2']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_b3']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_b3']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_b4']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_b4']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_b5']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_b5']['cuisine_include']); ?></td>
+            </tr>
+            <tr>
+                <td>午餐</td>
+                <td class="c1"><?php arEcho($res['cuisine_c1']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_c1']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_c2']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_c2']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_c3']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_c3']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_c4']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_c4']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_c5']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_c5']['cuisine_include']); ?></td>
+            </tr>
+            <tr>
+                <td>晚餐</td>
+                <td class="c1"><?php arEcho($res['cuisine_d1']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_d1']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_d2']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_d2']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_d3']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_d3']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_d4']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_d4']['cuisine_include']); ?></td>
+                <td class="c1"><?php arEcho($res['cuisine_d5']['cuisine_name']); ?></td>
+                <td><?php arEcho($res['cuisine_d5']['cuisine_include']); ?></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- bottom -->
+<div>
+</div>
+<!-- 弹窗内容 -->
+<form action="<?php echo arU(''); ?>" method="post" style="width: 868px;display: none;" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>学期：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'yid',
+                        'mapbundle' => array($schoolyear, 'yid', 'school_year'),
+                        )
+                    );
+                ?>
+            </td>
+            <td>周数：</td>
+            <td>
+                <input type="text" class="int" name="week">
+            </td>
+            <td style="width: 200px;"></td>
+        </tr>
+    </table>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td></td>
+                <td>周一</td>
+                <td>周二</td>
+                <td>周三</td>
+                <td>周四</td>
+                <td>周五</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>早餐</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_a1',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_a2',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_a3',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_a4',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_a5',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td>中餐</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_b1',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_b2',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_b3',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_b4',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_b5',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td>午餐</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_c1',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_c2',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_c3',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_c4',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_c5',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td>晚餐</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_d1',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_d2',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_d3',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_d4',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'cuisine_d5',
+                            'mapbundle' => array($cuisine, 'cid', 'cuisine_name'),
+                            )
+                        );
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="4"></td>
+                <td>
+                    <!-- 隐藏表单 -->
+                    <input type="hidden" name="type">
+                    <input type="hidden" name="trid">
+
+                    <input type="submit" class="button" value="提 交">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!-- js内容 -->
+<script>
+function add() {
+    $(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加教师食谱',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改  - cid:菜式ID
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]['cid']);
+        if(i=='trid'||i=='week'||i=='yid'){
+            $("[name='" + i + "']").val(data[i]);
+        }
+    }
+
+    layer.open({
+        title: '修改菜式',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(trid) {
+    layer.confirm('确认删除本周教师食谱?', function(index) {
+        $.get('<?php echo arU('teacherRecipeDel') ?>', {trid: trid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    // location.reload();
+                    window.location.href = JSV.PATH_CURRENT;
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+// 搜索
+function search() {
+    var yid = $("[name='yid']").val();
+    var week = $("[name='week']").val();
+    window.location.href = JSV.PATH_CURRENT +'?yid='+yid+'&week='+week;
+}
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+// var_dump($res);
+// print_r($res);
+ ?>
+</pre>

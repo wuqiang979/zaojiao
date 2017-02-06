@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=99fb985b-d0dc-446e-bf4c-4682ec2ed938', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function BindFieldType() {
+        var fieldTypeCtrl = '<select name="ddlFieldType" class="int">';
+        fieldTypeCtrl += '<option value="string">文本</option>';
+        fieldTypeCtrl += '<option value="decimal">数值</option>';
+        fieldTypeCtrl += '<option value="date">日期</option>';
+        fieldTypeCtrl += '</select>';
+        return fieldTypeCtrl;
+    }
+
+    function BindCtrlType() {
+        var ctrlTypeCtrl = '<select name="ddlCtrlType" class="int">';
+        ctrlTypeCtrl += '<option value="text">输入框</option>';
+        ctrlTypeCtrl += '<option value="select">下拉框</option>';
+        ctrlTypeCtrl += '<option value="radio">单选框</option>';
+        ctrlTypeCtrl += '<option value="checkbox">复选框</option>';
+        ctrlTypeCtrl += '</select>';
+        return ctrlTypeCtrl;
+    }
+
+    $(function() {
+        $("#btnAdd").live("click", function() {
+            var jsonData = '{"FieldDbName":"","FieldName":"","FieldPostil":"","FieldType":"string","CtrlType":"text","CtrlParamGuid":"00000000-0000-0000-0000-000000000000","ParamItem":[],"RequiredField":0,"SysField":0,"DefaultFieldName":"","TableName":"","IsShow":1,"FieldID":0,"SortID":0 }';
+            var trHtml = '<tr>';
+            trHtml += '<td><a href="javascript:void(0)" title="删除" class="deleteField"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del_c.png" /></a>';
+            trHtml += '&nbsp;&nbsp;<a href="javascript:void(0)" title="上升" class="up"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up_c.png" /></a></td>';
+            trHtml += '<td><input type="text" name="tbFieldName" class="int" /></td>';
+            trHtml += '<td><input type="text" name="tbFieldPostil" class="int" /></td>';
+            trHtml += '<td>' + BindFieldType() + '</td>';
+            trHtml += '<td style="text-align:left;width:230px;">' + BindCtrlType() + '<a href="javascript:void(0)" class="setItems" style="margin-left:10px;display:none;">设置选项</a></td>';
+            trHtml += '<td><input type="checkbox" name="cbRequired" /></td>';
+            trHtml += '<td><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/yes.png" /><input type="hidden" name="hFieldInfo" value=\'' + jsonData + '\' /></td>';
+            trHtml += '</tr>';
+            $("#FieldList").append(trHtml);
+            ReSizeScrollbar();
+        });
+
+        $("#FieldList .deleteField").live("click", function() {
+            if ($(".items").is(":hidden")) {
+                var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                if (jsonObj.FieldDbName.length > 0) {
+                    var delFields = $("#hfDelField").val();
+                    if (delFields.length > 0)
+                        delFields = delFields + "," + jsonObj.FieldDbName;
+                    else
+                        delFields = jsonObj.FieldDbName;
+                    $("#hfDelField").val(delFields);
+                }
+                $(this).parent().parent().remove();
+            } else
+                alert("设置选项操作还未完成，请完成后继续");
+        });
+        $(".up").live("click", function() {
+            var curRowObj = $(this).parent().parent();
+            if (curRowObj.index() > 0) {
+                var preRowObj = curRowObj.prev();
+                curRowObj.remove();
+                preRowObj.before(curRowObj);
+            }
+        });
+
+        $("#FieldList input[name='tbFieldName']").live("blur", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            jsonObj.FieldName = $(this).val();
+            fieldObj.val(JSON.stringify(jsonObj));
+        });
+        $("#FieldList input[name='tbFieldPostil']").live("blur", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            jsonObj.FieldPostil = $(this).val();
+            fieldObj.val(JSON.stringify(jsonObj));
+        });
+        $("#FieldList select[name='ddlFieldType']").live("change", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            jsonObj.FieldType = $(this).val();
+            fieldObj.val(JSON.stringify(jsonObj));
+        });
+        $("#FieldList select[name='ddlCtrlType']").live("change", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            jsonObj.CtrlType = $(this).val();
+            fieldObj.val(JSON.stringify(jsonObj));
+            if ($(this).val() != "text")
+                $(this).next().show();
+            else
+                $(this).next().hide();
+        });
+        $("#FieldList input[name='cbRequired']").live("click", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            if ($(this).attr("checked") == "checked")
+                jsonObj.RequiredField = 1;
+            else
+                jsonObj.RequiredField = 0;
+            fieldObj.val(JSON.stringify(jsonObj));
+        });
+        $("#FieldList input[name='cbShow']").live("click", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            if ($(this).attr("checked") == "checked")
+                jsonObj.IsShow = 1;
+            else
+                jsonObj.IsShow = 0;
+            fieldObj.val(JSON.stringify(jsonObj));
+        });
+
+        $("#FieldList .setItems").live("click", function() {
+            var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+
+            while ($("#ItemList tbody tr").length > 1) {
+                $("#ItemList tbody tr").eq(0).remove();
+            }
+            if (jsonObj.ParamItem != null && jsonObj.ParamItem.length > 0) {
+                for (var i = 0; i < jsonObj.ParamItem.length; i++) {
+                    $("#ItemList tbody tr").eq($("#ItemList tbody tr").length - 1).before(addItem(jsonObj.ParamItem[i]));
+                }
+            } else
+                $("#ItemList tbody tr").eq(0).before(addItem(""));
+
+            $(".items").show();
+            $("#hMapRow").val($(this).parent().parent().index());
+        });
+
+        $("#btnAddConfirm").live("click", function() {
+            var fieldObj = $("#FieldList tbody tr").eq($("#hMapRow").val()).find("input[name='hFieldInfo']");
+            var jsonObj = jQuery.parseJSON(fieldObj.val());
+            jsonObj.ParamItem = [];
+            $("#ItemList input[name='tbItem']").each(function() {
+                if ($.trim($(this).val()).length > 0)
+                    jsonObj.ParamItem.push($.trim($(this).val()));
+            });
+            fieldObj.val(JSON.stringify(jsonObj));
+            $(".items").hide();
+        });
+
+
+        $("#btnAddItem").live("click", function() {
+            $(this).parent().parent().before(addItem(""));
+            //$("#ItemList tr").eq($("#ItemList tr").length - 2).after(trHtml);
+        });
+
+        $("#ItemList .deleteItem").live("click", function() {
+            $(this).parent().parent().remove();
+        });
+    });
+
+    function addItem(itemValue) {
+        var trHtml = '<tr>';
+        trHtml += '<td><a href="javascript:void(0)" title="删除" class="deleteItem"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del_c.png" /></a>';
+        trHtml += '&nbsp;&nbsp;<a href="javascript:void(0)" title="上升" class="up"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up_c.png" /></a></td>';
+        trHtml += '<td><input type="text" name="tbItem" value="' + itemValue + '" class="int" style="width:240px;" /></td>';
+        trHtml += '</tr>';
+        return trHtml;
+    }
+
+    function check() {
+        if (confirm("确定要保存吗？")) {
+            var flag = true;
+            var error = "";
+            $("#FieldList input[name='tbFieldName']").each(function() {
+                var orginValue = $(this);
+                if ($.trim(orginValue.val()) == "") {
+                    error = "字段名称不能空";
+                    flag = false;
+                    return false;
+                }
+
+                $("#FieldList input[name='tbFieldName']").not(orginValue).each(function() {
+                    if ($.trim(orginValue.val()) == $.trim($(this).val())) {
+                        error = "字段名有重复";
+                        flag = false;
+                        return false;
+                    }
+                });
+            });
+            if (flag) {
+                return true;
+            } else {
+                alert(error);
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="UDFManage.aspx?isLeft=6&amp;navId=99fb985b-d0dc-446e-bf4c-4682ec2ed938" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTc4NDQ5OTk1OQ9kFgICAw9kFgQCAQ8WAh4EVGV4dAX/CTxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5a625bqt5pS25YWlIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9DUk0vUGFyYW1TZXQuYXNweD9pc0xlZnQ9MSZmbGFnPTImbmF2SWQ9OTlmYjk4NWItZDBkYy00NDZlLWJmNGMtNDY4MmVjMmVkOTM4IiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5bm85YS/57G75Z6LIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9DUk0vTWVtYmVyVHlwZS5hc3B4P2lzTGVmdD0yJm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuadpea6kOa4oOmBkyIsIFVybDogIi4uLy4uL01vZHVsZXMvQ1JNL01lbWJlclNvdXJjZS5hc3B4P2lzTGVmdD0zJm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIui3n+i/m+aWueW8jyIsIFVybDogIi4uLy4uL01vZHVsZXMvQ1JNL1BhcmFtU2V0LmFzcHg/aXNMZWZ0PTQmZmxhZz0wJm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuWutumVv+WFs+ezuyIsIFVybDogIi4uLy4uL01vZHVsZXMvQ1JNL1BhcmFtU2V0LmFzcHg/aXNMZWZ0PTUmZmxhZz0xJm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuW5vOWEv+Wtl+autSIsIFVybDogIi4uLy4uL01vZHVsZXMvU3lzQ29uZmlnL1VERk1hbmFnZS5hc3B4P2lzTGVmdD02Jm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiB0cnVlIH0seyBUZXh0OiAi5bm85YS/54K56K+EIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9DUk0vRXhhbWluZUxpc3QuYXNweD9pc0xlZnQ9NyZuYXZJZD05OWZiOTg1Yi1kMGRjLTQ0NmUtYmY0Yy00NjgyZWMyZWQ5MzgiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlubzlhL/moIfnrb7orr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0NSTS9NZW1iZXJNYXJrTGlzdC5hc3B4P2lzTGVmdD04Jm5hdklkPTk5ZmI5ODViLWQwZGMtNDQ2ZS1iZjRjLTQ2ODJlYzJlZDkzOCIsIFNlbGVjdGVkOiBmYWxzZSB9LF19KTt9KTs8L3NjcmlwdD48ZGl2IGlkPSdzJz48L2Rpdj5kAgMPFgIfAAWJDDx0cj48dGQ+PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiB0aXRsZT0i5Yig6ZmkIiBjbGFzcz0iZGVsZXRlRmllbGQiPjxpbWcgc3JjPSIvSW1hZ2VzL2RlbF9jLnBuZyIgLz48L2E+Jm5ic3A7Jm5ic3A7PGEgaHJlZj0iamF2YXNjcmlwdDp2b2lkKDApIiB0aXRsZT0i5LiK5Y2HIiBjbGFzcz0idXAiPjxpbWcgc3JjPSIvSW1hZ2VzL3VwX2MucG5nIiAvPjwvYT48L3RkPjx0ZD48aW5wdXQgdHlwZT0idGV4dCIgbmFtZT0idGJGaWVsZE5hbWUiIHZhbHVlPSLlu7rorq7nuqfliKsiIGNsYXNzPSJpbnQiIC8+PC90ZD48dGQ+PGlucHV0IHR5cGU9InRleHQiIG5hbWU9InRiRmllbGRQb3N0aWwiIHZhbHVlPSLlu7rorq7nuqfliKsiIGNsYXNzPSJpbnQiIC8+PC90ZD48dGQ+PHNlbGVjdCBuYW1lPSJkZGxGaWVsZFR5cGUiIGNsYXNzPSJpbnQiIGRpc2FibGVkPSJkaXNhYmxlZCI+PG9wdGlvbiB2YWx1ZT0ic3RyaW5nIiBzZWxlY3RlZD0ic2VsZWN0ZWQiPuaWh+acrDwvb3B0aW9uPjxvcHRpb24gdmFsdWU9ImRlY2ltYWwiPuaVsOWAvDwvb3B0aW9uPjxvcHRpb24gdmFsdWU9ImRhdGUiPuaXpeacnzwvb3B0aW9uPjwvc2VsZWN0PjwvdGQ+PHRkIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7d2lkdGg6MjMwcHg7Ij48c2VsZWN0IG5hbWU9ImRkbEN0cmxUeXBlIiBjbGFzcz0iaW50Ij48b3B0aW9uIHZhbHVlPSJ0ZXh0IiBzZWxlY3RlZD0ic2VsZWN0ZWQiPui+k+WFpeahhjwvb3B0aW9uPjxvcHRpb24gdmFsdWU9InNlbGVjdCI+5LiL5ouJ5qGGPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0icmFkaW8iPuWNlemAieahhjwvb3B0aW9uPjxvcHRpb24gdmFsdWU9ImNoZWNrYm94Ij7lpI3pgInmoYY8L29wdGlvbj48L3NlbGVjdD48YSBocmVmPSJqYXZhc2NyaXB0OnZvaWQoMCkiIGNsYXNzPSJzZXRJdGVtcyIgc3R5bGU9Im1hcmdpbi1sZWZ0OjEwcHg7ZGlzcGxheTpub25lOyI+6K6+572u6YCJ6aG5PC9hPjwvdGQ+PHRkPjxpbnB1dCB0eXBlPSJjaGVja2JveCIgbmFtZT0iY2JSZXF1aXJlZCIgIC8+PC90ZD48dGQ+PGlucHV0IHR5cGU9ImNoZWNrYm94IiBuYW1lPSJjYlNob3ciIGNoZWNrZWQgLz48aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJoRmllbGRJbmZvIiB2YWx1ZT0neyJGaWVsZERiTmFtZSI6Ik1lbWJlcl9VRDEiLCJDb21wYW55R3VpZCI6ImZmMGYxZDUxLWQxMGUtNGMyOS1hY2MwLTZlZDg4OGEzMDI3OCIsIkZpZWxkTmFtZSI6IuW7uuiurue6p+WIqyIsIkZpZWxkVHlwZSI6InN0cmluZyIsIkN0cmxUeXBlIjoidGV4dCIsIkN0cmxQYXJhbUd1aWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJSZXF1aXJlZEZpZWxkIjowLCJTeXNGaWVsZCI6MCwiRmllbGRQb3N0aWwiOiLlu7rorq7nuqfliKsiLCJEZWZhdWx0RmllbGROYW1lIjoiIiwiSXNTaG93IjoxLCJUYWJsZU5hbWUiOiJNZW1iZXJfVUQiLCJGaWVsZElEIjoxLCJTb3J0SUQiOjEsIlBhcmFtSXRlbSI6W10sIkZDdHJsUGFyYW1HdWlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwIn0nIC8+PC90ZD48L3RyPmRkCDro8MmiDzZML+bZEDH/FBc8lXE7btBQqyZ2M+5/BPA=" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="4A17464D" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAANo1XrCcS5SNQJOOPCejVQFlliAPKY+KvRmniYVjNuQiHwaIetbzejYLytJAZ9PM0FejVWLbMmP1j3rEablN5+gXEPGnuy3V3KBs8FWDgrx3Q==" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                 item: [{
+                        Text: "家庭收入",
+                        Url: "<?php echo arU('SystemConfiguration/familyIncome'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿类型",
+                        Url: "<?php echo arU('SystemConfiguration/infantType'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "来源渠道",
+                        Url: "<?php echo arU('SystemConfiguration/sourceCanal'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "跟进方式",
+                        Url: "<?php echo arU('SystemConfiguration/followUp'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "家长关系",
+                        Url: "<?php echo arU('SystemConfiguration/guardian'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿字段",
+                        Url: "<?php echo arU('SystemConfiguration/infantfields'); ?>",
+                        Selected: true
+                    }, {
+                        Text: "幼儿点评",
+                        Url: "<?php echo arU('SystemConfiguration/infantComment'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿标签设置",
+                        Url: "<?php echo arU('SystemConfiguration/infantLabels'); ?>",
+                        Selected: false
+                    }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table id="FieldList" class="list" style="text-align: center;">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>字段名称</th>
+                    <th>字段批注</th>
+                    <th>字段类型</th>
+                    <th>控件类型</th>
+                    <th>是否必填</th>
+                    <th>是否显示</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a href="javascript:void(0)" title="删除" class="deleteField"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del_c.png" /></a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" title="上升" class="up"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up_c.png" /></a>
+                    </td>
+                    <td>
+                        <input type="text" name="tbFieldName" value="建议级别" class="int" />
+                    </td>
+                    <td>
+                        <input type="text" name="tbFieldPostil" value="建议级别" class="int" />
+                    </td>
+                    <td>
+                        <select name="ddlFieldType" class="int" disabled="disabled">
+                            <option value="string" selected="selected">文本</option>
+                            <option value="decimal">数值</option>
+                            <option value="date">日期</option>
+                        </select>
+                    </td>
+                    <td style="text-align:left;width:230px;">
+                        <select name="ddlCtrlType" class="int">
+                            <option value="text" selected="selected">输入框</option>
+                            <option value="select">下拉框</option>
+                            <option value="radio">单选框</option>
+                            <option value="checkbox">复选框</option>
+                        </select><a href="javascript:void(0)" class="setItems" style="margin-left:10px;display:none;">设置选项</a></td>
+                    <td>
+                        <input type="checkbox" name="cbRequired" />
+                    </td>
+                    <td>
+                        <input type="checkbox" name="cbShow" checked />
+                        <input type="hidden" name="hFieldInfo" value='{"FieldDbName":"Member_UD1","CompanyGuid":"ff0f1d51-d10e-4c29-acc0-6ed888a30278","FieldName":"建议级别","FieldType":"string","CtrlType":"text","CtrlParamGuid":"00000000-0000-0000-0000-000000000000","RequiredField":0,"SysField":0,"FieldPostil":"建议级别","DefaultFieldName":"","IsShow":1,"TableName":"Member_UD","FieldID":1,"SortID":1,"ParamItem":[],"FCtrlParamGuid":"00000000-0000-0000-0000-000000000000"}' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <tr>
+                <td style="text-align: center; vertical-align: top; padding-top: 10px;">
+                    <input type="button" class="button" id="btnAdd" value="添 加" />&nbsp;&nbsp;
+                    <input type="submit" name="btnSave" value="保 存" onclick="return check();" id="btnSave" class="button" />
+                    <input type="hidden" name="hfDelField" id="hfDelField" />
+                </td>
+                <td style="width: 40%;">
+                    <div class="items" style="width: 300px; display: none;">
+                        <table id="ItemList" class="list" style="text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">设置选项</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">
+                                        <input type="button" class="button" id="btnAddItem" value="添 加" />&nbsp;
+                                        <input type="button" class="button" id="btnAddConfirm" value="完 成" />
+                                        <input id="hMapRow" type="hidden" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <p style="text-align: center; margin-top: 10px;">
+        </p>
+    </form>
+</body>
+
+</html>

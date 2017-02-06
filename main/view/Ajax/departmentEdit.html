@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    
+    <head>
+        <title></title>
+        <link href='<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css' rel='stylesheet' type='text/css' />
+        <!--[if IE 8]>
+            <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' />
+        <![endif]-->
+        <script type="text/javascript"></script>
+        <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+        <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js"></script>
+        <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
+        <script src='<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js' type='text/javascript'></script>
+        <script type='text/javascript'>var isEtmClient = false;
+            function ReSizeScrollbar() {
+                if ($('form').getNiceScroll().length > 0) {
+                    $('form').getNiceScroll().onResize();
+                }
+            }
+            function ReSizeFlexgridScrollbar() {
+                if ($('.bDiv').getNiceScroll().length > 0) {
+                    $('.bDiv').getNiceScroll().onResize();
+                }
+            }
+            function InitFlexgridScrollbar() {
+                $('.bDiv').niceScroll({
+                    cursorcolor: '#75A801',
+                    zindex: 4
+                });
+            }
+            function ReSizenDivScrollbar() {
+                if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                    $('.flexigrid .nDiv').getNiceScroll().onResize();
+                }
+            }
+            function InitnDivScrollbar() {
+                $('.flexigrid .nDiv').niceScroll({
+                    cursorcolor: '#75A801',
+                    horizrailenabled: false
+                });
+            }
+            function proxyExecuteFun(funName) {
+                if (funName == undefined || funName == null || funName.length == 0) {
+                    window.parent.showsending(true, "执行中，请耐心等待...");
+                    return;
+                }
+                if (window[funName]()) {
+                    window.parent.showsending(true, "执行中，请耐心等待...");
+                    return true;
+                }
+                return false;
+            };
+            var _tmpOnSelectedFile = null;
+            function onSelectedFile(fileName, fileUrl, isImg) {
+                if (_tmpOnSelectedFile != null) {
+                    _tmpOnSelectedFile(fileName, fileUrl, isImg);
+                }
+            }
+            function showFileList(callback) {
+                window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=9793c155-1405-4de2-add0-cac6445cda15', '900px', '450px');
+                _tmpOnSelectedFile = callback;
+            }
+            $(function() {
+                if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    window.parent.showsending(false, '');
+                }
+                $(".button").each(function() {
+                    if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                        var tmpClick = $(this).attr("onclick");
+                        if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                            $(this).attr("onclick", "proxyExecuteFun();");
+                            return;
+                        }
+                        if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                            tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                            if (tmpClick.indexOf("()") != -1) {
+                                var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                                $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                            }
+                        }
+                    }
+                });
+                $('body').click(function() {
+                    if (typeof parent.onChildPageClick != 'undefined') {
+                        parent.onChildPageClick();
+                    }
+                });
+                $('form').height($(window).height() - 0).niceScroll({
+                    cursorcolor: '#75A801',
+                    horizrailenabled: false
+                });
+                $(window).resize(function() {
+                    ReSizeScrollbar();
+                });
+            });</script>
+    </head>
+    
+    <body>
+        <form method="post" action="<?php echo arU('Ajax/departmentEdit'); ?>" id="form1">
+        	<?php if($success): ?>
+        		<script>alert('添加成功！');parent.content.location.href='<?php echo arU('SystemConfiguration/departmentManagement') ?>'; parent.BoxClose();</script>
+			<?php endif; ?>
+            <table class="edit">
+                <tr>
+                    <td class="textAlignRight" style="width:80px;">部门名称：</td>
+                    <td>
+                        <input name="tbDepartmentName" type="text" id="tbDepartmentName" class="int" onchange="return CheckEmpty(&#39;tbDepartmentName&#39;, &#39;spanDepartmentName&#39;);" style="width:300px;" />
+                        <span class="words">*</span>
+                        <span class="words" id="spanDepartmentName"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="textAlignRight">上级部门：</td>
+                    <td>
+                        <select name="ddlParent" id="ddlParent" class="int">
+                            <option value="0">请选择</option>
+                        	<?php if($department) :foreach($department as $dep): ?>
+                    		<option value="<?php echo $dep['id']; ?>"><?php echo $dep['name']; ?></option>
+                        	<?php endforeach;endif; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="textAlignRight">备注：</td>
+                    <td>
+                        <textarea name="tbNotes" rows="2" cols="20" id="tbNotes" class="int" style="width:90%;height:50px;"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="borderBottom">&nbsp;</td></tr>
+            </table>
+            <p style="margin-top:10px;text-align:center;">
+                <input type="submit" name="btnSave" value="提交" onclick="return getValidator();" id="btnSave" class="button" /></p>
+            <script type="text/javascript">function getValidator() {
+                    if (!CheckEmpty('tbDepartmentName', 'spanDepartmentName')) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }</script>
+        </form>
+    </body>
+
+</html>

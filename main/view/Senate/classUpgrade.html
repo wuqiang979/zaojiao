@@ -1,0 +1,167 @@
+<!-- 班级升级 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <!-- <span>幼儿编号：</span>
+    <input type="text" class="int" name="searchtext">
+    <input type="button" class="button" value="搜 索" onclick="return search();"> -->
+    <input type="button" class="button" value="升 级" onclick="return upgrade();">
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td>升级前班级</td>
+                <td>升级后班级</td>
+                <td>升级日期</td>
+                <td>登记时间</td>
+                <td>备注</td>
+                <td>升级人</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($res as $k=>$v): ?>
+            <tr>
+                <td>
+                    <?php arEcho($v['class_before']['school_year']['first_school_year'].'~'.$v['class_before']['school_year']['last_school_year']); ?>
+                    <?php arEcho($v['class_before']['class_name']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['class_later']['school_year']['first_school_year'].'~'.$v['class_later']['school_year']['last_school_year']); ?>
+                    <?php arEcho($v['class_later']['class_name']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$v['upgrade_time'])) ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$v['add_time'])) ?>
+                </td>
+                <td>
+                    <?php arEcho($v['note'],'-') ?>
+                </td>
+                <td>
+                    <?php arEcho($v['member']['realname']) ?>
+                </td>
+                
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<!-- bottom -->
+<div>
+    <?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="<?php echo arU(''); ?>" method="post" style="display: none;width: 868px;" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>升级前班级：</td>
+            <td>
+                <?php 
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select',
+                        // <select name="name">
+                        'name' => 'cid_before',
+                        'id' => 'cid_before',
+                        // 适配器数据 数组
+                        // 'map' => EduClassroomModel::$TYPE_CLASS,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                 ?>
+            </td>
+            <td>升级后班级：</td>
+            <td>
+                <?php 
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select',
+                        // <select name="name">
+                        'name' => 'cid_later',
+                        // 适配器数据 数组
+                        // 'map' => EduClassroomModel::$TYPE_CLASS,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                 ?>
+            </td>
+            <td>升级日期：</td>
+            <td>
+                <input type="text" class="int" name="upgrade_time" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})">
+            </td>
+        </tr>
+        <tr>
+            <td>备注：</td>
+            <td>
+                <input type="text" class="int" name="note">
+            </td>
+            <td colspan="2"></td>
+            <td></td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="hidden" name="type">
+
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- js内容 -->
+<script>
+// 升级
+function upgrade() {
+    $("[name = 'type']").attr('value', 'upgrade');
+    layer.open({
+        title: '学生升级',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 搜索
+function search() {
+    var searchText = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchText;
+}
+</script>
+
+<script>
+$("[name='u_cid_before']").change(function() {
+    var cid = document.getElementById('u_cid_before').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择',''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+    // var_dump($res);
+ ?>
+</pre>

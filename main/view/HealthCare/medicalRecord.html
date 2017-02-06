@@ -1,0 +1,267 @@
+<!-- 用药记录 -->
+<!-- 显示内容 start -->
+<div class="top" style="margin: 5px 0;">
+    <span>幼儿姓名：</span>
+    <input type="text" name="searchtext" class="int">
+    <input type="button" value="搜 索" class="button" onclick="return search();" />
+    <input type="button" value="添 加" class="button" onclick="return add();" />
+</div>
+<div id="P_Data">
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td colspan="6"></td>
+                <td colspan="4">晨检记录</td>
+                <td colspan="2">全日健康观察记录</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="width: 120px;">操作</td>
+                <td>序号</td>
+                <td>幼儿姓名</td>
+                <td>用药日期</td>
+                <td>幼儿编号</td>
+                <td>班级</td>
+                <td>家长主诉与检查</td>
+                <td>服药名称</td>
+                <td>用量</td>
+                <td>处方单位</td>
+                <td>症状与体检</td>
+                <td>处理</td>
+                <td>检查者</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($res):foreach($res as $k=>$med):?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($med); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $med['mid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($med['mid']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['baby']['name']);?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$med['date']));?>
+                </td>
+                <td>
+                    <?php arEcho($med['bid']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['class']['class_name']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['exam']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['medicine_name']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['dosage']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['prescription_from']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['symptom']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['deal']);?>
+                </td>
+                <td>
+                    <?php arEcho($med['examiner']);?>
+                </td>
+            </tr>
+            <?php endforeach;endif;?>
+            <tr>
+                <?php if(!$res):?>
+                <p style="color: red;">搜索到0条记录！</p>
+                <?php endif;?>
+            </tr>
+        </tbody>
+    </table>
+    <?php echo($page->show());?>
+</div>
+<!-- 显示内容 end -->
+<!-- 弹窗内容 start -->
+<form action="<?php echo arU(''); ?>" method="post" id="edit_window" style="display:none;width: 868px;">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>幼儿班级：</td>
+            <td style="width: 145px;">
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select2',
+                        // <select name="name">
+                        'name' => 'cid',
+                        'id' => 'cid',
+                        // 适配器数据 数组
+                        // 'map' => AdModel::$TYPE_MAP,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                ?>
+            </td>
+            <td>幼儿：</td>
+            <td style="width: 145px;">
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    @arSeg(
+                        array(
+                        'segKey' => 'Html/select2',
+                        'name' => 'bid',
+                        'id'    => 'bid',
+                        'map'   => '',
+                        )
+                    );
+                ?>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>主诉与检查：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="exam">
+            </td>
+            
+            <td>服药名称：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="medicine_name">
+            </td>
+            <td>处理：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="deal">
+            </td>
+        </tr>
+        <tr>
+            <td>症状与体检：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="symptom">
+            </td>
+            
+            <td>用量：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="dosage">
+            </td>
+            <td>检查者：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="examiner">
+            </td>
+        </tr>
+        <tr>
+            <td>用药日期：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="date" onclick="laydate({istoday: true,max:laydate.now(),})">
+            </td>
+            <td>处方单位：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="prescription_from">
+            </td>
+            <td>
+                <input type="text" name="type" style="display: none;">
+                <input type="text" name="mid" style="display: none;">
+            </td>
+            <td style="width: 145px;">
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- 弹窗内容 end -->
+<!-- js方法 start -->
+<script>
+// 添加
+function add() {
+    $("[name='type']").attr('value', 'add');
+    layer.open({
+        title: '添加 - 用药记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// data
+function modify(data) {
+    $("[name='type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+        if (i == 'date') {
+            $("[name='" + i + "']").val(timetostr(data[i]));
+        }
+    }
+    layer.open({
+        title: '修改 - 用药记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext;
+}
+// 删除
+function del(mid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('medicalRecordDel') ?>', {mid: mid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+
+function timetostr(time) {
+    var date = new Date(time * 1000);
+    return date.toLocaleDateString().replace('/', '-').replace('/', '-');
+}
+</script>
+<script>
+$("[name='cid']").change(function() {
+    var cid = document.getElementById('cid').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择',''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- js方法 end -->
+<pre>
+<?php 
+// var_dump($res);
+// print_r($res);
+ ?>
+</pre>

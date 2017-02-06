@@ -1,0 +1,244 @@
+<!-- 幼儿请假管理 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <span>幼儿姓名：</span>
+    <input type="text" class="int" name="bname">
+    <span>请假时间：</span>
+    <input type="text" class="int" onclick="laydate({istody:true,max:laydate.now(),});" name="leave_time">
+    <input type="submit" class="button" value="搜 索" onclick="return search();">
+    <input type="button" class="button" value="添 加" onclick="return add();">
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td style="width: 80px;">操作</td>
+                <td>幼儿姓名</td>
+                <td>开始时间</td>
+                <td>结束时间</td>
+                <td>请假天数</td>
+                <td>请假事由</td>
+                <td>备注</td>
+                <td>登记时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($res):foreach($res as $k=>$v): ?>
+            <tr>
+                <td class="caozuo">
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['blid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['bname']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date("Y-m-d",$v['leave_start_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho(date("Y-m-d",$v['leave_end_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['leave_days']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['why_leave']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['note']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date("Y-m-d",$v['created_time'])); ?>
+                </td>
+            </tr>
+            <?php endforeach;endif; ?>
+        </tbody>
+    </table>
+</div>
+<div>
+    <?php if($page){echo($page->show());} ?>
+</div>
+<!-- 显示内容 end -->
+<!-- 弹窗内容 -->
+<form style="display: none;width: 868px;" id="edit_window" action="<?php echo arU(''); ?>" method="post">
+    <!-- 隐藏表单 -->
+    <!-- <input type="hidden" name="blid">
+    <span>幼儿姓名：</span>
+    <input type="text" name="name">
+    <span>幼儿编号：</span>
+    <input type="text" name="bid">
+    <br>
+    <span>请假时间：</span>
+    <input type="text" onclick="laydate({istody:true,});" name="leave_start_time">
+    <span>结束时间：</span>
+    <input type="text" name="leave_end_time" onclick="laydate({istody:true,});">
+    <br>
+    <span>请假事由：</span>
+    <input type="text" name="why_leave">
+    <span>备 注：</span>
+    <input type="text" name="note">
+    <input type="submit" class="button" value="提 交"> -->
+
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>幼儿班级：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select2',
+                        // <select name="name">
+                        'name' => 'cid_leave',
+                        'id' => 'cid_leave',
+                        // 适配器数据 数组
+                        // 'map' => AdModel::$TYPE_MAP,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                ?>
+            </td>
+            <td>请假幼儿：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    @arSeg(
+                        array(
+                        'segKey' => 'Html/select2',
+                        'name' => 'bid',
+                        'id'    => 'bid',
+                        'map'   => '',
+                        )
+                    );
+                ?>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>请假时间：</td>
+            <td>
+                <input type="text" onclick="laydate({istody:true,});" name="leave_start_time" class="int">
+            </td>
+            <td>结束时间：</td>
+            <td>
+                <input type="text" name="leave_end_time" onclick="laydate({istody:true,});" class="int">
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>请假事由：</td>
+            <td>
+                <input type="text" name="why_leave" class="int">
+            </td>
+            <td>备 注：</td>
+            <td>
+                <input type="text" name="note" class="int">
+            </td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="hidden" name="blid">
+
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- 弹窗内容 end -->
+<!-- js内容 -->
+<script>
+// 添加
+function add() {
+    $("[name='blid']").attr('value', '');
+    layer.open({
+        title: '添加幼儿请假',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    })
+}
+// data
+function modify(data) {
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+        if (i == 'leave_start_time'||i=='leave_end_time') {
+            $("[name='" + i + "']").val(timetostr(data[i]));
+        }
+    }
+
+    layer.open({
+        title: false,
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+
+function timetostr(time) {
+    var date = new Date(time * 1000);
+    return date.toLocaleDateString().replace('/', '-').replace('/', '-');
+}
+// 搜索
+function search() {
+    var bname = $("[name='bname']").val();
+    var leave_time = $("[name='leave_time']").val();
+    window.location.href = JSV.PATH_CURRENT + '?bname=' + bname + '&leave_time=' + leave_time;
+}
+// 删除
+function del(blid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('babyLeaveDel') ?>', {
+                blid: blid
+            },
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+</script>
+
+<script>
+$("[name='cid_leave']").change(function() {
+    var cid = document.getElementById('cid_leave').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择',''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- js内容 end -->
+<!-- 测试内容 -->
+<pre>
+<?php 
+// echo("<hr>POST：<br>");
+// print_r($res);
+// echo("<hr>搜索：<br>");
+// print_r($co);
+ ?>
+</pre>
+<!-- 测试内容 end -->

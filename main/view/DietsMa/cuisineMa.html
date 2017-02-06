@@ -1,0 +1,146 @@
+<!-- 菜式管理 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div>
+    <span>菜式名称：</span>
+    <input type="text" class="int" name="searchtext">
+    <input type="button" class="button" value="搜 索" onclick="return search();">
+    <input type="button" class="button" value="添 加" onclick="return add();">
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td style="width: 80px;">操作</td>
+                <td>菜式名称</td>
+                <td>菜式主料</td>
+                <td>工艺</td>
+                <td>备注</td>
+                <td>录入时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($res as $k=>$v): ?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['cid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['cuisine_name']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['cuisine_include']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['make_cuisine']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['note'],'-'); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d H:i',$v['created_time'])); ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<!-- bottom -->
+<div>
+<?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="" method="post" style="display: none;width: 868px;" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>菜式名称：</td>
+            <td>
+                <input type="text" name="cuisine_name" class="int">
+            </td>
+            <td>菜式主料：</td>
+            <td>
+                <input type="text" name="cuisine_include" class="int">
+            </td>
+        </tr>
+        <tr>
+            <td>工艺：</td>
+            <td>
+                <input type="text" name="make_cuisine" class="int">
+            </td>
+            <td>备注：</td>
+            <td>
+                <input type="text" name="note" class="int">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="hidden" name="type">
+                <input type="hidden" name="cid">
+            </td>
+            <td>
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- js内容 -->
+<script>
+function add() {
+    $(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加班级',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").attr('value', data[i]);
+    }
+
+    layer.open({
+        title: '修改菜式',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(cid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('cuisineDel') ?>', {cid: cid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext;
+}
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+
+ ?>
+</pre>

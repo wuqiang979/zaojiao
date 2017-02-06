@@ -1,0 +1,383 @@
+<!-- 日常生活情况记录 -->
+<!-- 显示内容 start -->
+<div class="top" style="margin: 5px 0;">
+    <span>幼儿姓名：</span>
+    <input type="text" name="searchtext" class="int">
+    <input type="button" value="搜 索" class="button" onclick="return search();" />
+    <input type="button" value="添 加" class="button" onclick="return add();" />
+</div>
+<div id="P_Data">
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td colspan="7"></td>
+                <td colspan="3">早餐情况</td>
+                <td colspan="2"></td>
+                <td colspan="2">生 理</td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td style="width: 80px;">操作</td>
+                <td>序号</td>
+                <td>幼儿姓名</td>
+                <td>幼儿编号</td>
+                <td>班级</td>
+                <td>记录时间</td>
+                <td>入园状况</td>
+                <td>粥</td>
+                <td>鸡蛋\鹌鹑蛋</td>
+                <td>包子\馒头\花卷</td>
+                <td>午餐情况</td>
+                <td>晚餐情况</td>
+                <td>大便(次)</td>
+                <td>出汗量</td>
+                <td>午睡表现</td>
+                <td>饮水(ml/次)</td>
+                <td>备注</td>
+                <td>登记人</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($res):foreach($res as $v):?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['lid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['lid']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['baby']['name']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['bid']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['class']['class_name']);?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$v['record_time']));?>
+                </td>
+                <td>
+                    <?php arEcho($v['inschool_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['congee']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['egg']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['bun']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['lunch_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['dinner_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['shit_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['sweat_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['nap_condition']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['drink']);?>
+                </td>
+                <td>
+                    <?php arEcho($v['note'],'-');?>
+                </td>
+                <td>
+                    <?php arEcho($v['member']['realname'],'-');?>
+                </td>
+            </tr>
+            <?php endforeach;endif;?>
+            <tr>
+                <?php if(!$res):?>
+                <p style="color: red;">搜索到0条记录！</p>
+                <?php endif;?>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <?php if(isset($page)){echo($page->show());}?>
+</div>
+<!-- 显示内容 end -->
+<!-- 弹窗内容 start -->
+<form action="<?php echo arU(''); ?>" method="post" id="edit_window" style="display:none;width: 868px;">
+    
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>班级：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select2',
+                        // <select name="name">
+                        'name' => 'cid',
+                        'id' => 'cid',
+                        // 适配器数据 数组
+                        // 'map' => AdModel::$TYPE_MAP,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                ?>
+            </td>
+            <td>幼儿：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    @arSeg(
+                        array(
+                        'segKey' => 'Html/select2',
+                        'name' => 'bid',
+                        'id'    => 'bid',
+                        'map'   => '',
+                        )
+                    );
+                ?>
+            </td>
+            <td>入园状况：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="inschool_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'inschool_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>粥：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="congee"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'congee',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td>鸡蛋\鹌鹑蛋：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="egg"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'egg',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td>包子\馒头\花卷：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="bun"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'bun',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>午餐情况：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="lunch_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'lunch_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td>晚餐情况：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="dinner_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'dinner_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>大便(次)：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="shit_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'shit_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td>出汗量：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="sweat_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'sweat_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+            <td>午睡表现：</td>
+            <td style="width: 145px;">
+                <!-- <input type="text" class="int" name="nap_condition"> -->
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'nap_condition',
+                        'map'   => HealthLifeRecordModel::$LIFE_RECORD_SCORE,
+                        )
+                    );
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>饮水(ml/次)：</td>
+            <td style="width: 145px;">
+                <input type="text" class="int" name="drink">
+            </td>
+            <td>备注：</td>
+            <td style="width: 145px;" colspan="2">
+                <input type="text" class="int" name="note" style="width: 98%">
+            </td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="text" name="type" style="display: none;">
+                <input type="text" name="lid" style="display: none;">
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+    <div style="border: 1px #ccc solid;padding: 0 5px;margin-top: 20px;">
+        <p>备注：此表格是为帮助家长及时了解孩子在园一日生活、以及习惯方面的情况，并为幼儿园幼儿教育的研究提供有效的数据。情绪、午睡、出汗量教师根据1---10的参考值进行打分。三餐、大便、饮水以幼儿实际量记录。情绪和午睡用数字1--10表示，1代表为差，5代表一般，10代表非常好。出汗量1表示为出汗少，5表示出汗正常，10表示出汗非常多。</p>
+    </div>
+</form>
+<!-- 弹窗内容 end -->
+<!-- js方法 start -->
+<script>
+// 添加
+function add() {
+    $("[name='type']").attr('value', 'add');
+    layer.open({
+        title: '添加 - 生活情况记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// data
+function modify(data) {
+    $("[name='type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+    }
+
+    layer.open({
+        title: '修改 - 生活情况记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext;
+}
+// 删除
+function del(lid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('lifeRecordDel') ?>', {
+                lid: lid
+            },
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+</script>
+<script>
+$("[name='cid']").change(function() {
+    var cid = document.getElementById('cid').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择', ''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- js方法 end -->

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=acb0df76-c113-4b1a-b5eb-b5759469168d', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type='text/javascript'>
+    $(function() {
+        $('.list td').bind({
+            mouseenter: function(e) {
+                e.stopPropagation();
+            }
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    $(function() {
+        $(".listFrist").live("click", function() {
+            var $obj = $(this);
+            var act = "0";
+            if ($obj.text() != "") act = "1";
+            $.ajaxMethod("HolidayAct", {
+                "act": act,
+                "RestDate": $obj.next().val()
+            }, function(data) {
+                if (data == "1") {
+                    if (act == "1") {
+                        $obj.text("");
+                        $obj.attr("title", "点击设置休假");
+                    } else {
+                        $obj.text("休");
+                        $obj.attr("title", "点击取消休假");
+                    }
+                } else if (data == "无法设置该日期") {
+                    alert("不能设置过去时间！");
+                } else
+                    alert("执行失败");
+            }, true, "text");
+        });
+    })
+    </script>
+    <style type="text/css">
+    /* .calendar{ margin-top: 1px;}*/
+
+    .list tbody td {
+        line-height: none !important;
+        height: auto;
+    }
+
+    .list {
+        background-color: #DAD8D4;
+        border-bottom: 0px;
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+
+    .list tbody td,
+    .list thead td {
+        border: 0px;
+    }
+
+    .calendar .day {
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        font-size: 15px;
+        font-weight: bold;
+        /*font-size: 28px;
+    font-weight: bold;
+    line-height: 70px;*/
+    }
+
+    .calendar .dayhascontent {
+        font-size: 18px;
+        font-weight: bold;
+        /* left: 5px;
+    position: absolute;
+    top: 0;*/
+    }
+
+    .calendar .calendarContent {
+        /* width: 99%;
+    word-wrap:break-word;
+    word-break:break-all;
+    position: absolute;
+    top: 32px;
+    left: 0px;
+    padding-left: 5px;
+    text-align:left;
+    font-size: 13px;
+    text-align: center;*/
+    }
+
+    .calendar .numday {}
+
+    .calendar .cnday {
+        position: absolute;
+        right: 1px;
+        top: 1px;
+        /*  font-size: 13px;
+    position: absolute;
+    right: 5px;
+    text-align: right;
+    top: 0;
+    width: 70px;*/
+    }
+
+    .setCalendar {
+        /* position: relative;*/
+    }
+
+    .calendar .datestr {
+        font-size: 12px;
+    }
+
+    .dayList {
+        height: 99%;
+        position: relative;
+        width: 99%;
+    }
+
+    .listFrist {
+        cursor: pointer;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        height: 46px;
+    }
+
+    .dayinfo {
+        width: 99%;
+        height: 23px;
+        /*
+        font-size: 13px;*/
+        position: relative;
+    }
+
+    .btnAdd {
+        width: 99%;
+        text-align: center;
+    }
+
+    .add {
+        color: darkgrey;
+    }
+
+    .icon {
+        font-size: 10px;
+        color: darkgrey;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    td {
+        position: relative;
+    }
+
+    .cndatestr {
+        /*margin-left: 30px;*/
+    }
+
+    .cndatestr:hover {
+        text-decoration: none;
+    }
+
+    html {
+        -webkit-text-size-adjust: none;
+    }
+    /*fix*/
+
+    .td_4 {
+        height: 9px\9;
+    }
+    /* Opera */
+
+    @media all and (-webkit-min-device-pixel-ratio:10000),
+    not all and (-webkit-min-device-pixel-ratio:0) {
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 10px;
+        }
+    }
+    /* Safari chrome */
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        .icon {
+            font-size: 5px;
+        }
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 9px;
+        }
+    }
+    /* tip */
+
+    #tips {
+        font-size: 12px;
+        position: absolute;
+        top: 0;
+        z-index: 9999;
+        color: #000;
+        display: none;
+        background-color: white;
+        width: 150px;
+        /*height: 120px;*/
+        /*border: 2px solid #CAD3E2;*/
+        border: 1px solid #CAD3E2\9;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -moz-box-shadow: 5px 5px 10px #000;
+        -webkit-box-shadow: 5px 5px 10px #000;
+        box-shadow: 5px 5px 10px #000;
+        /*filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius=Ǝ', MakeShadow='true',ShadowOpacity=Ɔ.20');*/
+        filter: progid: DXImageTransform.Microsoft.Shadow(color='#969696', Direction=135, Strength=5);
+        word-wrap: break-word;
+        word-break: break-all;
+        padding: 10px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .dropdown-divider {
+        border-bottom: 1px solid #DDDDDD;
+        margin: 5px 1px 6px;
+        padding-top: 1px;
+    }
+
+    .text {
+        padding-left: 10px;
+    }
+
+    #buttons {
+        position: absolute;
+        right: 10px;
+        top: 107px;
+    }
+
+    .button {
+        height: 21px;
+    }
+
+    .list td:hover {
+        background-color: #FFFCD3;
+    }
+    </style>
+</head>
+
+<body>
+    <form method="post" action="SetRestDays.aspx?isLeft=6&amp;navId=acb0df76-c113-4b1a-b5eb-b5759469168d" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTU3MjA0MTM5MA9kFgICAw9kFgYCAQ8WAh4EVGV4dAWaDTxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5a2m5pyf6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9UZXJtLmFzcHg/aXNMZWZ0PTEmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5bm057qn6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9HcmFkZS5hc3B4P2lzTGVmdD0yJm5hdklkPWFjYjBkZjc2LWMxMTMtNGIxYS1iNWViLWI1NzU5NDY5MTY4ZCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuivvueoi+iuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvVGVhY2gvTGVzc29uLmFzcHg/aXNMZWZ0PTMmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5omN6Im66K++56iL6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9MaWtlTGVzc29uLmFzcHg/aXNMZWZ0PTQmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5pWZ5a6k6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9Sb29tLmFzcHg/aXNMZWZ0PTUmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5LyR5YGH6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9TZXRSZXN0RGF5cy5hc3B4P2lzTGVmdD02Jm5hdklkPWFjYjBkZjc2LWMxMTMtNGIxYS1iNWViLWI1NzU5NDY5MTY4ZCIsIFNlbGVjdGVkOiB0cnVlIH0seyBUZXh0OiAi6K++56iL5L2T57O76K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9Db3Vyc2VTeXNTZXQuYXNweD9pc0xlZnQ9NyZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLkuIror77oioLngrkiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1RpbWVOb2RlLmFzcHg/aXNMZWZ0PTgmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K++56iL5YW25LuW6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9Db3Vyc2VUaW1lTGVuLmFzcHg/aXNMZWZ0PTkmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K+35YGH57G75Z6L6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9MZWF2ZVR5cGVTZXQuYXNweD9pc0xlZnQ9MTAmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K+35YGH6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9MZWF2ZUNoZWNrU2V0LmFzcHg/aXNMZWZ0PTExJm5hdklkPWFjYjBkZjc2LWMxMTMtNGIxYS1iNWViLWI1NzU5NDY5MTY4ZCIsIFNlbGVjdGVkOiBmYWxzZSB9LF19KTt9KTs8L3NjcmlwdD48ZGl2IGlkPSdzJz48L2Rpdj5kAgUPEGQPFgxmAgECAgIDAgQCBQIGAgcCCAIJAgoCCxYMEAUCMDEFAjAxZxAFAjAyBQIwMmcQBQIwMwUCMDNnEAUCMDQFAjA0ZxAFAjA1BQIwNWcQBQIwNgUCMDZnEAUCMDcFAjA3ZxAFAjA4BQIwOGcQBQIwOQUCMDlnEAUCMTAFAjEwZxAFAjExBQIxMWcQBQIxMgUCMTJnZGQCDQ8WAh8ABYpNPHRyPjx0ZCB2YWxpZ249J3RvcCc+PC90ZD48dGQgdmFsaWduPSd0b3AnPjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/lha08L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTAxIiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5bu/5LiDPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjI8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0wMiIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+WFqzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4zPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMDMiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/kuZ08L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+NDwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTA0IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48L3RyPjx0cj48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+PGZvbnQgY29sb3I9JyMzMkNEMzInPuiKkuenjTwvZm9udD48L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+NTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTA1IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LqMPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjY8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0wNiIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWIneS4iTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz43PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMDciIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7liJ3lm5s8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+ODwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTA4IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LqUPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjk8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0wOSIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWIneWFrTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xMDwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTEwIiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5LiDPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjExPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMTEiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjwvdHI+PHRyPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7liJ3lhas8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTI8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0xMiIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWIneS5nTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xMzwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTEzIiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Yid5Y2BPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjE0PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMTQiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHkuIA8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTU8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0xNSIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIGFsdD0nZXhjZXB0JyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjojRkZGQ0QzOycgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnIGlkPSd0ZF9zZWxlY3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Y2B5LqMPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjE2PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMTYiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHkuIk8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MTc8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0xNyIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWNgeWbmzwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4xODwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTE4IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48L3RyPjx0cj48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5Y2B5LqUPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjE5PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMTkiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHlha08L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MjA8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0yMCIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPjxmb250IGNvbG9yPScjMzJDRDMyJz7lpI/oh7M8L2ZvbnQ+PC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjIxPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMjEiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7ljYHlhas8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MjI8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0yMiIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuWNgeS5nTwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yMzwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTIzIiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5LqM5Y2BPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjI0PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMjQiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/kuIA8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+MjU8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0yNSIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PC90cj48dHI+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+S6jDwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yNjwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTI2IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5bu/5LiJPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjI3PC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMjciIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PGRpdiBjbGFzcz0nZGF5TGlzdCc+PGRpdiBjbGFzcz0nZGF5aW5mbyc+PHNwYW4gY2xhc3M9J2NuZGF5Jz7lu7/lm5s8L3NwYW4+PHNwYW4gY2xhc3M9J2RheSc+Mjg8L3NwYW4+PHNwYW4gY2xhc3M9J2NsZWFyJz48L3NwYW4+PC9kaXY+PGRpdiBjbGFzcz0nbGlzdEZyaXN0IHdvcmRzJyB0aXRsZT0n54K55Ye76K6+572u5LyR5YGHJz48L2Rpdj48aW5wdXQgdHlwZT0iaGlkZGVuIiB2YWx1ZT0iMjAxNi0wNi0yOCIgLz48ZGl2IHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6MTNweDsnPjwvZGl2PjwvZGl2PjwvdGQ+PHRkIHZhbGlnbj0ndG9wJz48ZGl2IGNsYXNzPSdkYXlMaXN0Jz48ZGl2IGNsYXNzPSdkYXlpbmZvJz48c3BhbiBjbGFzcz0nY25kYXknPuW7v+S6lDwvc3Bhbj48c3BhbiBjbGFzcz0nZGF5Jz4yOTwvc3Bhbj48c3BhbiBjbGFzcz0nY2xlYXInPjwvc3Bhbj48L2Rpdj48ZGl2IGNsYXNzPSdsaXN0RnJpc3Qgd29yZHMnIHRpdGxlPSfngrnlh7vorr7nva7kvJHlgYcnPjwvZGl2PjxpbnB1dCB0eXBlPSJoaWRkZW4iIHZhbHVlPSIyMDE2LTA2LTI5IiAvPjxkaXYgc3R5bGU9J3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtc2l6ZToxM3B4Oyc+PC9kaXY+PC9kaXY+PC90ZD48dGQgdmFsaWduPSd0b3AnPjxkaXYgY2xhc3M9J2RheUxpc3QnPjxkaXYgY2xhc3M9J2RheWluZm8nPjxzcGFuIGNsYXNzPSdjbmRheSc+5bu/5YWtPC9zcGFuPjxzcGFuIGNsYXNzPSdkYXknPjMwPC9zcGFuPjxzcGFuIGNsYXNzPSdjbGVhcic+PC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9J2xpc3RGcmlzdCB3b3JkcycgdGl0bGU9J+eCueWHu+iuvue9ruS8keWBhyc+PC9kaXY+PGlucHV0IHR5cGU9ImhpZGRlbiIgdmFsdWU9IjIwMTYtMDYtMzAiIC8+PGRpdiBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1zaXplOjEzcHg7Jz48L2Rpdj48L2Rpdj48L3RkPjx0ZCB2YWxpZ249J3RvcCc+PC90ZD48dGQgdmFsaWduPSd0b3AnPjwvdGQ+PC90cj5kZBqQEq81oECTpbPXSvON3OTLFn9rGkPTdNS3BCQTCoec" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="B0004068" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABFVYQ1AROQAj3VjDfqaw/32y37GA43880HQdfWjXLBe5Rqc2RNFFPNbsAMDN32rt5wD183Mws3tpVc66v1ejuzwas4SzWdZAkpF+JfoXm/7iaNOD7jpZpS98fKu14y6455zUPVawIXJ0JPO+n1/q/u+OIRjYZT3TUZx++nKBmj+4air3pDhsllOs7eqWz4wzSkmAYt3RqedIBdvccEEQKWnsq4y01NgNHUHVhcSNvOAegpLz3n9QF8h1VU6+5PYHoKddKVDbhYtCg2NDtVkAXR0pyIqmqsBGvovP8Mn0mAA1I7U3Vc0WZ+wxclqyPFfzmMA4ZjSqJcKfvNl8QRtuu5TgWOkgugWB5Cq9dYD7toQNND7EpetgQ0W94MS/1sr3M/KuQnrxLrG29ww+Rgl4yKq" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "学期设置",
+                    Url: "<?php echo arU('SystemConfiguration/termSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "年级设置",
+                    Url: "<?php echo arU('SystemConfiguration/gradeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/courseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "才艺课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/ArtcourseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "教室设置",
+                    Url: "<?php echo arU('SystemConfiguration/classroomSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "休假设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaySet'); ?>",
+                    Selected: true
+                }, {
+                    Text: "课程体系设置",
+                    Url: " <?php echo arU('SystemConfiguration/CourseSystemSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "上课节点",
+                    Url: "<?php echo arU('SystemConfiguration/CourseTime'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程其他设置",
+                    Url: "<?php echo arU('SystemConfiguration/CourseOthersSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假类型设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaytypeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假设置",
+                    Url: "<?php echo arU('SystemConfiguration/ApholidaySet'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="edit">
+            <tr>
+                <td class="textAlignRight" style="width: 90px;">节假日设置：
+                </td>
+                <td>
+                    <input name="txtYear" type="text" value="2016" id="txtYear" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy&#39;})" style="width:50px;text-align: center" />年
+                    <select name="ddlDate" id="ddlDate">
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option selected="selected" value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>月 &nbsp;&nbsp;&nbsp;
+                    <input type="submit" name="btnSearch" value="转 向" id="btnSearch" class="button" />&nbsp;
+                    <input type="submit" name="btnPre" value="本 月" id="btnPre" class="button" />&nbsp;
+                    <input type="submit" name="btnNext" value="下 月" id="btnNext" class="button" />
+                </td>
+            </tr>
+        </table>
+        <table class="list calendar">
+            <thead>
+                <tr class="list_th" style="text-align: center;">
+                    <td style="width: 15%;">周日</td>
+                    <td style="width: 14%;">周一</td>
+                    <td style="width: 14%;">周二</td>
+                    <td style="width: 14%;">周三</td>
+                    <td style="width: 14%;">周四</td>
+                    <td style="width: 14%;">周五</td>
+                    <td style="width: 15%;">周六</td>
+                </tr>
+            </thead>
+            <tr>
+                <td valign='top'></td>
+                <td valign='top'></td>
+                <td valign='top'></td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿六</span><span class='day'>1</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-01" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿七</span><span class='day'>2</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-02" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿八</span><span class='day'>3</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-03" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿九</span><span class='day'>4</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-04" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'><font color='#32CD32'>芒种</font></span><span class='day'>5</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-05" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初二</span><span class='day'>6</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-06" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初三</span><span class='day'>7</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-07" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初四</span><span class='day'>8</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-08" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初五</span><span class='day'>9</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-09" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初六</span><span class='day'>10</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-10" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初七</span><span class='day'>11</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-11" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初八</span><span class='day'>12</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-12" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初九</span><span class='day'>13</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-13" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>初十</span><span class='day'>14</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-14" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十一</span><span class='day'>15</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-15" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td alt='except' style='background-color:#FFFCD3;' valign='top'>
+                    <div class='dayList' id='td_select'>
+                        <div class='dayinfo'><span class='cnday'>十二</span><span class='day'>16</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-16" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十三</span><span class='day'>17</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-17" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十四</span><span class='day'>18</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-18" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十五</span><span class='day'>19</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-19" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十六</span><span class='day'>20</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-20" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'><font color='#32CD32'>夏至</font></span><span class='day'>21</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-21" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十八</span><span class='day'>22</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-22" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>十九</span><span class='day'>23</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-23" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>二十</span><span class='day'>24</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-24" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿一</span><span class='day'>25</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-25" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿二</span><span class='day'>26</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-26" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿三</span><span class='day'>27</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-27" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿四</span><span class='day'>28</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-28" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿五</span><span class='day'>29</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-29" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'>
+                    <div class='dayList'>
+                        <div class='dayinfo'><span class='cnday'>廿六</span><span class='day'>30</span><span class='clear'></span></div>
+                        <div class='listFrist words' title='点击设置休假'></div>
+                        <input type="hidden" value="2016-06-30" />
+                        <div style='text-align:center;font-size:13px;'></div>
+                    </div>
+                </td>
+                <td valign='top'></td>
+                <td valign='top'></td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!-- 活动管理 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div class="top">
+    <span>活动主题：</span>
+    <input type="text" class="int" name="searchtext">
+    <?php
+        // 调用用html seg 直接输出 select标签
+        arSeg(
+            array(
+            'segKey' => 'Html/select2',
+            'name' => 'status',
+            // 'mapbundle' => array($schoolyear, 'yid', 'school_year'),
+            'map' => ActivityModel::$STATUS_ACTIVITY,
+            )
+        );
+    ?>
+    <input type="button" class="button" value="搜 索" onclick="return search();">
+    <input type="button" class="button" value="添 加" onclick="return add();">
+</div>
+<!-- content -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <th style="width: 80px;">操作</th>
+                <th>活动主题</th>
+                <th>活动类型</th>
+                <th>活动时间</th>
+                <th>活动性质</th>
+                <th>活动地点</th>
+                <th>负责人</th>
+                <th>创建人</th>
+                <th>录入时间</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($res as $k=>$v): ?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['aid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['activity_theme']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['activity_type']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$v['activity_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['activity_nature']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['activity_addr']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['leader']['realname']); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['creater']['realname']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d H:i',$v['add_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['status'],ActivityModel::$STATUS_ACTIVITY); ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<!-- buttom -->
+<div>
+    <?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<form action="<?php echo arU(''); ?>" method="post" style="width: 868px;display: none;" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>活动主题：</td>
+            <td>
+                <input type="text" class="int" name="activity_theme">
+            </td>
+            <td>活动类型：</td>
+            <td>
+                <input type="text" class="int" name="activity_type">
+            </td>
+            <td>活动性质：</td>
+            <td>
+                <input type="text" class="int" name="activity_nature">
+            </td>
+        </tr>
+        <tr>
+            <td>活动时间：</td>
+            <td>
+                <input type="text" class="int" name="activity_time" onclick="laydate({istoday: true})">
+            </td>
+            <td>活动地点：</td>
+            <td>
+                <input type="text" class="int" name="activity_addr">
+            </td>
+            <td>负责人：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'mid_leader',
+                        'mapbundle' => array($teachers, 'mid', 'teacher'),
+                        // 'map' => ActivityModel::$STATUS_ACTIVITY,
+                        )
+                    );
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>状态：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        'segKey' => 'Html/select',
+                        'name' => 'status',
+                        // 'mapbundle' => array($schoolyear, 'yid', 'school_year'),
+                        'map' => ActivityModel::$STATUS_ACTIVITY,
+                        )
+                    );
+                ?>
+            </td>
+            <td colspan="3"></td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="hidden" name="type">
+                <input type="hidden" name="aid">
+
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- js内容 -->
+<script>
+function add() {
+    $(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加班级',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+        if(i=='activity_time'){
+            $("[name='" + i + "']").val(timetostr(data[i]));
+        }
+    }
+
+    layer.open({
+        title: '修改菜式',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(aid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('activityDel') ?>', {aid: aid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    var status = $("[name='status']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext+ '&status=' + status;
+}
+
+function timetostr(time) {
+    var date = new Date(time * 1000);
+    return date.toLocaleDateString().replace('/', '-').replace('/', '-');
+}
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+
+?>
+</pre>

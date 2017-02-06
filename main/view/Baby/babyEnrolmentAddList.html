@@ -1,0 +1,411 @@
+    <form method="post" action="<?php echo arU('');?>">
+        <div class="aspNetHidden">
+        <div id='l1' style="float: left; *position: relative; width: 100%">
+            <input type="hidden" name="eid" value="<?php echo arRequest('eid'); ?>">
+            <table id="BaseInfo" width="100%" class="edit">
+                <tr>
+                    <td>
+                        <table class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        基本资料
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight" style="width: 80px;">幼儿姓名：
+                                </td>
+                                <td class="borderRight" style="width: 270px;">
+                                   <?php
+      // 调用用html seg 直接输出 input type text 标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/input_text',
+            // showname<input name="name" value="value" extra/>
+            'name' => 'name',
+            'value' => $enrollment['name'],
+            // 名称
+            // 'showname' => '名称',
+            // 'displayKey' => 'dd',
+            'extra' => 'class="int"'
+         )
+      );
+?>
+
+                                    <span class="words">*</span>
+                                    <span class="words" id="spanResult"></span>
+                                </td>
+                                <td class="textAlignRight" style="width: 97px;">幼儿昵称：
+                                </td>
+                                <td class="">
+
+                <?php
+      // 调用用html seg 直接输出 input type text 标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/input_text',
+            // showname<input name="name" value="value" extra/>
+            'name' => 'nickname',
+            'value' => $enrollment['nickname'],
+            // 名称
+            // 'showname' => '名称',
+            // 'displayKey' => 'dd',
+            'extra' => 'class="int"'
+         )
+      );
+?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">幼儿生日：
+                                </td>
+                                <td class="borderRight">
+                                    <input name="birthday" value="<?php echo $enrollment['birthday'] ?>" type="text" id="xtBirthDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,minDate:&#39;1900-01-01&#39;})" />
+                                </td>
+                                <td class="textAlignRight">幼儿性别：
+                                </td>
+                                <td class="">
+<?php
+      // 调用用html seg 直接输出 input type radio 标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/input_radio',
+            // <select name="name">
+            'name' => 'sex',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentModel::$SEX_MAP,
+            // 选中的value checked =checked
+            'checked' => $enrollment['sex'],
+            // 'valueKey' => 'ss',
+            // 'displayKey' => 'dd',
+            // 'extra' => 'class="testcheck"'
+         )
+      );
+?>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">固定电话：
+                                </td>
+                                <td class="borderRight">
+                                      <?php
+      // 调用用html seg 直接输出 input type text 标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/input_text',
+            // showname<input name="name" value="value" extra/>
+            'name' => 'phone',
+            'value' => $enrollment['phone'],
+            // 名称
+            // 'showname' => '名称',
+            // 'displayKey' => 'dd',
+            'extra' => 'class="int"'
+         )
+      );
+?>
+                                </td>
+                                <td class="textAlignRight">家庭收入：
+                                </td>
+                                <td class="">
+<?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'income',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentModel::$INCOME_TYPE,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            'selected' => $enrollment['income']
+         )
+      );
+?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">户籍地址：
+                                </td>
+                                <td colspan="3">
+<?php
+      // 调用用html seg 直接输出 地址 select标签 通用方法 简单易用
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select_area',
+            // <select name="name">
+            'namekey' => array('ancestral_province_id', 'ancestral_city_id'),
+            // 适配器数据 数组 选中 四川成都
+            'namevalue' => array($enrollment['ancestral_province_id'], $enrollment['ancestral_city_id']),
+         )
+      );
+?>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">现住地址：
+                                </td>
+                                <td colspan="3">
+                                  <?php
+      // 调用用html seg 直接输出 地址 select标签 通用方法 简单易用
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select_area',
+            // <select name="name">
+            'namekey' => array('province_id', 'city_id', 'county_id'),
+            // 适配器数据 数组 选中 四川成都
+            'namevalue' => array($enrollment['province_id'], $enrollment['city_id'], $enrollment['county_id']),
+         )
+      );
+?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">详细地址：</td>
+                                <td colspan="3">
+                                    <textarea name="address" rows="2" cols="20" id="txtAddress" class="int" style="width: 514px; height: 35px;"><?php echo $enrollment['address']; ?></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table id="FieldList" class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        家长信息
+                                    </div>
+
+                                    <?php
+                                        for ($plength = 0; $plength < 3; $plength++) :
+                                            $parent = $enrollment['parents'][$plength];
+                                    ?>
+                                    <div class="relation" style="margin:5px;">
+
+
+                                        <input type="hidden" name="parent_pid[]" value="<?php echo $parent['pid'] ?>">
+
+                                        姓名
+                                        <input name="parent_name[]" value="<?php echo $parent['name'] ?>" />
+                                        关系
+                                        <input name="parent_relationship[]" value="<?php echo $parent['relationship'] ?>" />
+                                        电话
+                                        <input name="parent_phone[]" value="<?php echo $parent['phone'] ?>" />
+                                    </div>
+                                    <?php
+                                        endfor;
+                                    ?>
+
+                                </td>
+                            </tr>
+
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table class="edit" style="margin-top: -5px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        高级资料
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight" style="width: 80px;">幼儿来源：
+                                </td>
+                                <td class="borderRight" style="width: 270px;">
+<?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'source_type',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentModel::$SOURCE_TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            'selected' => $enrollment['source_type'],
+         )
+      );
+?>
+
+                                </td>
+                                <td class="textAlignRight" style="width: 97px;">幼儿类型：
+                                </td>
+                                <td>
+                                    <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'attention_type',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentModel::$ATTENTION_TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            'selected' => $enrollment['attention_type']
+         )
+      );
+?>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">申报年级：
+                                </td>
+                                <td class="borderRight">
+                                    <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'school_year_id',
+            // 适配器数据 数组
+            // 'map' => BabyEnrolmentModel::$ATTENTION_TYPE_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+            // 选中的value selected = selected
+            'selected' => $enrollment['profile']['school_year_id']
+         )
+      );
+?>
+                                </td>
+                                <td class="textAlignRight">入学学期：
+                                </td>
+                                <td>
+                                    <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'class_room_id',
+            // 适配器数据 数组
+            // 'map' => BabyEnrolmentModel::$ATTENTION_TYPE_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array($classRoom, 'cid', 'class_name'),
+            // 选中的value selected = selected
+            'selected' => $enrollment['profile']['class_room_id']
+         )
+      );
+?>
+
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td class="textAlignRight">健康状况：
+                                </td>
+                                <td class="borderRight">
+                                    <textarea name="health_info" rows="2" cols="20" id="tbHealthInfo" class="int" style="width: 240px; height: 31px;"><?php echo $enrollment['profile']['health_info'] ?></textarea>
+                                </td>
+                                <td class="textAlignRight">忌食过敏：
+                                </td>
+                                <td>
+                                    <textarea name="allergy" rows="2" cols="20" id="tbAvoidAllergyInfo" class="int" style="width: 262px; height: 31px;"><?php echo $enrollment['profile']['allergy'] ?></textarea>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">兴趣爱好：
+                                </td>
+                                <td class="borderRight">
+                                    <textarea name="interest" rows="2" cols="20" id="tbInterestInfo" class="int" style="width: 240px; height: 35px;"><?php echo $enrollment['profile']['interest'] ?></textarea>
+                                </td>
+                                <td class="textAlignRight">备注：
+                                </td>
+                                <td>
+                                    <textarea name="info" rows="2" cols="20" id="txtNote" class="int" style="width: 262px; height: 35px;"><?php echo $enrollment['profile']['info'] ?></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table id="Table1" class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        其他信息
+                                    </div>
+                                </td>
+                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td style="width:80px;" require="false" ctrltype="text" ctrlname="udMember_UD1">建议级别：
+             <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'recommen_level',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentModel::$RECOMMENT_LEVEL_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array($classRoom, 'cid', 'class_name'),
+            // 选中的value selected = selected
+            'selected' => $enrollment['recommen_level'],
+         )
+      );
+?>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" name="btnSave" value="全部保存"id="btnSave" class="button" style="position: fixed; top: 10px; right: 15px; width: 85px;" />
+
+        </div>
+    </form>
+
+    <?php if (arRequest('action') == 'show_onwindow'): ?>
+        <script>
+            disableForm();
+        </script>
+    <?php endif ?>

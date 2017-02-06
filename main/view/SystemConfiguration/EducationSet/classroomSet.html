@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=acb0df76-c113-4b1a-b5eb-b5759469168d', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="Room.aspx?isLeft=5&amp;navId=acb0df76-c113-4b1a-b5eb-b5759469168d" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNzYyNjE0MTczD2QWAgIDD2QWBAIBDxYCHgRUZXh0BZoNPHNjcmlwdCBzcmM9Ii4uLy4uL1NjcmlwdHMvalF1ZXJ5LmV0bVRhYnMuanMiPjwvc2NyaXB0PjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4kKGZ1bmN0aW9uICgpIHskKCIjcyIpLmV0bVRhYnMoe2l0ZW06IFt7IFRleHQ6ICLlrabmnJ/orr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1Rlcm0uYXNweD9pc0xlZnQ9MSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlubTnuqforr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0dyYWRlLmFzcHg/aXNMZWZ0PTImbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K++56iL6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9MZXNzb24uYXNweD9pc0xlZnQ9MyZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmiY3oibror77nqIvorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xpa2VMZXNzb24uYXNweD9pc0xlZnQ9NCZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmlZnlrqTorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1Jvb20uYXNweD9pc0xlZnQ9NSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogdHJ1ZSB9LHsgVGV4dDogIuS8keWBh+iuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvVGVhY2gvU2V0UmVzdERheXMuYXNweD9pc0xlZnQ9NiZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor77nqIvkvZPns7vorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0NvdXJzZVN5c1NldC5hc3B4P2lzTGVmdD03Jm5hdklkPWFjYjBkZjc2LWMxMTMtNGIxYS1iNWViLWI1NzU5NDY5MTY4ZCIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuS4iuivvuiKgueCuSIsIFVybDogIi4uLy4uL01vZHVsZXMvVGVhY2gvVGltZU5vZGUuYXNweD9pc0xlZnQ9OCZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor77nqIvlhbbku5borr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0NvdXJzZVRpbWVMZW4uYXNweD9pc0xlZnQ9OSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor7flgYfnsbvlnovorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xlYXZlVHlwZVNldC5hc3B4P2lzTGVmdD0xMCZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor7flgYforr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xlYXZlQ2hlY2tTZXQuYXNweD9pc0xlZnQ9MTEmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0sXX0pO30pOzwvc2NyaXB0PjxkaXYgaWQ9J3MnPjwvZGl2PmQCCQ9kFgICAQ8WAh4LXyFJdGVtQ291bnQCBBYIZg9kFgoCAQ8PFgIeC0NvbW1hbmROYW1lBSRjODcwOWUxMS03NThhLTQ2ZWEtOTYwYi1lYWIyMDZkNjQ1NmNkZAIDDw8WAh8CBSRjODcwOWUxMS03NThhLTQ2ZWEtOTYwYi1lYWIyMDZkNjQ1NmNkZAIEDxUBCTEwMeaVmeWupGQCBQ8PFgQfAgUkYzg3MDllMTEtNzU4YS00NmVhLTk2MGItZWFiMjA2ZDY0NTZjHgdWaXNpYmxlaGRkAgcPDxYCHwIFJGM4NzA5ZTExLTc1OGEtNDZlYS05NjBiLWVhYjIwNmQ2NDU2Y2RkAgEPZBYKAgEPDxYCHwIFJDQ1NDkxYzIyLTFiN2QtNGI1Ni1iMzI1LTU3ZDYzYTY4ZTUxNmRkAgMPDxYCHwIFJDQ1NDkxYzIyLTFiN2QtNGI1Ni1iMzI1LTU3ZDYzYTY4ZTUxNmRkAgQPFQEJMTAy5pWZ5a6kZAIFDw8WAh8CBSQ0NTQ5MWMyMi0xYjdkLTRiNTYtYjMyNS01N2Q2M2E2OGU1MTZkZAIHDw8WAh8CBSQ0NTQ5MWMyMi0xYjdkLTRiNTYtYjMyNS01N2Q2M2E2OGU1MTZkZAICD2QWCgIBDw8WAh8CBSQ2ZGJkN2Q0Mi1jMjAxLTQ5NzItYmNjMS03ZGEzOTA0ODExYTlkZAIDDw8WAh8CBSQ2ZGJkN2Q0Mi1jMjAxLTQ5NzItYmNjMS03ZGEzOTA0ODExYTlkZAIEDxUBCTEwM+aVmeWupGQCBQ8PFgIfAgUkNmRiZDdkNDItYzIwMS00OTcyLWJjYzEtN2RhMzkwNDgxMWE5ZGQCBw8PFgIfAgUkNmRiZDdkNDItYzIwMS00OTcyLWJjYzEtN2RhMzkwNDgxMWE5ZGQCAw9kFgoCAQ8PFgIfAgUkOTA3NGIzOWMtM2IwOS00OTI4LThlYjYtMzc4ZTJkNWQwY2EwZGQCAw8PFgIfAgUkOTA3NGIzOWMtM2IwOS00OTI4LThlYjYtMzc4ZTJkNWQwY2EwZGQCBA8VAQkxMDTmlZnlrqRkAgUPDxYCHwIFJDkwNzRiMzljLTNiMDktNDkyOC04ZWI2LTM3OGUyZDVkMGNhMGRkAgcPDxYEHwIFJDkwNzRiMzljLTNiMDktNDkyOC04ZWI2LTM3OGUyZDVkMGNhMB8DaGRkZCNmaCgz8ckK3w9Jm8bx8u59vz1zMb/z0H6Qb1kWh7QO" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="402F6AA5" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABGUqGyx3inhQVH+LJWpKt9imThTLWMpTwMRc7eaZe/4ZpNcQtnKtb31hEtbT6bWJ98ULAUDd1qCbuyuSRW5wPZahFQ7iyk5GoDj80+kXV5qmZBgZ50VyaYj28mcOVDIMutppDpSWTnElMYTjM+2gs86yPG+n4yZE2QUXiSSbxrfYKfYYHVbluR/OLQS6+jJUGCC4MFGovxv6ErOscqQo11gP+b35yeJkawSLLBr3X1jOdG167iBMSDWpxNMFfokKpuCJYGtkQZk63rXoJd9ufchSYs79Ng6gIoKpb1nJQyxBSZwD4GvlnXoJ+DMFNaNTv9oyALWk1uQu/0Au0hybL5iVZLuvgdlXTeHkyUAZz1LWS7CzgtEwcHJPY234rrPJbm5dcs6LDMIiUarJK6i1xwL" />
+        </div>
+
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "学期设置",
+                    Url: "<?php echo arU('SystemConfiguration/termSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "年级设置",
+                    Url: "<?php echo arU('SystemConfiguration/gradeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/courseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "才艺课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/ArtcourseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "教室设置",
+                    Url: "<?php echo arU('SystemConfiguration/classroomSet'); ?>",
+                    Selected: true
+                }, {
+                    Text: "休假设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaySet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程体系设置",
+                    Url: " <?php echo arU('SystemConfiguration/CourseSystemSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "上课节点",
+                    Url: "<?php echo arU('SystemConfiguration/CourseTime'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程其他设置",
+                    Url: "<?php echo arU('SystemConfiguration/CourseOthersSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假类型设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaytypeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假设置",
+                    Url: "<?php echo arU('SystemConfiguration/ApholidaySet'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">教学地点：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbRoomName" type="text" id="tbRoomName" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 100px">操作</td>
+                        <td>教学地点</td>
+                        <td>排序</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptRoom_linkEdit_0" href="javascript:__doPostBack(&#39;rptRoom$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptRoom_linkDel_0" href="javascript:__doPostBack(&#39;rptRoom$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>101教室</td>
+                        <td>
+                            <a id="rptRoom_lnkDown_0" href="javascript:__doPostBack(&#39;rptRoom$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptRoom_linkEdit_1" href="javascript:__doPostBack(&#39;rptRoom$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptRoom_linkDel_1" href="javascript:__doPostBack(&#39;rptRoom$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>102教室</td>
+                        <td>
+                            <a id="rptRoom_lnkUp_1" href="javascript:__doPostBack(&#39;rptRoom$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                            <a id="rptRoom_lnkDown_1" href="javascript:__doPostBack(&#39;rptRoom$ctl01$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptRoom_linkEdit_2" href="javascript:__doPostBack(&#39;rptRoom$ctl02$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptRoom_linkDel_2" href="javascript:__doPostBack(&#39;rptRoom$ctl02$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>103教室</td>
+                        <td>
+                            <a id="rptRoom_lnkUp_2" href="javascript:__doPostBack(&#39;rptRoom$ctl02$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                            <a id="rptRoom_lnkDown_2" href="javascript:__doPostBack(&#39;rptRoom$ctl02$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptRoom_linkEdit_3" href="javascript:__doPostBack(&#39;rptRoom$ctl03$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptRoom_linkDel_3" href="javascript:__doPostBack(&#39;rptRoom$ctl03$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>104教室</td>
+                        <td>
+                            <a id="rptRoom_lnkUp_3" href="javascript:__doPostBack(&#39;rptRoom$ctl03$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("tbRoomName").value == '') {
+                alert("教学地点不能为空！");
+                return false;
+            } else
+                return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

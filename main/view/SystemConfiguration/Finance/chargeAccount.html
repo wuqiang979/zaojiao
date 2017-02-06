@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function show(navId, tuitionItemGuid) {
+        window.parent.showDialog("费用子项", "../Modules/Finance/TuitionSubItem.aspx?parentGuid=" + tuitionItemGuid + "&navId=" + navId, "700px", "400px");
+    }
+
+    function showConsumeRegulation(navId, tuitionItemGuid) {
+        window.parent.showDialog("消费规则", "../Modules/Finance/ConsumeRegulationEdit.aspx?parentGuid=" + tuitionItemGuid + "&navId=" + navId, "700px", "450px");
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="TuitionItem.aspx?isLeft=4&amp;navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTMyMDI4NDA5Mg9kFgICAw9kFgZmDxYCHgRUZXh0BfgHPHNjcmlwdCBzcmM9Ii4uLy4uL1NjcmlwdHMvalF1ZXJ5LmV0bVRhYnMuanMiPjwvc2NyaXB0PjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4kKGZ1bmN0aW9uICgpIHskKCIjcyIpLmV0bVRhYnMoe2l0ZW06IFt7IFRleHQ6ICLmlLblhaXnp5Hnm64iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0ZpbmFuY2UvQ2hhcmdlSXRlbS5hc3B4P2lzTGVmdD0xJmZsYWc9MSZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmlK/lh7rnp5Hnm64iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0ZpbmFuY2UvQ2hhcmdlSXRlbS5hc3B4P2lzTGVmdD0yJmZsYWc9MiZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLotKLliqHotKblj7ciLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0ZpbmFuY2UvQWNjb3VudC5hc3B4P2lzTGVmdD0zJm5hdklkPTI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYSIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuaUtui0ueenkeebriIsIFVybDogIi4uLy4uL01vZHVsZXMvRmluYW5jZS9UdWl0aW9uSXRlbS5hc3B4P2lzTGVmdD00Jm5hdklkPTI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYSIsIFNlbGVjdGVkOiB0cnVlIH0seyBUZXh0OiAi5a6h5qC46K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL1R1aXRpb25JbkNoZWNrU2V0LmFzcHg/aXNMZWZ0PTUmbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5bel6LWE5p6E5oiQIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9TYWxhcnkvU2FsYXJ5SXRlbS5hc3B4P2lzTGVmdD02Jm5hdklkPTI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYSIsIFNlbGVjdGVkOiBmYWxzZSB9LF19KTt9KTs8L3NjcmlwdD48ZGl2IGlkPSdzJz48L2Rpdj5kAgIPEGQQFQQJ6K+36YCJ5oupBuWtpui0uQblrprph5EM5Y2V5o2u5pS26LS5FQQkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJGNjMTE3MjQ2LTI3YmItNDJmOS1iYTM0LWY5MDc3OWZjOTQyZCQyOTk5NGQxOS00NjcwLTQxNjUtYmFiNi1lMjE1ZDE2ZjMyOWUkZDJkYjZlZTItMDZhNy00ODNhLTg1MWEtOGZhYWQ1M2U2NzgwFCsDBGdnZ2dkZAIKD2QWAgIBDxYCHgtfIUl0ZW1Db3VudAICFgRmD2QWEgIBDw8WAh4LQ29tbWFuZE5hbWUFJDE0OGYxNzA0LTNiMDctNDlhZi1hOTg1LTIxOWNmMGU1NTBiN2RkAgMPDxYCHwIFJDE0OGYxNzA0LTNiMDctNDlhZi1hOTg1LTIxOWNmMGU1NTBiN2RkAgQPFQIG5a2m6LS5BuWtpui0uWQCBQ8WAh8AZWQCBw8WAh8ABc0BPGEgaHJlZj0iamF2YXNjcmlwdDpzaG93KCcyNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEnLCAnMTQ4ZjE3MDQtM2IwNy00OWFmLWE5ODUtMjE5Y2YwZTU1MGI3Jyk7IiBzdHlsZT0iZmxvYXQ6cmlnaHQ7Ij48aW1nIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiIHN0eWxlPSJib3JkZXI6MDsiIC8+PC9hPmQCCQ8WAh8ABd4BPGEgaHJlZj0iamF2YXNjcmlwdDpzaG93Q29uc3VtZVJlZ3VsYXRpb24oJzI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYScsICcxNDhmMTcwNC0zYjA3LTQ5YWYtYTk4NS0yMTljZjBlNTUwYjcnKTsiIHN0eWxlPSJmbG9hdDpyaWdodDsiPjxpbWcgc3JjPSIuLi8uLi9JbWFnZXMvYWRkLnBuZyIgdGl0bGU9IueCueWHu+a3u+WKoCIgc3R5bGU9ImJvcmRlcjowOyIgLz48L2E+ZAILDw8WBB8CBSQxNDhmMTcwNC0zYjA3LTQ5YWYtYTk4NS0yMTljZjBlNTUwYjceB1Zpc2libGVoZGQCDQ8PFgIfAgUkMTQ4ZjE3MDQtM2IwNy00OWFmLWE5ODUtMjE5Y2YwZTU1MGI3ZGQCDg8VAQExZAIBD2QWEgIBDw8WAh8CBSRmZTc4MzlmOS1jYWYzLTQwNWYtYTg2MC01MDVmODM2ZDk0ODlkZAIDDw8WAh8CBSRmZTc4MzlmOS1jYWYzLTQwNWYtYTg2MC01MDVmODM2ZDk0ODlkZAIEDxUCBue7rei0uQblrabotLlkAgUPFgIfAGVkAgcPFgIfAAXNATxhIGhyZWY9ImphdmFzY3JpcHQ6c2hvdygnMjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhJywgJ2ZlNzgzOWY5LWNhZjMtNDA1Zi1hODYwLTUwNWY4MzZkOTQ4OScpOyIgc3R5bGU9ImZsb2F0OnJpZ2h0OyI+PGltZyBzcmM9Ii4uLy4uL0ltYWdlcy9hZGQucG5nIiB0aXRsZT0i54K55Ye75re75YqgIiBzdHlsZT0iYm9yZGVyOjA7IiAvPjwvYT5kAgkPFgIfAAXeATxhIGhyZWY9ImphdmFzY3JpcHQ6c2hvd0NvbnN1bWVSZWd1bGF0aW9uKCcyNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEnLCAnZmU3ODM5ZjktY2FmMy00MDVmLWE4NjAtNTA1ZjgzNmQ5NDg5Jyk7IiBzdHlsZT0iZmxvYXQ6cmlnaHQ7Ij48aW1nIHNyYz0iLi4vLi4vSW1hZ2VzL2FkZC5wbmciIHRpdGxlPSLngrnlh7vmt7vliqAiIHN0eWxlPSJib3JkZXI6MDsiIC8+PC9hPmQCCw8PFgIfAgUkZmU3ODM5ZjktY2FmMy00MDVmLWE4NjAtNTA1ZjgzNmQ5NDg5ZGQCDQ8PFgQfAgUkZmU3ODM5ZjktY2FmMy00MDVmLWE4NjAtNTA1ZjgzNmQ5NDg5HwNoZGQCDg8VAQExZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBAUHcmJDeWNsZQUIcmJCdXlvdXQFCHJiQnV5b3V0BQ1ja2JJc0Rpc2NvdW50WPNEPIz0nOY9da+YSvrGDNu0Ehj4cGYu4/X1B2d4jTM=" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="B018DCC4" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABLJ3Fq8grK97kWB5/qScIY9NliZS2p7LXO0h9xN3jAKgp9Lfu+JwUli/O4+lCK/O2Vgg1/fMVK3DSXNIzk/eDqu+UEbsMktNk+OJmNmUof5wOIdUZ+7QxfVFmk19oLenthrOmpgwW4lLA24924L6JVRFkPQFWm9pfXdLnZtBkxUGPoYWIUAStoF1oljc83uywCI41CO59Ekk6Bb2zpPMVWfHenBj4F38DDySsDomsvcBJNcQtnKtb31hEtbT6bWJ9/t/4N6wwgXD+qbnKr4AK8XVWqbBNHcYillqWtXzj6Cy7Wu7tbfmhnUW+zLlVxzuhIeHMBJ7hgvVQSJmXS1W5yypvxdk/trnqpMYgkR2Dvu1dE1nWdnkudxITfRaoZWFHRiZXNT054Z4byNTO/YiGsFxx69z8xj2PbacHEZF+u1Wg==" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+               item: [{
+                    Text: "收入科目",
+                    Url: "<?php echo arU('SystemConfiguration/IncomeAccount'); ?>",
+                    Selected: true
+                }, {
+                    Text: "支出科目",
+                    Url: "<?php echo arU('SystemConfiguration/CostAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "财务账号",
+                    Url: "<?php echo arU('SystemConfiguration/financeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "收费科目",
+                    Url: "<?php echo arU('SystemConfiguration/chargeAccount'); ?>",
+                    Selected: true
+                }, {
+                    Text: "审核设置",
+                    Url: "<?php echo arU('SystemConfiguration/checkSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "工资构成",
+                    Url: "<?php echo arU('SystemConfiguration/SalaryConstitute'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">科目名称：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbItemName" type="text" id="tbItemName" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">收入科目：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlChargeItem" id="ddlChargeItem" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="cc117246-27bb-42f9-ba34-f90779fc942d">学费</option>
+                        <option value="29994d19-4670-4165-bab6-e215d16f329e">定金</option>
+                        <option value="d2db6ee2-06a7-483a-851a-8faad53e6780">单据收费</option>
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 54px;">费用：
+                </td>
+                <td>
+                    <input id="rbCycle" type="radio" name="PriceType" value="rbCycle" checked="checked" onclick="priceType(1);" />
+                    <label for="rbCycle">周期性费用</label>
+                    <input id="rbBuyout" type="radio" name="PriceType" value="rbBuyout" onclick="priceType(0);" />
+                    <label for="rbBuyout">一次性费用</label>
+                    <span id="spanPrice" style="display:none">
+                        <input name="tbItemPrice" type="text" id="tbItemPrice" class="int" style="width: 80px; text-align: right;" />
+                        元
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">是否折扣：</td>
+                <td class="borderRight">
+                    <input id="ckbIsDiscount" type="checkbox" name="ckbIsDiscount" />
+                </td>
+                <td class="textAlignRight">备注：
+                </td>
+                <td class="borderRight">
+                    <input name="tbNotes" type="text" id="tbNotes" class="int" style="width:140px;" />
+                </td>
+                <td style="text-align:left;padding-left:100px;" colspan="2">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 100px">操作</td>
+                        <td>科目名称</td>
+                        <td>收入科目</td>
+                        <td style="width: 85px">是否折扣</td>
+                        <td>费用（元）</td>
+                        <td>消费规则</td>
+                        <td>排序</td>
+                        <td>备注</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptItem_linkEdit_0" href="javascript:__doPostBack(&#39;rptItem$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptItem_linkDel_0" href="javascript:__doPostBack(&#39;rptItem$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>学费</td>
+                        <td>学费</td>
+                        <td style="text-align: center;">
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="javascript:show('24f47ff1-5a6c-4fd4-8d86-8234095a67ea', '148f1704-3b07-49af-a985-219cf0e550b7');" style="float:right;"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加" style="border:0;" /></a>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="javascript:showConsumeRegulation('24f47ff1-5a6c-4fd4-8d86-8234095a67ea', '148f1704-3b07-49af-a985-219cf0e550b7');" style="float:right;"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加" style="border:0;" /></a>
+                        </td>
+                        <td>
+                            <a id="rptItem_lnkDown_0" href="javascript:__doPostBack(&#39;rptItem$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptItem_linkEdit_1" href="javascript:__doPostBack(&#39;rptItem$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptItem_linkDel_1" href="javascript:__doPostBack(&#39;rptItem$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>续费</td>
+                        <td>学费</td>
+                        <td style="text-align: center;">
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="javascript:show('24f47ff1-5a6c-4fd4-8d86-8234095a67ea', 'fe7839f9-caf3-405f-a860-505f836d9489');" style="float:right;"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加" style="border:0;" /></a>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="javascript:showConsumeRegulation('24f47ff1-5a6c-4fd4-8d86-8234095a67ea', 'fe7839f9-caf3-405f-a860-505f836d9489');" style="float:right;"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" title="点击添加" style="border:0;" /></a>
+                        </td>
+                        <td>
+                            <a id="rptItem_lnkUp_1" href="javascript:__doPostBack(&#39;rptItem$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("tbItemName").value == '') {
+                alert("科目名称不能为空！");
+                return false;
+            } else
+                return true;
+        }
+
+        function priceType(v) {
+            if (v == 1) {
+                $("#spanPrice").hide();
+            } else {
+                $("#spanPrice").show();
+            }
+        }
+        </script>
+    </form>
+</body>
+
+</html>

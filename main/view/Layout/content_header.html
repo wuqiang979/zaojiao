@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.GPUBLIC'); ?>css/zaojiao.css">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.GPUBLIC'); ?>css/style.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script type="text/javascript">
+    </script>
+    <script src="<?php echo arCfg('PATH.GPUBLIC'); ?>js/jquery.min1-10-2.js"></script>
+    <script src="<?php echo arCfg('PATH.GPUBLIC'); ?>js/laydate/laydate.js"></script>
+    <script src="<?php echo arCfg('PATH.GPUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.GPUBLIC'); ?>js/jQuery.etmTabs.js"></script>
+    <?php /**必须加载的 css seg*/ include arCfg('DIR.SEG') . 'Sys/css.seg'; ?>
+</head>
+<body>
+<div class="headnav" style="margin:10px;font-weight:bold">
+    <?php if (isset($headnavs) && !isset($nonav) && !arRequest('nonav')): ?>
+    <?php
+    $currentMenu = strtolower(arU(arCfg('requestRoute.a_c') .'/'. arCfg('requestRoute.a_a')));
+    foreach ($headnavs as $key => $value): ?>
+        <a href="<?php echo $value; ?>" <?php if ($currentMenu == strtolower($value)): ?>
+        style="color:red"
+        <?php endif ?>><?php echo $key; ?></a>&nbsp;|&nbsp;
+    <?php endforeach ?>
+    <?php endif ?>
+</div>
+<div style="position:fixed;right:150px;top:10px;"><a href="javascript:location.reload();">刷新本页</a></div>
+<script>
+    // layer frame加载url scrool > yes or no
+    function loadurl(url, title, scrool)
+    {
+        if (scrool != 'no') {
+            scrool = 'yes';
+        }
+
+        layer.open({
+            title: title,
+            type: 2,
+            area:['900px', '460px'],
+            content: [url, scrool] // 这里content是一个url
+        });
+
+    }
+
+    // 禁止form 编辑
+    function disableForm() {
+        var form = document.forms[0];
+        for (var i = 0; i < form.length; i++) {
+            var element = form.elements[i];
+            //部分元素可以编号 element.name 是元素自定义 name
+                if (element.name != "auditEntity.auditContent"
+                && element.name != "auditEntity.auditAutograph"
+                && element.name != "auditEntity.auditTime"
+                && element.name != "auditEntity.auditState"
+                && element.name != "submitBtn"
+                && element.name != "reset"
+                && element.name != "id"
+                && element.name != "processInstanceId"
+                && element.name != "updateForm") {
+            element.disabled = "true";
+            }
+        }
+    }
+
+    //取消不可编辑
+    function enableForm() {
+        var form = document.forms[0];
+        for (var i = 0; i < form.length; i++) {
+            var element = form.elements[i];
+            element.disabled = false;
+        }
+    }
+</script>

@@ -1,0 +1,13 @@
+<form action="<?php echo arU(''); ?>" method="post">
+<input type="hidden" name="mid" value="<?php echo arRequest('mid'); ?>">
+<?php foreach ($departDetail as $depart): ?>
+<div style="margin:5px;">
+    <div>
+        <span><input name="dids[]" type="checkbox" value="<?php echo $depart['did']; ?>" <?php if (in_array($depart['did'], $hasRights)): ?>
+        checked
+        <?php endif ?>><?php echo $depart['name'] ?></span>
+    </div>
+</div>
+<?php endforeach; ?>
+<input type="submit" name="btnAdd" value="保存" class="button" />
+</form>

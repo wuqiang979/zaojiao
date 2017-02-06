@@ -1,0 +1,132 @@
+<div class="etm-tabs">
+    <a href="<?php echo arU('Baby/ListStatisticsAnalysis');?> " style="margin-left:10px;" class="" id="hdgl">幼儿性别分布</a>|
+    <a href="<?php echo arU('Home/HouseholdDataStatistics');?>" class="" id="hdqd">户籍数据统计</a>|
+    <a href="javascript: " class="etm-tabSelected" id="hdqdjl">现住址数据统计</a>|
+    <a href="<?php echo arU('Home/ChildAgeDistributed');?>" class="" id="yenlfb">幼儿年龄分布</a>|
+    <a href="<?php echo arU('Home/FamilyIncomeSituation');?>" class="" id="jtsrqk">家庭收入情况</a>
+</div>
+
+<div style="background-color: #F4F4F4;padding-left:20px;font-size: 12px;border-bottom:1px #DAD8D4 solid;">
+                    <span style="display: inline-block;width: 210px;padding:10px;">
+
+                        <span style="display: inline-block;padding: 0 10px 0px 0;border-right: 1px #DAD8D4 solid;">
+                            现住地址:&nbsp;
+                                        <select name="" id="" style="width: 120px;border: 1px solid #DAD8D4;">
+                                            <option value="">请选择</option>
+                                        </select>
+                        </span>
+                    </span>
+                    <span style="display: inline-block;width: 150px;padding:10px 10px 10px 0px;">
+
+
+                        <span style="display: inline-block;padding: 0 10px 0px 0;border-right: 1px #DAD8D4 solid;">
+                            &nbsp;
+                                        <select name="" id="" style="border: 1px solid #DAD8D4;">
+                                            <option value="">市辖 区</option>
+                                        </select>
+                        </span>
+                    </span>
+                    <span >
+                        <input style="margin:0px 20px 0 0px; " class="etm-button" type="button" value="搜素">
+                    </span>
+</div>
+<div id="div1" style="width:900px;height:400px;border:1px solid #dddddd;margin:10px auto;"></div>
+<script type="text/javascript">
+$(function() {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('div1'));
+    // 指定图表的配置项和数据
+    option = {
+        title: {
+            text: '户籍数据统计',
+            subtext: '本院',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            // orient: 'vertical',
+            // x: 'left',
+            // data: ['男孩', '女孩']
+        },
+        toolbox: {
+            show: false,
+            feature: {
+                mark: {
+                    show: true
+                },
+                dataView: {
+                    show: true,
+                    readOnly: false
+                },
+                magicType: {
+                    show: true,
+                    type: ['pie', 'funnel'],
+                    option: {
+                        funnel: {
+                            x: '25%',
+                            width: '50%',
+                            funnelAlign: 'left',
+                            max: 1548
+                        }
+                    }
+                },
+                restore: {
+                    show: true
+                },
+                saveAsImage: {
+                    show: true
+                }
+            }
+        },
+        calculable: true,
+        series: [{
+            name: '访问来源',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '60%'],
+
+            data: [{
+                value: 335,
+                name: '武侯区',
+            }, {
+                value: 310,
+                 name: '青羊区',
+            },{
+                value: 310,
+                 name: '锦江区',
+            },{
+                value: 310,
+                 name: '其它',
+            }]
+        }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    //------------------------------------------------
+    $("#hdgl").hover(function() {
+        $(this).addClass("etm-tabSelected");
+    }, function() {
+        $(this).removeClass("etm-tabSelected");
+    });
+    $("#hdqd").hover(function() {
+        $(this).addClass("etm-tabSelected");
+    }, function() {
+        $(this).removeClass("etm-tabSelected");
+    });
+
+    $("#yenlfb").hover(function() {
+        $(this).addClass("etm-tabSelected");
+    }, function() {
+        $(this).removeClass("etm-tabSelected");
+    });
+
+    $("#jtsrqk").hover(function() {
+        $(this).addClass("etm-tabSelected");
+    }, function() {
+        $(this).removeClass("etm-tabSelected");
+    });
+})
+</script>

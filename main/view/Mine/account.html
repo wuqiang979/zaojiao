@@ -1,0 +1,12 @@
+修改密码
+<form action="<?php echo arU(''); ?>" method="post">
+账号
+<input type="text" name="account_name" value="<?php echo arCfg('current_member.account_name') ?>" disabled/>
+原密码
+<input type="password" name="oripass" value="">
+新密码
+<input type="password" name="newpass" value="">
+重复新密码
+<input type="password" name="rnewpass" value="">
+<input type="submit" value="提交">
+</form>

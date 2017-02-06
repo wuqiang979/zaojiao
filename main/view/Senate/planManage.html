@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head id="Head1">
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/flexigrid.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=61b764ca-a0ea-41cc-9b9d-11d18f406b3f', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            ShowHide();
+            $(".TeachPlanDelete").live("click", function() {
+                if (confirm("确定要删除吗")) {
+                    $.ajaxMethod("TeachPlanDelete", {
+                            "TeachPlanGuid": $(this).attr("TeachPlanGuid")
+                        },
+                        function(data) {
+                            alert(data);
+                        },
+                        true, "text");
+                }
+            });
+        });
+
+        function ShowHide() {
+            if ($("#ddlTimeType").val() == '-1') {
+                $("#txtMonth").hide();
+                $("#txtYear").hide();
+                $("#ddlSourceInfo").hide();
+                $("#ddlTerm").hide();
+            }
+            if ($("#ddlTimeType").val() == '0') {
+                $("#txtMonth").hide();
+                $("#txtYear").show();
+                $("#ddlSourceInfo").show();
+                $("#ddlTerm").hide();
+            } else if ($("#ddlTimeType").val() == '1') {
+                $("#txtMonth").show();
+                $("#txtYear").hide();
+                $("#ddlSourceInfo").hide();
+                $("#ddlTerm").hide();
+            } else if ($("#ddlTimeType").val() == '2') {
+                $("#txtMonth").hide();
+                $("#txtYear").hide();
+                $("#ddlSourceInfo").hide();
+                $("#ddlTerm").show();
+            } else {}
+        }
+
+        function Modify() {
+            var guids = "";
+            var count = 0;
+            $("input[name='selectItem']:checkbox:checked").each(function() {
+                guids = guids + $(this).val() + ",";
+                count++;
+            });
+            if (guids == "") {
+                alert("请选择一条数据");
+                return false;
+            }
+            var s = guids.substring(0, guids.length - 1);
+            var test = s.split(",");
+            if (count > 1) {
+                alert("请选择一条数据");
+                return false;
+            } else {
+                document.location.href = "TeachPlanEdit.aspx?sc=btn&navId=61b764ca-a0ea-41cc-9b9d-11d18f406b3f&TeachPlanGuid=" + test[0].replace(/^\"|\"$/g, '');
+            }
+            return false;
+        }
+
+
+        function Del() {
+            var guids = "";
+            $("input[name='selectItem']:checkbox:checked").each(function() {
+                guids = guids + $(this).val() + ",";
+            });
+            if (guids == "") {
+                alert("请选择一条数据");
+                return false;
+            }
+            var s = guids.substring(0, guids.length - 1);
+            if (confirm("确定要删除吗？")) {
+                $.ajaxMethod("TeachPlanListDelete", {
+                        "TeachPlanGuid": s
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            }
+            return false;
+        }
+
+        function pickedFunc(selectDate) {
+            $.ajaxMethod("TeachPlanSelectDate", {
+                    "selectDate": selectDate
+                },
+                function(data) {
+                    if (data != null) {
+                        $("#ddlSourceInfo").show();
+                        $("#ddlSourceInfo").html("<option value=''>请选择</option>");
+                        var jsonData = jQuery.parseJSON(data);
+                        $.each(jsonData, function(i, n) {
+                            $("#ddlSourceInfo").append("<option value='" + n.CycleValue + "'>" + n.CycleName + "</option>");
+                        });
+                    } else {
+                        $("#ddlSourceInfo").empty();
+                        $("#ddlSourceInfo").hide();
+                    }
+                },
+                true, "text");
+        }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="TeachPlanList.aspx?navId=61b764ca-a0ea-41cc-9b9d-11d18f406b3f" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTIwMjU0MDQ0ODEPZBYCAgMPZBYIAgMPFgIeBFRleHQF7xw8c2VsZWN0IGlkPSJkZGxTb3VyY2VJbmZvIiBuYW1lPSJkZGxTb3VyY2VJbmZvIiBjbGFzcz0iaW50IiAgc3R5bGU9IndpZHRoOjEwMHB4OyI+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wMS0wMX4yMDE2LTAxLTAzIj7nrKwx5ZGoWzAxLjAxfjAxLjAzXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDEtMDR+MjAxNi0wMS0xMCI+56ysMuWRqFswMS4wNH4wMS4xMF08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTAxLTExfjIwMTYtMDEtMTciPuesrDPlkahbMDEuMTF+MDEuMTddPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wMS0xOH4yMDE2LTAxLTI0Ij7nrKw05ZGoWzAxLjE4fjAxLjI0XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDEtMjV+MjAxNi0wMS0zMSI+56ysNeWRqFswMS4yNX4wMS4zMV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTAyLTAxfjIwMTYtMDItMDciPuesrDblkahbMDIuMDF+MDIuMDddPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wMi0wOH4yMDE2LTAyLTE0Ij7nrKw35ZGoWzAyLjA4fjAyLjE0XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDItMTV+MjAxNi0wMi0yMSI+56ysOOWRqFswMi4xNX4wMi4yMV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTAyLTIyfjIwMTYtMDItMjgiPuesrDnlkahbMDIuMjJ+MDIuMjhdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wMi0yOX4yMDE2LTAzLTA2Ij7nrKwxMOWRqFswMi4yOX4wMy4wNl08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTAzLTA3fjIwMTYtMDMtMTMiPuesrDEx5ZGoWzAzLjA3fjAzLjEzXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDMtMTR+MjAxNi0wMy0yMCI+56ysMTLlkahbMDMuMTR+MDMuMjBdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wMy0yMX4yMDE2LTAzLTI3Ij7nrKwxM+WRqFswMy4yMX4wMy4yN108L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTAzLTI4fjIwMTYtMDQtMDMiPuesrDE05ZGoWzAzLjI4fjA0LjAzXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDQtMDR+MjAxNi0wNC0xMCI+56ysMTXlkahbMDQuMDR+MDQuMTBdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNC0xMX4yMDE2LTA0LTE3Ij7nrKwxNuWRqFswNC4xMX4wNC4xN108L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA0LTE4fjIwMTYtMDQtMjQiPuesrDE35ZGoWzA0LjE4fjA0LjI0XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDQtMjV+MjAxNi0wNS0wMSI+56ysMTjlkahbMDQuMjV+MDUuMDFdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNS0wMn4yMDE2LTA1LTA4Ij7nrKwxOeWRqFswNS4wMn4wNS4wOF08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA1LTA5fjIwMTYtMDUtMTUiPuesrDIw5ZGoWzA1LjA5fjA1LjE1XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDUtMTZ+MjAxNi0wNS0yMiI+56ysMjHlkahbMDUuMTZ+MDUuMjJdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNS0yM34yMDE2LTA1LTI5Ij7nrKwyMuWRqFswNS4yM34wNS4yOV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA1LTMwfjIwMTYtMDYtMDUiPuesrDIz5ZGoWzA1LjMwfjA2LjA1XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDYtMDZ+MjAxNi0wNi0xMiI+56ysMjTlkahbMDYuMDZ+MDYuMTJdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNi0xM34yMDE2LTA2LTE5IiBzZWxlY3RlZD7nrKwyNeWRqFswNi4xM34wNi4xOV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA2LTIwfjIwMTYtMDYtMjYiPuesrDI25ZGoWzA2LjIwfjA2LjI2XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDYtMjd+MjAxNi0wNy0wMyI+56ysMjflkahbMDYuMjd+MDcuMDNdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNy0wNH4yMDE2LTA3LTEwIj7nrKwyOOWRqFswNy4wNH4wNy4xMF08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA3LTExfjIwMTYtMDctMTciPuesrDI55ZGoWzA3LjExfjA3LjE3XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDctMTh+MjAxNi0wNy0yNCI+56ysMzDlkahbMDcuMTh+MDcuMjRdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wNy0yNX4yMDE2LTA3LTMxIj7nrKwzMeWRqFswNy4yNX4wNy4zMV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA4LTAxfjIwMTYtMDgtMDciPuesrDMy5ZGoWzA4LjAxfjA4LjA3XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDgtMDh+MjAxNi0wOC0xNCI+56ysMzPlkahbMDguMDh+MDguMTRdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wOC0xNX4yMDE2LTA4LTIxIj7nrKwzNOWRqFswOC4xNX4wOC4yMV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA4LTIyfjIwMTYtMDgtMjgiPuesrDM15ZGoWzA4LjIyfjA4LjI4XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDgtMjl+MjAxNi0wOS0wNCI+56ysMzblkahbMDguMjl+MDkuMDRdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wOS0wNX4yMDE2LTA5LTExIj7nrKwzN+WRqFswOS4wNX4wOS4xMV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTA5LTEyfjIwMTYtMDktMTgiPuesrDM45ZGoWzA5LjEyfjA5LjE4XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMDktMTl+MjAxNi0wOS0yNSI+56ysMznlkahbMDkuMTl+MDkuMjVdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0wOS0yNn4yMDE2LTEwLTAyIj7nrKw0MOWRqFswOS4yNn4xMC4wMl08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTEwLTAzfjIwMTYtMTAtMDkiPuesrDQx5ZGoWzEwLjAzfjEwLjA5XTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMTAtMTB+MjAxNi0xMC0xNiI+56ysNDLlkahbMTAuMTB+MTAuMTZdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0xMC0xN34yMDE2LTEwLTIzIj7nrKw0M+WRqFsxMC4xN34xMC4yM108L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTEwLTI0fjIwMTYtMTAtMzAiPuesrDQ05ZGoWzEwLjI0fjEwLjMwXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMTAtMzF+MjAxNi0xMS0wNiI+56ysNDXlkahbMTAuMzF+MTEuMDZdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0xMS0wN34yMDE2LTExLTEzIj7nrKw0NuWRqFsxMS4wN34xMS4xM108L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTExLTE0fjIwMTYtMTEtMjAiPuesrDQ35ZGoWzExLjE0fjExLjIwXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMTEtMjF+MjAxNi0xMS0yNyI+56ysNDjlkahbMTEuMjF+MTEuMjddPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0xMS0yOH4yMDE2LTEyLTA0Ij7nrKw0OeWRqFsxMS4yOH4xMi4wNF08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTEyLTA1fjIwMTYtMTItMTEiPuesrDUw5ZGoWzEyLjA1fjEyLjExXTwvb3B0aW9uPjxvcHRpb24gdmFsdWU9IjIwMTYtMTItMTJ+MjAxNi0xMi0xOCI+56ysNTHlkahbMTIuMTJ+MTIuMThdPC9vcHRpb24+PG9wdGlvbiB2YWx1ZT0iMjAxNi0xMi0xOX4yMDE2LTEyLTI1Ij7nrKw1MuWRqFsxMi4xOX4xMi4yNV08L29wdGlvbj48b3B0aW9uIHZhbHVlPSIyMDE2LTEyLTE5fjIwMTYtMTItMjUiPuesrDUz5ZGoWzEyLjI2fjEyLjMxXTwvb3B0aW9uPjwvc2VsZWN0PmQCBA8QZBAVBAnor7fpgInmi6kNMjAxN+S4i+Wtpuacnw0yMDE35LiK5a2m5pyfDTIwMTbkuIvlrabmnJ8VBCQwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAkOTg4MGRkZGItZDgyMi00NjUyLTk3NmUtOGRiNTUwM2FlNTRlJDY5ZGI4ZTYyLWZhZTYtNDI2ZC05YmIyLTgwNjkzNjcxODkwZSRkMGU1OWZkNi02MTcxLTRiOGUtYWY2OC0wZWVkOTlmNWRiOGUUKwMEZ2dnZ2RkAgYPDxYCHgdWaXNpYmxlZ2RkAgcPDxYCHwFnZGRkJZlzSgKzLNaLZmn+2IDWMlk2luvtDCvDCgp7XOS4x1A="
+            />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C5450FFA" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAA70vVYAW8preWKeVzmTuGygqtQ58yI5ksd4eMm/u3Lwbs1orTA/ssSfAjiWG1v2jWrDuwTEDj7qBmGofq2/UlzW8milLDGUCrfFz/Vas2gRCcqt/3ouI9iC4MiGYTc05dfLfsYDjfzzQdB19aNcsF7lOvBiY54AEw5aVvi+eKnR7XiQsKj/1/vMlTK7atLnwnaFdOKX3hOtCAC/dn8UVy20aiMxMik8/HR4Zdrdi+cLkLrZiRCqc8WDJESCLLHi21qTXELZyrW99YRLW0+m1iffO0ptUh1HgjRAxICB1H1CXvgX3N/5VaDPSzlwH0klbbVZLrN+7AcSF5UDl6+eFIuc"
+            />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">时间周期：
+                </td>
+                <td class="borderRight" style="width: 120px">
+                    <select name="ddlTimeType" id="ddlTimeType" class="int" onchange="ShowHide(this.value)" style="width:100px;">
+                        <option value="-1">请选择</option>
+                        <option value="0">周</option>
+                        <option value="1">月</option>
+                        <option value="2">学期</option>
+
+                    </select>
+                    <input name="txtMonth" type="text" id="txtMonth" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM&#39;})" style="width:60px;" />
+                    <input name="txtYear" type="text" value="2016" id="txtYear" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy&#39;,onpicked:function(dp){pickedFunc(dp.cal.getNewDateStr());}})" style="width:50px;text-align: center" />
+                    <select id="ddlSourceInfo" name="ddlSourceInfo" class="int" style="width:100px;">
+                        <option value="2016-01-01~2016-01-03">第1周[01.01~01.03]</option>
+                        <option value="2016-01-04~2016-01-10">第2周[01.04~01.10]</option>
+                        <option value="2016-01-11~2016-01-17">第3周[01.11~01.17]</option>
+                        <option value="2016-01-18~2016-01-24">第4周[01.18~01.24]</option>
+                        <option value="2016-01-25~2016-01-31">第5周[01.25~01.31]</option>
+                        <option value="2016-02-01~2016-02-07">第6周[02.01~02.07]</option>
+                        <option value="2016-02-08~2016-02-14">第7周[02.08~02.14]</option>
+                        <option value="2016-02-15~2016-02-21">第8周[02.15~02.21]</option>
+                        <option value="2016-02-22~2016-02-28">第9周[02.22~02.28]</option>
+                        <option value="2016-02-29~2016-03-06">第10周[02.29~03.06]</option>
+                        <option value="2016-03-07~2016-03-13">第11周[03.07~03.13]</option>
+                        <option value="2016-03-14~2016-03-20">第12周[03.14~03.20]</option>
+                        <option value="2016-03-21~2016-03-27">第13周[03.21~03.27]</option>
+                        <option value="2016-03-28~2016-04-03">第14周[03.28~04.03]</option>
+                        <option value="2016-04-04~2016-04-10">第15周[04.04~04.10]</option>
+                        <option value="2016-04-11~2016-04-17">第16周[04.11~04.17]</option>
+                        <option value="2016-04-18~2016-04-24">第17周[04.18~04.24]</option>
+                        <option value="2016-04-25~2016-05-01">第18周[04.25~05.01]</option>
+                        <option value="2016-05-02~2016-05-08">第19周[05.02~05.08]</option>
+                        <option value="2016-05-09~2016-05-15">第20周[05.09~05.15]</option>
+                        <option value="2016-05-16~2016-05-22">第21周[05.16~05.22]</option>
+                        <option value="2016-05-23~2016-05-29">第22周[05.23~05.29]</option>
+                        <option value="2016-05-30~2016-06-05">第23周[05.30~06.05]</option>
+                        <option value="2016-06-06~2016-06-12">第24周[06.06~06.12]</option>
+                        <option value="2016-06-13~2016-06-19" selected>第25周[06.13~06.19]</option>
+                        <option value="2016-06-20~2016-06-26">第26周[06.20~06.26]</option>
+                        <option value="2016-06-27~2016-07-03">第27周[06.27~07.03]</option>
+                        <option value="2016-07-04~2016-07-10">第28周[07.04~07.10]</option>
+                        <option value="2016-07-11~2016-07-17">第29周[07.11~07.17]</option>
+                        <option value="2016-07-18~2016-07-24">第30周[07.18~07.24]</option>
+                        <option value="2016-07-25~2016-07-31">第31周[07.25~07.31]</option>
+                        <option value="2016-08-01~2016-08-07">第32周[08.01~08.07]</option>
+                        <option value="2016-08-08~2016-08-14">第33周[08.08~08.14]</option>
+                        <option value="2016-08-15~2016-08-21">第34周[08.15~08.21]</option>
+                        <option value="2016-08-22~2016-08-28">第35周[08.22~08.28]</option>
+                        <option value="2016-08-29~2016-09-04">第36周[08.29~09.04]</option>
+                        <option value="2016-09-05~2016-09-11">第37周[09.05~09.11]</option>
+                        <option value="2016-09-12~2016-09-18">第38周[09.12~09.18]</option>
+                        <option value="2016-09-19~2016-09-25">第39周[09.19~09.25]</option>
+                        <option value="2016-09-26~2016-10-02">第40周[09.26~10.02]</option>
+                        <option value="2016-10-03~2016-10-09">第41周[10.03~10.09]</option>
+                        <option value="2016-10-10~2016-10-16">第42周[10.10~10.16]</option>
+                        <option value="2016-10-17~2016-10-23">第43周[10.17~10.23]</option>
+                        <option value="2016-10-24~2016-10-30">第44周[10.24~10.30]</option>
+                        <option value="2016-10-31~2016-11-06">第45周[10.31~11.06]</option>
+                        <option value="2016-11-07~2016-11-13">第46周[11.07~11.13]</option>
+                        <option value="2016-11-14~2016-11-20">第47周[11.14~11.20]</option>
+                        <option value="2016-11-21~2016-11-27">第48周[11.21~11.27]</option>
+                        <option value="2016-11-28~2016-12-04">第49周[11.28~12.04]</option>
+                        <option value="2016-12-05~2016-12-11">第50周[12.05~12.11]</option>
+                        <option value="2016-12-12~2016-12-18">第51周[12.12~12.18]</option>
+                        <option value="2016-12-19~2016-12-25">第52周[12.19~12.25]</option>
+                        <option value="2016-12-19~2016-12-25">第53周[12.26~12.31]</option>
+                    </select>
+                    <select name="ddlTerm" id="ddlTerm" class="int" style="width: 142px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="9880dddb-d822-4652-976e-8db5503ae54e">2017下学期</option>
+                        <option value="69db8e62-fae6-426d-9bb2-80693671890e">2017上学期</option>
+                        <option value="d0e59fd6-6171-4b8e-af68-0eed99f5db8e">2016下学期</option>
+
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 66px;">关键词：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="txtKeyword" type="text" id="txtKeyword" class="int" name="txtKeyword" />
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="button" class="button" id="btnSearch" value="搜 索" />&nbsp;
+                    <input type="submit" name="btnAdd" value="添 加" id="btnAdd" class="button" />&nbsp;
+                    <input type="submit" name="btnDel" value="批量删除" onclick="return Del();" id="btnDel" class="button" />
+                </td>
+            </tr>
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"","Name":"TeachPlanGuid","Width":35,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":true,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"TeachPlanAct","Display":"操作","Name":"TeachPlanGuid,YearTime,61b764ca-a0ea-41cc-9b9d-11d18f406b3f","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"标题","Name":"Title","Width":260,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":true,"LinkStrForamtBindColumn":"TeachPlanGuid","LinkStrForamt":"javascript:show(\"{0}\")","LinkClass":"","OperationButtons":"","SubStringLength":16,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"内容","Name":"Notes","Width":260,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":16,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"总结","Name":"Summary","Width":260,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":16,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"TimeTypeAct","Display":"周期类型","Name":"TimeType","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"录入人员","Name":"RealName","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd HH:mm","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"录入时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]'
+        />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"61b764ca-a0ea-41cc-9b9d-11d18f406b3f"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Teach/TeachPlanList.aspx?navId=61b764ca-a0ea-41cc-9b9d-11d18f406b3f' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='Teach_TeachPlanList' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='Teach_TeachPlanListTeach_TeachPlanList' />
+        <script type='text/javascript'>
+            var etmFormId = 'form1';
+
+            function fixIE9() {
+                if ($.browser.msie && $.browser.version == 9) {
+                    $('#form1 select').each(function() {
+                        var name = $(this).attr('name');
+                        if (name != undefined && name.length > 0) {
+                            var value = $(this).val();
+                            if (value == null) {
+                                value = $(this).find('option:first').attr('value');
+                                $(this).val(value);
+                            }
+                        }
+                    });
+                }
+            }
+
+            function RefreshGrid() {
+                $('#Test').flexOptions().flexReload();
+            };
+
+            function addFormData() {
+                fixIE9();
+                var dt = $('#form1').serializeArray();
+                $('#Test').flexOptions({
+                    params: dt
+                });
+                return true;
+            }
+            $(function() {
+                $('#btnSearch').click(function() {
+                    $('#Test').flexOptions({
+                        newp: 1
+                    }).flexReload();
+                    return false;
+                });
+            });
+            $('#Test').flexigrid({
+                url: 'http://vip.yj.etmcn.com/Ajax/Teach_TeachPlanList',
+                sortname: 'CreateTime',
+                sortorder: 'desc',
+                usepager: true,
+                useRp: true,
+                rpOptions: [20, 30, 50, 100, 200],
+                rp: 30,
+                colModel: [{
+                    display: '',
+                    name: 'TeachPlanGuid',
+                    etmname: 'TeachPlanGuid',
+                    width: 35,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: true,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '操作',
+                    name: 'TeachPlanGuid,YearTime,61b764ca-a0ea-41cc-9b9d-11d18f406b3f',
+                    etmname: 'TeachPlanAct',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '标题',
+                    name: 'Title',
+                    etmname: 'Title',
+                    width: 260,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: true,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 16,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '内容',
+                    name: 'Notes',
+                    etmname: 'Notes',
+                    width: 260,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 16,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '总结',
+                    name: 'Summary',
+                    etmname: 'Summary',
+                    width: 260,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 16,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '周期类型',
+                    name: 'TimeType',
+                    etmname: 'TimeTypeAct',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '录入人员',
+                    name: 'RealName',
+                    etmname: 'RealName',
+                    width: 100,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '录入时间',
+                    name: 'CreateTime',
+                    etmname: 'CreateTime',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: 'yyyy-MM-dd HH:mm',
+                    ColumnType: 'DateTime',
+                    IsJsAddColumn: false
+                }],
+                width: $(window).width(),
+                height: $(window).height() - 185 + 60,
+                onSubmit: addFormData
+            });
+        </script>
+
+        <script type="text/javascript">
+            function show(TeachPlanGuid) {
+                document.location.href = "TeachPlanInfo.aspx?sc=btn&navId=61b764ca-a0ea-41cc-9b9d-11d18f406b3f&TeachPlanGuid=" + TeachPlanGuid;
+            }
+        </script>
+    </form>
+</body>
+
+</html>

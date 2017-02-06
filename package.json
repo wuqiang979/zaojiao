@@ -1,0 +1,24 @@
+{
+  "name": "zaojiao",
+  "version": "1.0.0",
+  "description": "早教",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.coiu.cn/zaojiao"
+  },
+  "keywords": [
+    "早教"
+  ],
+  "author": "buickluo",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.12.8",
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.1"
+  }
+}

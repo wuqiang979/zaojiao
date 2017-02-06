@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=f4ed72c2-fbb2-4c0d-9fe7-164b5a79111c', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="DoType.aspx?isLeft=5&amp;navId=f4ed72c2-fbb2-4c0d-9fe7-164b5a79111c" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTI4MzQ2NDg0Mg9kFgICAw9kFgQCAQ8WAh4EVGV4dAXsBjxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi55+t5L+h5qih5p2/6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Db21tL1N5c01zZ1RlbXBsYXRlLmFzcHg/aXNMZWZ0PTEmbmF2SWQ9ZjRlZDcyYzItZmJiMi00YzBkLTlmZTctMTY0YjVhNzkxMTFjIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi55+t5L+h6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Db21tL01zZ0NvbmZpZy5hc3B4P2lzTGVmdD0yJm5hdklkPWY0ZWQ3MmMyLWZiYjItNGMwZC05ZmU3LTE2NGI1YTc5MTExYyIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuWRvOWPq+S4reW/g+iuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvQ29tbS9DYWxsU2V0VXAuYXNweD9pc0xlZnQ9MyZuYXZJZD1mNGVkNzJjMi1mYmIyLTRjMGQtOWZlNy0xNjRiNWE3OTExMWMiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlvIDmlL7ml6Xnsbvlnovorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0NSTS9PcGVuRGF5VHlwZS5hc3B4P2lzTGVmdD00Jm5hdklkPWY0ZWQ3MmMyLWZiYjItNGMwZC05ZmU3LTE2NGI1YTc5MTExYyIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIua0u+WKqOexu+Wei+iuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvRmFtaWx5U2Nob29sL0RvVHlwZS5hc3B4P2lzTGVmdD01Jm5hdklkPWY0ZWQ3MmMyLWZiYjItNGMwZC05ZmU3LTE2NGI1YTc5MTExYyIsIFNlbGVjdGVkOiB0cnVlIH0sXX0pO30pOzwvc2NyaXB0PjxkaXYgaWQ9J3MnPjwvZGl2PmQCBw8WAh4LXyFJdGVtQ291bnQCAhYEZg9kFgoCAQ8PFgIeC0NvbW1hbmROYW1lBSRmMzRmYWQ3Yi1kOWMzLTQwOTEtOTEzNS1hNGI0MWNmY2QzYzFkZAIDDw8WAh8CBSRmMzRmYWQ3Yi1kOWMzLTQwOTEtOTEzNS1hNGI0MWNmY2QzYzFkZAIEDxUBDOaIt+Wklua0u+WKqGQCBQ8PFgQfAgUkZjM0ZmFkN2ItZDljMy00MDkxLTkxMzUtYTRiNDFjZmNkM2MxHgdWaXNpYmxlaGRkAgcPDxYCHwIFJGYzNGZhZDdiLWQ5YzMtNDA5MS05MTM1LWE0YjQxY2ZjZDNjMWRkAgEPZBYKAgEPDxYCHwIFJDE2OTkxYWI2LWY4YmYtNDRmNC1iYTk1LWNjNjQzMjE0MTgwYWRkAgMPDxYCHwIFJDE2OTkxYWI2LWY4YmYtNDRmNC1iYTk1LWNjNjQzMjE0MTgwYWRkAgQPFQEM5a6k5YaF5rS75YqoZAIFDw8WAh8CBSQxNjk5MWFiNi1mOGJmLTQ0ZjQtYmE5NS1jYzY0MzIxNDE4MGFkZAIHDw8WBB8CBSQxNjk5MWFiNi1mOGJmLTQ0ZjQtYmE5NS1jYzY0MzIxNDE4MGEfA2hkZGRpDw73t0aHGo1gxbBJITi9925jvB1ftb3+v1WUQVQPmw==" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="F3B1ABA5" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAkJprNI0onq92beUTVHIICtozoJZpuXxkpOVJKRbHyuHpNcQtnKtb31hEtbT6bWJ9/B5Xb6JI5wXJgt5bdjaaZ48oPhqM50Rdu+nZ2ntWwBikYY0Wwi1SA+XKbsAqaJo5zEQiT+PcDV6LB0mE34PaA6r7OlMDQCCgv6U6qMDPsUjDkHTlJMoTaDgzk8MRuRsoCUXXHVQxf6tEbqii39f9DLRpPDoDwXRCxdRFLP81ElhA==" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "短信模板设置",
+                    Url: "<?php echo arU('SystemConfiguration/homelandSet'); ?>",
+                    Selected: true
+                }, {
+                    Text: "短信设置",
+                    Url: "<?php echo arU('SystemConfiguration/messageSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "呼叫中心设置",
+                    Url: "<?php echo arU('SystemConfiguration/callcenterSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "开放日类型设置",
+                    Url: "<?php echo arU('SystemConfiguration/openingtype'); ?>",
+                    Selected: false
+                }, {
+                    Text: "活动类型设置",
+                    Url: "<?php echo arU('SystemConfiguration/activitytype'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 102px;">活动类别名称：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="txtName" type="text" id="txtName" class="int" />
+                    <span id="msg" class="words">*</span>&nbsp;</td>
+                <td style="padding-left: 20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <table class="list" style="text-align:center;">
+            <thead>
+                <tr>
+                    <td style="width:10%">操作</td>
+                    <td>活动类别名称</td>
+                    <td>排序</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a id="rptColumn_linkEdit_0" href="javascript:__doPostBack(&#39;rptColumn$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                        <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptColumn_linkDel_0" href="javascript:__doPostBack(&#39;rptColumn$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                    </td>
+                    <td style="text-align:left;">
+                        户外活动
+                    </td>
+                    <td>
+                        <a id="rptColumn_lnkDown_0" href="javascript:__doPostBack(&#39;rptColumn$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a id="rptColumn_linkEdit_1" href="javascript:__doPostBack(&#39;rptColumn$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                        <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptColumn_linkDel_1" href="javascript:__doPostBack(&#39;rptColumn$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                    </td>
+                    <td style="text-align:left;">
+                        室内活动
+                    </td>
+                    <td>
+                        <a id="rptColumn_lnkUp_1" href="javascript:__doPostBack(&#39;rptColumn$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("txtName").value == '') {
+                document.getElementById("msg").innerHTML = '*不能为空！';
+                return false;
+            } else
+                return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

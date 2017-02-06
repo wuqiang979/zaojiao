@@ -1,0 +1,270 @@
+
+    <div class="top" style="margin:10px">
+        <input type="text" name="searchtext" >
+        <input type="button" value="搜索" onclick="return search();"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>园区名称</td>
+                        <td>园区简码</td>
+                        <td>公司名称</td>
+                        <td>所属公司</td>
+                        <td>负责人</td>
+                        <td>联系方式</td>
+                        <td>类型</td>
+                        <td>地址</td>
+                        <td>录入时间</td>
+                        <td>备注</td>
+                        <td>状态</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if($schools):foreach($schools as $school): ?>
+                    <tr>
+                        <td class="caozuo">
+                           <?php if (!$school['adminuser']): ?>
+                           <a href='javascript:assign(<?php echo json_encode($school); ?>)'>未分配</a>|
+                           <?php else: ?>
+                           <a href='javascript:assign(<?php echo json_encode($school); ?>)'>已分配</a>|
+                           <?php endif ?>
+                           <a href='javascript:modify(<?php echo json_encode($school); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $school['sid'] ?>')">删除</a>
+                        </td>
+                        <td><?php arEcho($school['name'],'未定义'); ?></td>
+                        <td><?php arEcho($school['scode'], '-'); ?></td>
+                        <td><?php arEcho($school['cpname'],' '); ?></td>
+                        <td><?php arEcho($school['company']['name'],' '); ?></td>
+                        <td><?php arEcho($school['director'],' '); ?></td>
+                        <td><?php arEcho($school['mobile'],' '); ?></td>
+                        <td><?php arEcho($school['type'], CompanySchoolModel::$TYPE_MAP); ?></td>
+                        <td><?php arEcho($school['address'],' '); ?></td>
+                        <td><?php echo date('Y-m-d H:i:s', $school['addtime']); ?></td>
+                        <td><?php arEcho($school['remarks'], '-'); ?></td>
+                        <td><?php arEcho($school['status'], CompanySchoolModel::$STATUS_MAP); ?></td>
+                        <td style="text-align:left;"></td>
+                    </tr>
+                    <?php endforeach;endif; ?>
+                </tbody>
+            </table>
+            <div class="page"><?php echo $page->show(); ?></div>
+        </div>
+
+<!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">
+                    园区名称：<input name="name" type="text"/>
+                    <input name="sid" type="hidden" value="" />
+                </td>
+
+                <td style="width: 228px;float:left">园区简码 ：
+
+                    <input name="scode" type="text" class="int" />
+                </td>
+                <td style="width: 228px;float:left">公司名称 ：
+                    <input name="cpname" type="text" />
+                </td>
+                <td style="width: 228px;float:left">所属公司 ：
+                <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'cid',
+            // 适配器数据 数组
+            // 'map' => AdModel::$TYPE_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array($companys, 'cid', 'name'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                 <td style="width: 228px;float:left">负责人:
+                    <input name="director" type="text" />
+                </td>
+                 <td style="width: 228px;float:left">联系方式:
+                    <input name="mobile" type="text" />
+                </td>
+
+                  <td style="width: 228px;float:left">地址:
+                    <input name="address" type="text" />
+                </td>
+
+                <td style="width: 228px;float:left">类型:
+                   <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'type',
+            // 适配器数据 数组
+            'map' => CompanySchoolModel::$TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+
+                 <td style="width: 228px;float:left">备注:
+                    <input name="remarks" type="text" />
+                </td>
+<?php if (arModule('Lib.Auth')->hasSysRights(CompanySchoolMemberModel::ROLE_PLATFORM_ADMIN)): ?>
+
+                <td style="width: 228px;float:left">状态:
+                                  <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'status',
+            // 适配器数据 数组
+            'map' => CompanySchoolModel::$STATUS_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+<?php endif ?>
+
+                <td style="width: 228px;float:left">
+                    <input type="submit" name="btnAdd" value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<!--分配管理员-->
+<div id="assignadmin_window" style="display:none;padding:10px">
+    用户名
+    <input type="text" name="adminuser">
+    <input type="hidden" name="adminsid">
+    <br>
+    密码
+    <input type="text" name="adminpwd">
+    <br>
+    真实姓名
+    <input type="text" name="realname">
+    <br>
+    联系电话
+    <input type="text" name="adminmobile">
+    <br>
+    <input type="button" name="save" onclick="saveadmin();" value="保存">
+</div>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='sid']").attr('value', '');
+        layer.open({
+            title:'添加园区',
+            type: 1,
+            area:'800px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(sid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('schoolDel') ?>', {sid:sid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // document.write(data.type);
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'800px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 搜索
+    function search()
+    {
+        var searchText = $("[name='searchtext']").val();
+        window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchText;
+    }
+
+    // 分配管理员
+    function assign(data)
+    {
+        $("[name='adminsid']").attr('value', data.sid);
+        $("[name='adminuser']").attr('value', '');
+
+        if (data.adminuser) {
+            $("[name='adminuser']").attr('value', data.adminuser.account_name);
+            $("[name='adminmobile']").attr('value', data.adminuser.mobile);
+            $("[name='realname']").attr('value', data.adminuser.realname);
+        }
+        layer.open({
+            title:'分配园长',
+            type: 1,
+            area:'500px',
+            content: $('#assignadmin_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 保存管理员信息
+    function saveadmin()
+    {
+        var sid = $("[name='adminsid']").val();
+        var adminuser = $("[name='adminuser']").val();
+        var adminpwd = $("[name='adminpwd']").val();
+        var realname = $("[name='realname']").val();
+        var mobile = $("[name='adminmobile']").val();
+        if (sid && adminuser && adminpwd) {
+            $.post('<?php echo arU('addschoolManager') ?>', {realname: realname, mobile: mobile, sid: sid, adminuser: adminuser, adminpwd: adminpwd}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('添加成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+            }, 'json');
+        } else {
+            layer.alert('参数不能为空');
+        }
+    }
+</script>

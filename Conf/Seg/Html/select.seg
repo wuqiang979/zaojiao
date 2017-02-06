@@ -1,0 +1,47 @@
+<?php
+/*
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'type',
+            // 适配器数据 数组
+            'map' => AdModel::$TYPE_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            'selected' => $ad['type'],
+            'extra' => 'class="testcheck"'
+         )
+      );
+*/
+?>
+<select name="<?php echo $name; ?>" <?php isset($extra) ? arEcho($extra, '') : ''; ?>>
+    <?php
+        if (isset($mapbundle)):
+            $map = array();
+            foreach ($mapbundle[0] as $bundle) :
+                $map[$bundle[$mapbundle[1]]] = $bundle[$mapbundle[2]];
+            endforeach;
+        endif;
+    ?>
+
+    <?php
+        foreach ($map as $k => $v) :
+    ?>
+
+    <option
+    <?php
+        if (isset($selected) && $selected == $k) :
+    ?>
+    selected = "selected"
+    <?php
+        endif;
+    ?>value="<?php echo $k; ?>"><?php echo $v; ?></option>
+
+    <?php
+        endforeach;
+    ?>
+</select>

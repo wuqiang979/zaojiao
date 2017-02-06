@@ -1,0 +1,92 @@
+<style>
+    .outer div{
+        margin: 10px;
+        padding: 10px;
+        border-bottom:1px solid #d1d1d1;
+    }
+</style>
+<div class="outer" style="margin:10px">
+    <form action="<?php echo arU(''); ?>" method="post">
+    <div>
+        <input type="hidden" name="mid" value="<?php echo arRequest('mid'); ?>"/>
+        <span>账户名:</span>
+        <span><?php arEcho($member['account_name']); ?></span>
+    </div>
+     <div>
+        <span>角色:</span>
+        <span><?php arEcho($member['rgid'], CompanySchoolMemberModel::$ROLE_MAP); ?></span>
+    </div>
+    <div>
+        <span>真实姓名:</span>
+        <span><input type="text" name="realname" value="<?php arEcho($member['realname']); ?>"></span>
+    </div>
+    <div>
+        <span>联系方式:</span>
+        <span><input type="text" name="mobile" value="<?php arEcho($member['mobile'], ''); ?>"></span>
+    </div>
+
+
+    <?php if (arModule('Lib.Auth')->isUserRole()): ?>
+        <div>
+            <span>所属学校:</span>
+            <span><?php arEcho($member['school']['name'], '-'); ?></span>
+        </div>
+        <div>
+            <span>部门:</span>
+            <span> <a href="javascript:loadurl('<?php echo arU('Member/departmentsAssign', array('mid' => $member['mid'])); ?>', '分配部门')">
+                <?php if (isset($member['profile']['departs'])): ?>
+
+                    <?php foreach ($member['profile']['departs'] as $departs): ?>
+                        <?php echo $departs['name'] ?>|
+                    <?php endforeach ?>
+                <?php else :?>
+                    未分配
+                <?php endif ?>
+            </a>
+        </span>
+    </div>
+    <div>
+        <span>岗位 :</span>
+        <span> <a href="javascript:loadurl('<?php echo arU('Member/postsAssign', array('mid' => $member['mid'])); ?>', '分配岗位')">
+                            <?php if (isset($member['profile']['posts'])): ?>
+
+                            <?php foreach ($member['profile']['posts'] as $posts): ?>
+                                <?php echo $posts['name'] ?>|
+                            <?php endforeach ?>
+                            <?php else :?>
+                                未分配
+                            <?php endif ?>
+                            </a>
+                        </td></span>
+    </div>
+
+<?php endif ?>
+
+<div>
+    <span>最后登录时间:</span>
+    <span><?php arEcho(date('Y-m-d H:i:s', $member['last_logintime']), '-'); ?></span>
+</div>
+<div>
+    <span>登录次数:</span>
+    <span><?php arEcho($member['logintimes'], '0'); ?></span>
+</div>
+<div>
+    <span>登录地址:</span>
+    <span><?php arEcho($member['loginip'], '-'); ?></span>
+</div>
+
+<div>
+    <span>在线时长:</span>
+    <span><?php arEcho(sprintf('%0.2f', $member['onlinetime'] / 60), '0.00'); ?>分钟</span>
+</div>
+
+<div>
+    <span>状态:</span>
+    <span><?php arEcho($member['status'], CompanySchoolMemberModel::$STATUS_MAP); ?></span>
+</div>
+
+<input type="submit" value="保存资料">
+</form>
+
+</div>
+

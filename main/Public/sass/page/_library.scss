@@ -1,0 +1,37 @@
+.library-top{
+    height: 40px;
+    line-height: 40px;
+    .library-funl{
+        padding-left: 25px;
+        #file{
+            margin-right: 20px;
+        }
+    }
+    .library-funr{
+        padding-right: 20px;
+    }
+}
+.library-filter{
+    height: 30px;
+    line-height: 30px;
+    padding-left: 20px;
+    border-top: 1px dotted #DAD8D4;
+    a{
+        color: $fontColor;
+        display: inline-block;
+        padding: 0 10px;
+        position: relative;
+        &.aAfter:after{
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: 10px;
+            height: 10px;
+            width: 0;
+            border-right: 1px solid #3f3f3f;
+        }
+        &.active{
+            color: #75A801;
+        }
+    }
+}

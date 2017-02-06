@@ -1,0 +1,297 @@
+ a {
+     text-decoration: none!important;
+ }
+ 
+ .btn.active.focus,
+ .btn.active:focus,
+ .btn.focus,
+ .btn:active.focus,
+ .btn:active:focus,
+ .btn:focus {
+     outline: none;
+ }
+ 
+ .collapsing[aria-expanded="true"].mzm-collapsing-fixed {
+     border-radius: 4px;
+     box-shadow: 0 0 5px 2px #ccc;
+ }
+ 
+ #topNavWrap .nav>li {
+     text-align: center;
+     padding: 0;
+ }
+ 
+ #topNavWrap li+li {
+     margin-left: 0;
+ }
+ 
+ #topNavWrap a {
+     color: #fff;
+     font-size: 16px;
+ }
+ 
+ #topNavWrap .dropdown-menu a {
+     color: #337ab7;
+ }
+ 
+ #topNavWrap a:focus,
+ #topNavWrap a:hover {
+     background-color: #337AB7;
+ }
+ 
+ .nav .open>a,
+ .nav .open>a:focus,
+ .nav .open>a:hover {
+     background-color: #4294DA;
+ }
+ 
+ #loginMask {
+ 	/*padding: 20px;*/
+ 	/*padding-top: 100px;*/
+ 	position: fixed;
+ 	width: 100%;
+ 	height: 100%;
+ 	top: 0;
+ 	left: 0;
+ 	background-color: #fff;
+ 	overflow: auto;
+ }
+
+ #loginWrap {
+    /*padding:20px;*/
+    position: absolute;
+    width:90%;
+    left:50%;
+    top:15%;
+    margin-left:-45%;
+
+ }
+ @media only screen and (max-width: 320px){
+     #loginMask input:not([type=button]){
+        font-size: 12px;
+     }
+     #loginMask .has-feedback .form-control {
+         padding-right: 35px;
+     }
+ }
+ /*
+ #login.in~#signupBtn{
+ 	display: none;
+ }
+ #signup.in~#loginBtn{
+ 	display: none;
+ }*/
+ 
+ .mzm-panel-default-fixed {
+     border: 0;
+ }
+ 
+ .mzm-panel-heading-fixed {
+     padding: 5px;
+ }
+ .panel-group{
+      padding:5px;  
+ }
+ #loginMask .panel-group {
+     margin-bottom: 0;
+ }
+ 
+ .panel-title {
+     position: relative;
+ }
+ 
+ .panel-title>a {
+     display: block;
+ }
+ 
+ .mzm-panel-body-fixed {
+     border-width: 1px 0 0;
+ }
+ 
+ .mzm-table-responsive-fixed {
+     margin-bottom: 0;
+     border-width: 0;
+ }
+ 
+ .table-responsive>.table-bordered {
+     border: 1px solid #ddd;
+ }
+ 
+ .mzm-col-width {
+     width: 24px;
+ }
+ 
+ .mzm-man-wrap {
+     margin: 0 5px;
+ }
+ 
+ .mzm-man-icon {
+     margin-left: 2px;
+     font-size: 80%;
+ }
+ /**/
+ 
+ .mzm-caret-fixed {
+     position: absolute;
+     /*margin-top:4px;*/
+     right: 4px;
+     top: 4px;
+ }
+ 
+ .panel-title>[aria-expanded="true"]+.mzm-caret-fixed {
+     border-top: 0;
+     border-bottom: 4px dashed;
+ }
+ 
+ .mzm-progress-fixed {
+     min-width: 80px;
+     margin: 0;
+     display: inline-block;
+     background-color: #ccc;
+ }
+ 
+ .mzm-progress-value {
+     display: inline-block;
+     vertical-align: top;
+ }
+ 
+ .mzm-panel-body-wrap {
+     padding: 0;
+ }
+ 
+ .mzm-panel-body-wrap * {
+     font-size: 12px;
+ }
+ 
+ .mzm-panel-body-wrap .panel-group {
+     padding: 0;
+     margin-bottom: 0;
+ }
+ 
+ .mzm-panel-body-wrap .panel {
+     border: 0;
+ }
+ 
+ .mzm-panel-body-wrap .panel-heading {
+     background-color: #fafafa;
+ }
+ 
+ #uploadFileBtn {
+     width: 100%;
+     height: 100%;
+     position: absolute;
+     left: 0;
+     top: 0;
+     opacity: 0;
+     filter: alpha(opacity=0);
+ }
+ #fileBtnWrap{
+ 	position: relative;
+ 	overflow: hidden;
+ }
+
+/* .collapsing {
+    -webkit-transition-duration: .5s;
+    -o-transition-duration: .5s;
+    transition-duration: .5s;
+}*/
+
+ /*表单验证类*/
+ .mzm-input-error{
+	border-color:#f00;
+ }
+ .form-control.mzm-input-error:focus {
+    border-color: #f00;
+    outline: 1px solid #f00;
+}
+.form-control-feedback{
+	z-index:3;
+    pointer-events: auto;
+}
+ /*表单验证类 END*/
+ .has-error .input-group-btn .btn {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #a94442;
+}
+
+/*部门管理*/
+#dmAddedShowTable{
+    display: none;
+}
+/*部门管理 END*/
+
+
+/*项目详情页面*/
+#pdWrap{
+    padding-top:15px;
+}
+.thumbnail{
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.thumbnail:hover{
+    background-color: #f5f5f5;
+}
+.thumbnail .caption{
+    padding:5px;
+}
+.thumbnail .caption h4{
+    font-size: 16px;
+}
+.thumbnail .caption p{
+    font-size: 12px;
+    color:#aaa;
+    margin:0;
+}
+
+th{
+    vertical-align: middle!important;
+}
+.table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+    border-bottom-width: 0px;
+}
+
+/*.glyphicon:not(.form-control-feedback){
+    padding-top: 2px;
+}
+a.glyphicon:focus{
+    transition: all 2s;
+    transform: rotate(360deg);
+}
+*/
+
+#pd_itemWrap input{
+    border:0;
+    outline:0;
+}
+/*项目详情页面 END*/
+
+/*修改模态框样式*/
+.modal-dialog {
+    position: absolute;
+    width: 90%;
+    left: 5%;
+    top: 30%;
+    margin:0;
+}
+/*.modal.fade .modal-dialog {
+    -webkit-transition: -webkit-transform 0.3s ease-out;
+    -o-transition: -o-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    -webkit-transform: translate(0,-25%);
+    -ms-transform: translate(0,-25%);
+    -o-transform: translate(0,-25%);
+    transform: translate(0,-25%);
+}
+.modal.in .modal-dialog {
+    -webkit-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    -o-transform: translate(0,0);
+    transform: translate(0,0);
+}*/
+.fade {
+    -webkit-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
+    transition: opacity 0.3ms linear 0ms;
+}
+/*修改模态框样式 END*/

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=72d68917-ae45-497e-8168-2ea8b1237839', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    $(function() {
+
+        $(".MaterialDelete").live("click", function() {
+            if (confirm("确认要删除吗")) {
+                $.ajaxMethod("Food_MaterialDelete", {
+                        "MaterialElementGuid": $(this).attr("MaterialElementGuid")
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            }
+        });
+
+        $("#ddlCategoryName").live("change", function() {
+            window.RefreshGrid();
+        });
+        $("#ddlFoodPercentage").live("change", function() {
+            window.RefreshGrid();
+        });
+    });
+
+    function show(MaterialElementGuid) {
+        window.location.href = "../Food/C_Food_MaterialEdit.aspx?sc=btn&navId=72d68917-ae45-497e-8168-2ea8b1237839&MaterialElementGuid=" + MaterialElementGuid;
+    }
+
+    function add() {
+        show('');
+        return false;
+    }
+
+    function Del() {
+        var count = 0;
+        jsonObjList = [];
+        $("input[name='selectItem']:checkbox:checked").each(function() {
+            var MaterialElementGuid = $(this).val();
+            var MaterialName = $(this).parent().parent().attr("MaterialName");
+            jsonObjList.push({
+                "MaterialElementGuid": MaterialElementGuid,
+                "MaterialName": MaterialName
+            });
+            count += 1;
+        });
+        if (count == 0) {
+            alert("请选择一条记录");
+            return false;
+        } else {
+            if (confirm("确定要删除吗")) {
+
+                $.ajaxMethod("Food_MaterialDelete_More", {
+                        "MaterialElementGuid": JSON.stringify(jsonObjList)
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            } else {
+                alert("记录状态为 " + getStatusName(dostatus) + "，无法删除！");
+            }
+        }
+        return false;
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="C_Food_MaterialList.aspx?navId=72d68917-ae45-497e-8168-2ea8b1237839" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTIyMjAyMDQ4NQ9kFgICAw9kFgYCAQ8QZBAVFAnor7fpgInmi6kG6LC357G7Buibi+exuwbkubPnsbsJ6JSs6I+c57G7CeWHieiPnOexuwnlubLosYbnsbsJ5rC05p6c57G7CeayueiEguexuwnnlZzogonnsbsJ56a96IKJ57G7CeiPjOiXu+exuwzolq/nsbvmt4DnsokM5Z2a5p6c56eN5a2QDOmAn+mjn+mjn+WTgQnova/ppa7mlpkJ5rK56ISC57G7Cea1t+mynOexuwzosIPlkbPlk4HnsbsM6YWS57K+6aWu5paZFRQkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJDM3YmU2NzE1LWYyZTAtNGE2ZC04OWU4LWIxMzYwMTZmYWQ0YyRjY2M2NjE2OC1iOTYyLTQyM2EtOGEyNi0wMTQ0ODZmZWU5MTQkOGI0NTczNzYtY2MyYy00MDBjLTliZDItMzdjYmY2NDM0M2I0JDY5ZjY1M2YzLTFmZDAtNGFhYS05NzI5LTEzZGI1ZjU3ZGJhOCRhZDEyOGQyNy0xYzBjLTRkNGQtODBiNy00MzkyMDdlYTAwNDEkMmRjNDEzMzEtYzcxYi00ZThkLWEzMmItMjdlZDk1YzAwYmJmJDE2NzMwOTA5LTRhNGQtNDU4Yy1hZjEyLTQwZWI5NzI4NTA5MCQ4MDZlNDgwMi01NTMyLTRlYWMtYTNlMi0wNGI2ZTk3ZDU5YjckMjI0YzI0ZWItNzZhYi00MGJjLTlmZmEtMjQ5ZjA4NjM5NmQwJDQxZTM2MGFjLWY4YTYtNGU2My05ZGI3LTEyYWNiODQ0NjI2NSQ0NWNjZTBlMi04ODYyLTQ5ZGUtYTQ3MS1iMGM1MDEzNWY0NDYkYjNlY2Y4ZjMtZTRhYS00NzhmLWJkZTAtMDYwODI0MDI3Zjc1JGRhNWZkZTQ0LWZlYWUtNGYwYi05ZDFhLWNmNmU5NzQ5NTA5NCRiNWMxMGJmZS03OTM4LTQzMTctODIwZi0wNzcyNzE2ZDk4MzUkZGM1YWEyODgtOGM4Yi00NDE4LTkwZjAtNGE0ODU2NDk4MjcwJDgyYWMyZGUxLTJjMGMtNGU4OC04M2M2LTcwZWYwMGNjZTkyZiQ1MDc4OGIzOC1lODcxLTRiYjUtODAyMC01NzlmYmU1OGMzMzYkZmFhYjI2ZDgtNjcwNi00ZTVlLTk0ODQtNTZiMDdjMDJhZmRmJDUzYzhmMzg4LWU3NTMtNDNiNS1hZDNhLWQxYjEwYWYxYTI1MhQrAxRnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2RkAgMPDxYCHgdWaXNpYmxlZ2RkAgQPDxYCHwBoZGRkTUOBP0BqITn5zRZKktevAxbx7XCBugUUtPS+wHbF4vo=" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="927BAAF0" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABpe9bsTRzvzCWGcVN1wTu55wzORieBSB7nG9RjWdHwGr1864M5jlfMu34RiiRjKiKcOTeBn4oR5rcCFzl5TeFB3g27PCx+oIF0yDDmAk6srSJPeLOHwS94J0ZlyiolXrZLkbnNa04tn3RfK84Qzsd0Afxi91BrW/fG9ps3CRgAXU11dZavgfKKm1rts1ts3jsOhmyo0vZy+JgpeJO1xlhanlnY+EOkjV3AiNSRHcqGC+xtaIKgqR/XRxFMggzD3lzO+ojr2Fy/ybME0vddeyndmsBh7hldZK/GWEQoL5ZxstPHEbB7DxRAIB0PS5E9MkEd/ag4ofpW9Z8ziQviKUlv/yo5WsoiQpJ2AvVpFXsPdl/3iYa9oARVI791Sf61KpldBh85rSVA4VAWXJiE4hgppTFPZ1470bvC5Y/FgDaUbY7Qfx4WGE22j7LK7gsSV9770nAMg6vTexb6OFV/GJ1RFR8hyq5r6PKnzSUCClxGmLLyjNzPeY49/eDvdaCblBUumYbBHvS6Ptg3hD+X2J3QZk1xC2cq1vfWES1tPptYn3zuTdk91chmaIx/Ay9ATUt09rUFHTbUiEY7+NMvpm2Kg" />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">食材名称：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbMaterialName" type="text" id="tbMaterialName" class="int" />
+                </td>
+                <td class="textAlignRight" style="width: 78px;">食材类别：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlCategoryName" id="ddlCategoryName" style="width: 142px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="37be6715-f2e0-4a6d-89e8-b136016fad4c">谷类</option>
+                        <option value="ccc66168-b962-423a-8a26-014486fee914">蛋类</option>
+                        <option value="8b457376-cc2c-400c-9bd2-37cbf64343b4">乳类</option>
+                        <option value="69f653f3-1fd0-4aaa-9729-13db5f57dba8">蔬菜类</option>
+                        <option value="ad128d27-1c0c-4d4d-80b7-439207ea0041">凉菜类</option>
+                        <option value="2dc41331-c71b-4e8d-a32b-27ed95c00bbf">干豆类</option>
+                        <option value="16730909-4a4d-458c-af12-40eb97285090">水果类</option>
+                        <option value="806e4802-5532-4eac-a3e2-04b6e97d59b7">油脂类</option>
+                        <option value="224c24eb-76ab-40bc-9ffa-249f086396d0">畜肉类</option>
+                        <option value="41e360ac-f8a6-4e63-9db7-12acb8446265">禽肉类</option>
+                        <option value="45cce0e2-8862-49de-a471-b0c50135f446">菌藻类</option>
+                        <option value="b3ecf8f3-e4aa-478f-bde0-060824027f75">薯类淀粉</option>
+                        <option value="da5fde44-feae-4f0b-9d1a-cf6e97495094">坚果种子</option>
+                        <option value="b5c10bfe-7938-4317-820f-0772716d9835">速食食品</option>
+                        <option value="dc5aa288-8c8b-4418-90f0-4a4856498270">软饮料</option>
+                        <option value="82ac2de1-2c0c-4e88-83c6-70ef00cce92f">油脂类</option>
+                        <option value="50788b38-e871-4bb5-8020-579fbe58c336">海鲜类</option>
+                        <option value="faab26d8-6706-4e5e-9484-56b07c02afdf">调味品类</option>
+                        <option value="53c8f388-e753-43b5-ad3a-d1b10af1a252">酒精饮料</option>
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">食用类别：</td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlFoodPercentage" id="ddlFoodPercentage" style="width: 142px;">
+                        <option value="-1">全部</option>
+                        <option value="0">生食</option>
+                        <option value="1">熟食</option>
+                    </select>
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="button" class="button" id="btnSearch" value="搜 索" />&nbsp;
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" /> &nbsp;
+                </td>
+            </tr>
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"","Name":"MaterialElementGuid","Width":35,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":true,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":"MaterialName","IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"MaterialAct","Display":"操作","Name":"MaterialElementGuid,72d68917-ae45-497e-8168-2ea8b1237839","Width":90,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"食材名称","Name":"MaterialName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"IsCityFoodAct","Display":"市品/非市品","Name":"IsCityFood","Width":90,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"食材类别","Name":"CategoryName","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"食用类别","Name":"MaterialType","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"食部","Name":"FoodPercentage","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"能量","Name":"Energy","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"蛋白质","Name":"Protein","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"脂肪","Name":"Fat","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"碳水化合物","Name":"Chemistry","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"钙","Name":"Calcium","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"铁","Name":"Iron","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"锌","Name":"Zinc","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"硒","Name":"Selenium","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"钠","Name":"Sodium","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"磷","Name":"Phosphorus","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"VitA","Name":"VitaminA","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"硫胺素","Name":"Thiamine","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"核黄素","Name":"Riboflavin","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"抗坏血素","Name":"AscorbicAcid","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"尼克酸","Name":"Niacin","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"膳食纤维","Name":"DietaryFiber","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"胆固醇","Name":"Cholesterol","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"胡萝卜素","Name":"Carotene","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"VitC","Name":"VitaminC","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"VitE","Name":"VitaminE","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"钾","Name":"Potassium","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"视黄醇当量","Name":"RetinolEquivalent","Width":50,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]' />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"72d68917-ae45-497e-8168-2ea8b1237839"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Food/C_Food_MaterialList.aspx?navId=72d68917-ae45-497e-8168-2ea8b1237839' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='Food_MateriaList' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='Food_MateriaListFood_MateriaList' />
+        <script type='text/javascript'>
+        var etmFormId = 'form1';
+
+        function fixIE9() {
+            if ($.browser.msie && $.browser.version == 9) {
+                $('#form1 select').each(function() {
+                    var name = $(this).attr('name');
+                    if (name != undefined && name.length > 0) {
+                        var value = $(this).val();
+                        if (value == null) {
+                            value = $(this).find('option:first').attr('value');
+                            $(this).val(value);
+                        }
+                    }
+                });
+            }
+        }
+
+        function RefreshGrid() {
+            $('#Test').flexOptions().flexReload();
+        };
+
+        function addFormData() {
+            fixIE9();
+            var dt = $('#form1').serializeArray();
+            $('#Test').flexOptions({
+                params: dt
+            });
+            return true;
+        }
+        $(function() {
+            $('#btnSearch').click(function() {
+                $('#Test').flexOptions({
+                    newp: 1
+                }).flexReload();
+                return false;
+            });
+        });
+        $('#Test').flexigrid({
+            url: 'http://vip.yj.etmcn.com/Ajax/Food_MateriaList',
+            sortname: 'MaterialName',
+            sortorder: 'asc',
+            usepager: true,
+            useRp: true,
+            rpOptions: [20, 30, 50, 100, 200],
+            rp: 30,
+            colModel: [{
+                display: '',
+                name: 'MaterialElementGuid',
+                etmname: 'MaterialElementGuid',
+                width: 35,
+                sortable: false,
+                align: 'Center',
+                checkbox: true,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '操作',
+                name: 'MaterialElementGuid,72d68917-ae45-497e-8168-2ea8b1237839',
+                etmname: 'MaterialAct',
+                width: 90,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '食材名称',
+                name: 'MaterialName',
+                etmname: 'MaterialName',
+                width: 120,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '市品/非市品',
+                name: 'IsCityFood',
+                etmname: 'IsCityFoodAct',
+                width: 90,
+                sortable: false,
+                align: 'center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '食材类别',
+                name: 'CategoryName',
+                etmname: 'CategoryName',
+                width: 100,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '食用类别',
+                name: 'MaterialType',
+                etmname: 'MaterialType',
+                width: 100,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '食部',
+                name: 'FoodPercentage',
+                etmname: 'FoodPercentage',
+                width: 50,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '能量',
+                name: 'Energy',
+                etmname: 'Energy',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '蛋白质',
+                name: 'Protein',
+                etmname: 'Protein',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '脂肪',
+                name: 'Fat',
+                etmname: 'Fat',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '碳水化合物',
+                name: 'Chemistry',
+                etmname: 'Chemistry',
+                width: 80,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '钙',
+                name: 'Calcium',
+                etmname: 'Calcium',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '铁',
+                name: 'Iron',
+                etmname: 'Iron',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '锌',
+                name: 'Zinc',
+                etmname: 'Zinc',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '硒',
+                name: 'Selenium',
+                etmname: 'Selenium',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '钠',
+                name: 'Sodium',
+                etmname: 'Sodium',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '磷',
+                name: 'Phosphorus',
+                etmname: 'Phosphorus',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: 'VitA',
+                name: 'VitaminA',
+                etmname: 'VitaminA',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '硫胺素',
+                name: 'Thiamine',
+                etmname: 'Thiamine',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '核黄素',
+                name: 'Riboflavin',
+                etmname: 'Riboflavin',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '抗坏血素',
+                name: 'AscorbicAcid',
+                etmname: 'AscorbicAcid',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '尼克酸',
+                name: 'Niacin',
+                etmname: 'Niacin',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '膳食纤维',
+                name: 'DietaryFiber',
+                etmname: 'DietaryFiber',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '胆固醇',
+                name: 'Cholesterol',
+                etmname: 'Cholesterol',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '胡萝卜素',
+                name: 'Carotene',
+                etmname: 'Carotene',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: 'VitC',
+                name: 'VitaminC',
+                etmname: 'VitaminC',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: 'VitE',
+                name: 'VitaminE',
+                etmname: 'VitaminE',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '钾',
+                name: 'Potassium',
+                etmname: 'Potassium',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '视黄醇当量',
+                name: 'RetinolEquivalent',
+                etmname: 'RetinolEquivalent',
+                width: 50,
+                sortable: false,
+                align: 'right',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }],
+            width: $(window).width(),
+            height: $(window).height() - 185 + 60,
+            onSubmit: addFormData
+        });
+        </script>
+    </form>
+</body>
+
+</html>

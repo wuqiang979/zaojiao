@@ -1,0 +1,42 @@
+body, html {
+    height: 100%;
+    width: 100%;
+}
+body {
+    font-family: 'Microsoft Yahei',"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #3f3f3f;
+    background-color: #fff;
+    -webkit-text-size-adjust: none;
+}
+body, dd, dl, dt, form, h1, h2, h3, h4, input, li, ol, p, ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    vertical-align: middle;
+    font-weight: 400
+}
+* {
+    box-sizing: border-box;
+}
+a, body, button, div, img, li, nav {
+    -webkit-tap-highlight-color: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    text-decoration: none;
+}
+img {
+    vertical-align: middle;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+input{
+    line-height: normal;
+}

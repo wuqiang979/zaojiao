@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="Account.aspx?isLeft=3&amp;navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjAxMDYyMjk4MA9kFgICAw9kFgQCAQ8WAh4EVGV4dAX4BzxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5pS25YWl56eR55uuIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0NoYXJnZUl0ZW0uYXNweD9pc0xlZnQ9MSZmbGFnPTEmbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5pSv5Ye656eR55uuIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0NoYXJnZUl0ZW0uYXNweD9pc0xlZnQ9MiZmbGFnPTImbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6LSi5Yqh6LSm5Y+3IiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0FjY291bnQuYXNweD9pc0xlZnQ9MyZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogdHJ1ZSB9LHsgVGV4dDogIuaUtui0ueenkeebriIsIFVybDogIi4uLy4uL01vZHVsZXMvRmluYW5jZS9UdWl0aW9uSXRlbS5hc3B4P2lzTGVmdD00Jm5hdklkPTI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYSIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuWuoeaguOiuvue9riIsIFVybDogIi4uLy4uL01vZHVsZXMvRmluYW5jZS9UdWl0aW9uSW5DaGVja1NldC5hc3B4P2lzTGVmdD01Jm5hdklkPTI0ZjQ3ZmYxLTVhNmMtNGZkNC04ZDg2LTgyMzQwOTVhNjdlYSIsIFNlbGVjdGVkOiBmYWxzZSB9LHsgVGV4dDogIuW3pei1hOaehOaIkCIsIFVybDogIi4uLy4uL01vZHVsZXMvU2FsYXJ5L1NhbGFyeUl0ZW0uYXNweD9pc0xlZnQ9NiZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAILD2QWAgIBDxYCHgtfIUl0ZW1Db3VudAICFgRmD2QWCgIBDw8WAh4LQ29tbWFuZE5hbWUFJDQ5YWFiNTU4LWIzMTAtNDIxOS05NmVkLWFiMTk5MTUxY2UxNWRkAgMPDxYCHwIFJDQ5YWFiNTU4LWIzMTAtNDIxOS05NmVkLWFiMTk5MTUxY2UxNWRkAgQPFQIUNjIyMjAyMjAgMTUwMDEzNzAwMTIG5bu66KGMZAIFDw8WBB8CBSQ0OWFhYjU1OC1iMzEwLTQyMTktOTZlZC1hYjE5OTE1MWNlMTUeB1Zpc2libGVoZGQCBw8PFgIfAgUkNDlhYWI1NTgtYjMxMC00MjE5LTk2ZWQtYWIxOTkxNTFjZTE1ZGQCAQ9kFgoCAQ8PFgIfAgUkZmUzMGVhMzItODM0MC00YzA2LWJkYWMtZWFlYTI4NTY0MjRiZGQCAw8PFgIfAgUkZmUzMGVhMzItODM0MC00YzA2LWJkYWMtZWFlYTI4NTY0MjRiZGQCBA8VAgznjrDph5HmlK/ku5gM546w6YeR5pSv5LuYZAIFDw8WAh8CBSRmZTMwZWEzMi04MzQwLTRjMDYtYmRhYy1lYWVhMjg1NjQyNGJkZAIHDw8WBB8CBSRmZTMwZWEzMi04MzQwLTRjMDYtYmRhYy1lYWVhMjg1NjQyNGIfA2hkZGSOayA8piaRiFotPQlW7BNnRjU/V1grL7E8IgGhFeuBuw==" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="11DD34A4" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAArbjB7HKjOmVYGEtrEpHdBOxD6zm70x7LyfgDkS+JCabWqVGqHak9JP6VLIq8C0fySTXELZyrW99YRLW0+m1iffIWjc8NWBbj0lnAUR7wZ5Lcm6bagVCS/xU+wbjUgWiU9LDZTzTeXf6Od4HXgRK2rB4/Ids6Qq+6O94qFP58kuk+hfTymb8n85xkO+buraw6km1Lyz0gwBYJMalyeaqZp/0cMvZVJmw4NffTAfv0B1eePOyHsM0JxO1QRpI2KhC0w=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+               item: [{
+                    Text: "收入科目",
+                    Url: "<?php echo arU('SystemConfiguration/IncomeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "支出科目",
+                    Url: "<?php echo arU('SystemConfiguration/CostAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "财务账号",
+                    Url: "<?php echo arU('SystemConfiguration/financeAccount'); ?>",
+                    Selected: true
+                }, {
+                    Text: "收费科目",
+                    Url: "<?php echo arU('SystemConfiguration/chargeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "审核设置",
+                    Url: "<?php echo arU('SystemConfiguration/checkSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "工资构成",
+                    Url: "<?php echo arU('SystemConfiguration/SalaryConstitute'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:78px;">
+                    财务帐号：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbAccountNo" type="text" id="tbAccountNo" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width:54px;">
+                    银行：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbBankInfo" type="text" id="tbBankInfo" class="int" />
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align:center;">
+                <thead>
+                    <tr>
+                        <td style="width:100px">操作</td>
+                        <td>财务帐号</td>
+                        <td>银行</td>
+                        <td>排序</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptAccount_linkEdit_0" href="javascript:__doPostBack(&#39;rptAccount$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptAccount_linkDel_0" href="javascript:__doPostBack(&#39;rptAccount$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>62220220 15001370012</td>
+                        <td>建行</td>
+                        <td>
+                            <a id="rptAccount_lnkDown_0" href="javascript:__doPostBack(&#39;rptAccount$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptAccount_linkEdit_1" href="javascript:__doPostBack(&#39;rptAccount$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptAccount_linkDel_1" href="javascript:__doPostBack(&#39;rptAccount$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>现金支付</td>
+                        <td>现金支付</td>
+                        <td>
+                            <a id="rptAccount_lnkUp_1" href="javascript:__doPostBack(&#39;rptAccount$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("tbAccountNo").value == '') {
+                alert("财务帐号不能为空！");
+                return false;
+            } else
+                return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

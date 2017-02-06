@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=af88127d-869b-4789-b782-2ac10d4e28f7', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <style type="text/css">
+    ul {
+        list-style: none;
+        padding-left: 18px;
+    }
+
+    ul li {
+        float: left;
+        padding: 1px 2px 1px 5px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+    }
+    </style>
+    <style type="text/css">
+    .spanMark {
+        border: solid 1px #ccc;
+        background-color: #fff;
+        padding: 0 3px 0 3px;
+        margin: 1px;
+        display: inline-block;
+        height: 20px;
+        line-height: 20px;
+    }
+    </style>
+    <script type="text/javascript">
+    $("#txtBgColor").live("change", function() {
+        $("#txtMark").css("background-color", $(this).val());
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="PhysicalExaminationMark.aspx?isLeft=1&amp;navId=af88127d-869b-4789-b782-2ac10d4e28f7" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTEzOTE2OTY1OA9kFgICAw9kFgQCAQ8WAh4EVGV4dAW8AjxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5L2T5qOA5qCH562+6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9IZWFsdGgvUGh5c2ljYWxFeGFtaW5hdGlvbk1hcmsuYXNweD9pc0xlZnQ9MSZuYXZJZD1hZjg4MTI3ZC04NjliLTQ3ODktYjc4Mi0yYWMxMGQ0ZTI4ZjciLCBTZWxlY3RlZDogdHJ1ZSB9LF19KTt9KTs8L3NjcmlwdD48ZGl2IGlkPSdzJz48L2Rpdj5kAgkPZBYCAgEPFgIeC18hSXRlbUNvdW50AgIWBGYPZBYEZg8VAQcjRkZGRkZGZAIBDw8WAh4LQ29tbWFuZE5hbWUFJGVjN2JiYjdhLWQyNDgtNDVkYi1iMWJiLWE2ZjYwZmVlNTk2NWQWBGYPFQEG5ouU54mZZAIBDw8WAh8CBSRlYzdiYmI3YS1kMjQ4LTQ1ZGItYjFiYi1hNmY2MGZlZTU5NjVkZAIBD2QWBGYPFQEHI0ZGRkZGRmQCAQ8PFgIfAgUkYjRjZjhhMGUtZDdlNy00MjFmLWJlMmQtOGI5MDBlNWU5ZmExZBYEZg8VAQzlj7PkvqfpvLvngo5kAgEPDxYCHwIFJGI0Y2Y4YTBlLWQ3ZTctNDIxZi1iZTJkLThiOTAwZTVlOWZhMWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYCBRlycHRUaW1lTm9kZSRjdGwwMCRsaW5rRGVsBRlycHRUaW1lTm9kZSRjdGwwMSRsaW5rRGVsn2QdS+8Xyl9gFNVWv63tdslAyKHnizKdMlWEI+PHR10=" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C74F6ABA" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAdLcjPr8qBMgElErmvaWNoXXxvIQsn7m98Cb4NIZDHgppNcQtnKtb31hEtbT6bWJ9+t1YcjKVnDidVrwpTu75Jqtn6galdbJ+GZ478SuVrakeqhGv+vO9QgWcCs5VJFo3xXCPkmzwcQv/N9M8sEZlniBj8OWWwzecZcwayZh0rcbffs27rO/gQ5yjjfMDLxjio=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "体检标签设置",
+                    Url: "../../Modules/Health/PhysicalExaminationMark.aspx?isLeft=1&navId=af88127d-869b-4789-b782-2ac10d4e28f7",
+                    Selected: true
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">标签名称：</td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="txtMark" type="text" id="txtMark" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div class="borderTop" style="margin-top: 5px;"></div>
+        <div id="P_Data">
+            <ul>
+                <li style="font-size: 13px; background-color: #FFFFFF;">
+                    <a id="rptTimeNode_lkbModify_0" title="点击修改" href="javascript:__doPostBack(&#39;rptTimeNode$ctl00$lkbModify&#39;,&#39;&#39;)">拔牙<input type="image" name="rptTimeNode$ctl00$linkDel" id="rptTimeNode_linkDel_0" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" /></a>
+                </li>
+                <li style="font-size: 13px; background-color: #FFFFFF;">
+                    <a id="rptTimeNode_lkbModify_1" title="点击修改" href="javascript:__doPostBack(&#39;rptTimeNode$ctl01$lkbModify&#39;,&#39;&#39;)">右侧鼻炎<input type="image" name="rptTimeNode$ctl01$linkDel" id="rptTimeNode_linkDel_1" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" /></a>
+                </li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if ($.trim($("#txtMark").val()) == '') {
+                alert("幼儿标签名称不能为空！");
+                return false;
+            }
+            return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

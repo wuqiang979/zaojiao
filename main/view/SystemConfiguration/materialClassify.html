@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=589b6071-b59b-4f6d-a61c-5a3579354f44', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="C_ProductCategory.aspx?isLeft=1&amp;navId=589b6071-b59b-4f6d-a61c-5a3579354f44" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTUxNzQ4ODk0MQ9kFgICAw9kFgYCAQ8WAh4EVGV4dAXKAzxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi54mp5paZ5YiG57G7IiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9IZWFkUXVhcnRlcnMvQ19Qcm9kdWN0Q2F0ZWdvcnkuYXNweD9pc0xlZnQ9MSZuYXZJZD01ODliNjA3MS1iNTliLTRmNmQtYTYxYy01YTM1NzkzNTRmNDQiLCBTZWxlY3RlZDogdHJ1ZSB9LHsgVGV4dDogIueJqeaWmeWNleS9jSIsIFVybDogIi4uLy4uL01vZHVsZXMvSGVhZFF1YXJ0ZXJzL0NfUHJvZHVjdFVuaXQuYXNweD9pc0xlZnQ9MiZuYXZJZD01ODliNjA3MS1iNTliLTRmNmQtYTYxYy01YTM1NzkzNTRmNDQiLCBTZWxlY3RlZDogZmFsc2UgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAIHDxBkEBUECeivt+mAieaLqQp84oCU5Zu+5LmmCnzigJTnjqnlhbcKfOKAlOaWh+WFtxUEJDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCRiYWJiZjZiZi04Y2JjLTQzZTItYjg5ZS03YzZiMzY4NzJlMjMkMTBmNWU4NTEtODI3ZC00MjVhLTg1MjktYTdmNjllMDVmZGY5JDY3MjZkMjdmLTMwODQtNGQyNC1iYzgxLWE4N2NhMmZjYjA4ORQrAwRnZ2dnZGQCDQ9kFgICAQ8WAh4LXyFJdGVtQ291bnQCAxYGZg9kFgoCAQ8PFgIeC0NvbW1hbmROYW1lBSRiYWJiZjZiZi04Y2JjLTQzZTItYjg5ZS03YzZiMzY4NzJlMjNkZAIDDw8WAh8CBSRiYWJiZjZiZi04Y2JjLTQzZTItYjg5ZS03YzZiMzY4NzJlMjNkZAIEDxUDBUZMMDAyBuWbvuS5pgBkAgUPDxYEHwIFJGJhYmJmNmJmLThjYmMtNDNlMi1iODllLTdjNmIzNjg3MmUyMx4HVmlzaWJsZWhkZAIHDw8WAh8CBSRiYWJiZjZiZi04Y2JjLTQzZTItYjg5ZS03YzZiMzY4NzJlMjNkZAIBD2QWCgIBDw8WAh8CBSQxMGY1ZTg1MS04MjdkLTQyNWEtODUyOS1hN2Y2OWUwNWZkZjlkZAIDDw8WAh8CBSQxMGY1ZTg1MS04MjdkLTQyNWEtODUyOS1hN2Y2OWUwNWZkZjlkZAIEDxUDBUZMMDAxBueOqeWFtwBkAgUPDxYCHwIFJDEwZjVlODUxLTgyN2QtNDI1YS04NTI5LWE3ZjY5ZTA1ZmRmOWRkAgcPDxYCHwIFJDEwZjVlODUxLTgyN2QtNDI1YS04NTI5LWE3ZjY5ZTA1ZmRmOWRkAgIPZBYKAgEPDxYCHwIFJDY3MjZkMjdmLTMwODQtNGQyNC1iYzgxLWE4N2NhMmZjYjA4OWRkAgMPDxYCHwIFJDY3MjZkMjdmLTMwODQtNGQyNC1iYzgxLWE4N2NhMmZjYjA4OWRkAgQPFQMFRkwwMDMG5paH5YW3AGQCBQ8PFgIfAgUkNjcyNmQyN2YtMzA4NC00ZDI0LWJjODEtYTg3Y2EyZmNiMDg5ZGQCBw8PFgQfAgUkNjcyNmQyN2YtMzA4NC00ZDI0LWJjODEtYTg3Y2EyZmNiMDg5HwNoZGRkGnVVdYxJKdVZK9lQmhPiZY5S7xqdKGOfdrnMfULRMPk=" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E0746785" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABIMz+ssiwTb53ATFxyH0x6MSC21dBR9r/GJnE8nUnzpxUscay2Pw8Kmc74r/IzoBqUWg0tM/zD5f5gfNwU8VFQF3DXnq1e5AjRGIU2hEdh3h68uytMAL1NKnK+QotQpw+jphcTJS4+lbCZZyP6xb4xnk1xC2cq1vfWES1tPptYn3zr7anqpDcdKgriRa6j0RDDkHoiBxyP3ZJwUrR3CUzXXXdiZna1R+BAXCqnH9ng1J4T5jrdkrYi/Kz1JL9aBpY8vaKADvS2uMO88NzQANmV+mNHeCzSJ+U4tURkKwQYET6Wm0sCzDvYGEcThwetaufgago7RqdE0tV4qf4vHAj8m8Hjkh7PGpa18YTZYbQLkkp2vqOC5NR6z2zMF224bq1xj7U/hQa/zt4SWAwto86i7wzQaMmkJD2FuvY7jErKe4A==" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "物料分类",
+                    Url: "<?php echo arU('SystemConfiguration/materialClassify'); ?>",
+                    Selected: true
+                }, {
+                    Text: "物料单位",
+                    Url: "<?php echo arU('SystemConfiguration/materialUnit'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">分类编码：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbCategoryCode" type="text" id="tbCategoryCode" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">分类名称：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbCategoryName" type="text" id="tbCategoryName" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">上级分类：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlParent" id="ddlParent" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="babbf6bf-8cbc-43e2-b89e-7c6b36872e23">|—图书</option>
+                        <option value="10f5e851-827d-425a-8529-a7f69e05fdf9">|—玩具</option>
+                        <option value="6726d27f-3084-4d24-bc81-a87ca2fcb089">|—文具</option>
+                    </select>
+                </td>
+                <td rowspan="2" style="padding-left: 20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 100px">操作</td>
+                        <td>分类编码</td>
+                        <td>分类名称</td>
+                        <td>上级分类</td>
+                        <td>排序</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>FL002</td>
+                        <td>图书</td>
+                        <td></td>
+                        <td>
+                            <a id="rptCategory_lnkDown_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>FL001</td>
+                        <td>玩具</td>
+                        <td></td>
+                        <td>
+                            <a id="rptCategory_lnkUp_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                            <a id="rptCategory_lnkDown_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_2" href="javascript:__doPostBack(&#39;rptCategory$ctl02$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_2" href="javascript:__doPostBack(&#39;rptCategory$ctl02$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>FL003</td>
+                        <td>文具</td>
+                        <td></td>
+                        <td>
+                            <a id="rptCategory_lnkUp_2" href="javascript:__doPostBack(&#39;rptCategory$ctl02$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if ($.trim($("#tbCategoryCode").val()) == '') {
+                alert("分类编码不能为空！");
+                return false;
+            }
+            if ($.trim($("#tbCategoryName").val()) == '') {
+                alert("分类名称不能为空！");
+                return false;
+            }
+            return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

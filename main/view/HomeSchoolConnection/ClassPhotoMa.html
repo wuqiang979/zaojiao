@@ -1,0 +1,206 @@
+<!--班级相册管理-->
+<div class="top" style="margin:10px">
+    <form action="<?php echo arU(''); ?>" method="get">
+        班级：
+        <?php
+            // 调用用html seg 直接输出 select标签
+            arSeg(
+                array(
+                    // seg文件
+                    'segKey' => 'Html/select',
+                    // <select name="name">
+                    'name' => 'cid',
+                    // 适配器数据 数组
+                    // 'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+                    // map 多维数组适配器
+                     'mapbundle' => array($class, 'cid', 'class_name'),
+                    // 选中的value selected = selected
+                    // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                    'selected' => arRequest('cid'),
+                )
+            );
+        ?>
+        类型：
+        <?php
+            // 调用用html seg 直接输出 select标签
+            arSeg(
+                array(
+                    // seg文件
+                    'segKey' => 'Html/select',
+                    // <select name="name">
+                    'name' => 'type',
+                    // 适配器数据 数组
+                    'map' => ClassPicModel::$TYPE_MAP,
+                    // map 多维数组适配器
+                    // 'mapbundle' => array($class, 'cid', 'class_name'),
+                    // 选中的value selected = selected
+                    // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                    'selected' => arRequest('cid'),
+                )
+            );
+        ?>
+        <input type="submit" value="搜索"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </form>
+</div>
+<div id="P_Data">
+    <table class="list" style="text-align: center;">
+        <thead>
+        <tr>
+            <td style="width: 120px;">操作</td>
+            <td>学校</td>
+            <td>姓名</td>
+            <td>相片</td>
+            <td>上传时间</td>
+            <td>备注</td>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if($list):foreach($list as $auth):?>
+        <tr>
+            <td class="caozuo">
+                <a href='javascript:modify(<?php echo json_encode($auth); ?>)'>修改</a>|
+                <a href="javascript:del('<?php echo $auth['pid'] ?>')">删除</a></td>
+            <td><?php arEcho($auth['s_name'],'-'); ?></td>
+            <td><?php arEcho($auth['b_name'],'-'); ?></td>
+            <td>
+                <a href="javascript:loadurl('<?php echo arU('addpic', array('pid' => $auth['pid'])); ?>', '添加相片')">
+                    <?php if($auth['pic']):?>
+                        展示
+                    <?php else: echo '-';?>
+                    <?php endif;?>
+                </a>
+
+            </td>
+            <td><?php if($auth['recordtime']):arEcho(date('Y-m-d', $auth['recordtime']),'-'); endif;?></td>
+            <td><?php arEcho($auth['remark'],'-'); ?></td>
+        </tr>
+        <?php endforeach;endif; ?>
+        </tbody>
+        <tr>
+            <td colspan="6"><?php echo $pagelist; ?></td>
+        </tr>
+    </table>
+
+</div>
+
+<!--弹出框-->
+<form enctype="multipart/form-data" action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+    <table class="search" style="width:800px">
+        <input name="pid" type="hidden" value=""/>
+        <tr>
+            班级：
+            <?php
+                // 调用用html seg 直接输出 select标签
+                arSeg(
+                    array(
+                        // seg文件
+                        'segKey' => 'Html/select',
+                        // <select name="name">
+                        'name' => 'classid',
+                        // 适配器数据 数组
+                        // 'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+                        // map 多维数组适配器
+                        'mapbundle' => array($class, 'cid', 'class_name'),
+                        // 选中的value selected = selected
+                        // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                        // 'selected' => arRequest('cid'),
+                    )
+                );
+            ?>
+            类型：
+            <?php
+                // 调用用html seg 直接输出 select标签
+                arSeg(
+                    array(
+                        // seg文件
+                        'segKey' => 'Html/select',
+                        // <select name="name">
+                        'name' => 'type',
+                        // 适配器数据 数组
+                        'map' => ClassPicModel::$TYPE_MAP,
+                        // map 多维数组适配器
+                        // 'mapbundle' => array($class, 'cid', 'class_name'),
+                        // 选中的value selected = selected
+                        // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                        // 'selected' => arRequest('cid'),
+                    )
+                );
+            ?>
+            幼儿：<?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'bid',
+                            // 适配器数据 数组
+                            // 'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+                            // map 多维数组适配器
+                            'mapbundle' => array($babies, 'bid', 'name'),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                            // 'selected' => arRequest('cid'),
+                        )
+                    );
+                ?>
+            日期：<input name="day" type="text" value="<?php echo date('Y-m-d', time());?>" class="int"
+                      onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,onpicked:function(dp){pickedFuncChar(dp.cal.getNewDateStr());}})" />
+            活动名称：<input type="text" name="name" />
+            备注：<input name="remark" type="text" />
+            <td style="width: 228px;float:left">
+                <input type="submit"  value="保存" class="button" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='nid']").attr('value', '');
+        layer.open({
+            title:'添加',
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(nid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('del');?>', {pid:nid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+
+</script>

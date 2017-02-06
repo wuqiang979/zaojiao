@@ -1,0 +1,34 @@
+<form action="<?php echo arU(''); ?>" method="post">
+<input type="hidden" name="pid" value="<?php echo arRequest('pid'); ?>">
+<?php foreach ($authDetail as $auth): ?>
+<div style="margin:5px;">
+    <div>
+        <div>
+        <?php echo $auth['name'] ?>
+        </div>
+        <?php foreach ($auth['authdetail']['authlist'] as $list): ?>
+            <span><input name="lids[]" type="checkbox" value="<?php echo $list['lid']; ?>" <?php if (in_array($list['lid'], $hasRights)): ?>
+            checked
+            <?php endif ?>><?php echo $list['name'] ?></span>
+        <?php endforeach ?>
+        <?php if (is_array($auth['sub_menu'])): ?>
+        <?php foreach ($auth['sub_menu'] as $subauth): ?>
+            <div style="margin:10px">
+                <?php echo $subauth['name'] ?>
+                <?php
+                // 二级分类
+                foreach ($subauth['authdetail']['authlist'] as $subauthlist): ?>
+                    <span>
+                        <input name="lids[]" type="checkbox" value="<?php echo $subauthlist['lid']; ?>" <?php if (in_array($subauthlist['lid'], $hasRights)): ?>
+                        checked
+                        <?php endif ?>><?php echo $subauthlist['name'] ?>
+                    </span>
+                <?php endforeach ?>
+            </div>
+        <?php endforeach ?>
+        <?php endif ?>
+    </div>
+</div>
+<?php endforeach ?>
+<input type="submit" name="btnAdd" value="保存" class="button" />
+</form>

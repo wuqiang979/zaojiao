@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.GPUBLIC'); ?>css/zaojiao.css">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.GPUBLIC'); ?>css/style.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script type="text/javascript">
+    </script>
+    <script src="<?php echo arCfg('PATH.GPUBLIC'); ?>js/jquery.min1-10-2.js"></script>
+    <?php /**必须加载的 css seg*/ include arCfg('DIR.SEG') . 'Sys/css.seg'; ?>
+</head>
+<body>
+<div class="headnav" style="margin:10px;font-weight:bold">
+    <?php if (isset($headnavs)): ?>
+    <?php foreach ($headnavs as $key => $value): ?>
+        <a href="<?php echo $value; ?>"><?php echo $key; ?></a>&nbsp;|&nbsp;
+    <?php endforeach ?>
+    <?php endif ?>
+</div>

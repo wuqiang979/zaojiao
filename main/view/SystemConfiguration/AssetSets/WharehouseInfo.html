@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=d065b06f-e444-44bf-8956-465622ab0e60', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function checkData() {
+        if ($.trim($("#txtParamName").val()) == "") {
+            alert("参数不能为空！");
+            return false;
+        } else {
+            return true;
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="ParamConfig.aspx?isLeft=2&amp;navId=d065b06f-e444-44bf-8956-465622ab0e60" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMjQwODE0MTc3D2QWAgIDD2QWBAIBDxYCHgRUZXh0BcAEPHNjcmlwdCBzcmM9Ii4uLy4uL1NjcmlwdHMvalF1ZXJ5LmV0bVRhYnMuanMiPjwvc2NyaXB0PjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4kKGZ1bmN0aW9uICgpIHskKCIjcyIpLmV0bVRhYnMoe2l0ZW06IFt7IFRleHQ6ICLnianlk4HnsbvlnosiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0Fzc2V0L0Fzc2V0Q2F0ZWdvcnkuYXNweD9pc0xlZnQ9MSZuYXZJZD1kMDY1YjA2Zi1lNDQ0LTQ0YmYtODk1Ni00NjU2MjJhYjBlNjAiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLku5PlupPkv6Hmga8iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0Fzc2V0L1BhcmFtQ29uZmlnLmFzcHg/aXNMZWZ0PTImbmF2SWQ9ZDA2NWIwNmYtZTQ0NC00NGJmLTg5NTYtNDY1NjIyYWIwZTYwIiwgU2VsZWN0ZWQ6IHRydWUgfSx7IFRleHQ6ICLnianlk4HljZXkvY0iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0Fzc2V0L1VuaXRDb25maWcuYXNweD9pc0xlZnQ9MyZuYXZJZD1kMDY1YjA2Zi1lNDQ0LTQ0YmYtODk1Ni00NjU2MjJhYjBlNjAiLCBTZWxlY3RlZDogZmFsc2UgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAILD2QWAgIBDxYCHgtfIUl0ZW1Db3VudAICFgRmD2QWDAIBDw8WAh4PQ29tbWFuZEFyZ3VtZW50BSRkODAyZDBmNi1iNmQ1LTQxNzUtYTMxYy04YjhhN2NiMTY5YjFkZAIDDw8WAh8CBSRkODAyZDBmNi1iNmQ1LTQxNzUtYTMxYy04YjhhN2NiMTY5YjFkZAIEDxUBB+S7k+W6kzFkAgUPDxYEHgtDb21tYW5kTmFtZQUkZDgwMmQwZjYtYjZkNS00MTc1LWEzMWMtOGI4YTdjYjE2OWIxHgdWaXNpYmxlaGRkAgcPDxYCHwMFJGQ4MDJkMGY2LWI2ZDUtNDE3NS1hMzFjLThiOGE3Y2IxNjliMWRkAggPFQEAZAIBD2QWDAIBDw8WAh8CBSRhMGNkNzQ2Zi0yNjcxLTQ3NTQtYjNkZi0zN2ZhOTMzODA3ZjVkZAIDDw8WAh8CBSRhMGNkNzQ2Zi0yNjcxLTQ3NTQtYjNkZi0zN2ZhOTMzODA3ZjVkZAIEDxUBB+S7k+W6kzJkAgUPDxYCHwMFJGEwY2Q3NDZmLTI2NzEtNDc1NC1iM2RmLTM3ZmE5MzM4MDdmNWRkAgcPDxYEHwMFJGEwY2Q3NDZmLTI2NzEtNDc1NC1iM2RmLTM3ZmE5MzM4MDdmNR8EaGRkAggPFQEAZGSt1dF5nwiGEFsytpJl+AjLd1nqu15tguFd/pj/w+KtdA==" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="5E73D06F" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAApPxZ/Ak3GC3oKpWW8wKe4m4Br2PZ84Bs/2MVOikgXRegmZdevBl3u2IhDyw8039SxxmN7sXBkIwa4SliY/AwR9CPIhviCgNJCXUspYUpo2QI53gmUZylnE1WF//Te/Ef2x4cTvqhomg5uQrsSpUktcyYK7T6mVoCgXc40MRpMAmVW5utjjE1EMFKY5N5vozHTStoYkzJZU+qxdmvIdu/dklamrYrxCEM6zkuzVpFip9jhI/PGgLzicWAJIVNsFOIQ=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+               item: [{
+                    Text: "物品类型",
+                    Url: "<?php echo arU('SystemConfiguration/goodsType'); ?>",
+                    Selected: false
+                }, {
+                    Text: "仓库信息",
+                    Url: "<?php echo arU('SystemConfiguration/wharehouseInfo'); ?>",
+                    Selected: true
+                }, {
+                    Text: "物品单位",
+                    Url: "<?php echo arU('SystemConfiguration/goodsUnit'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 54px;">
+                    <span id="lbParamName">参数：</span>
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="txtParamName" type="text" id="txtParamName" class="int" /> &nbsp;
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 54px;">
+                    <span id="lbParamVaule">描述：</span>
+                </td>
+                <td class="borderRight" style="width: 220px;">
+                    <input name="txtParamValue" type="text" id="txtParamValue" class="int" style="width:200px;" />
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="submit" name="btnParamAdd" value="添 加" onclick="return checkData();" id="btnParamAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td>操作</td>
+                        <td>参数</td>
+                        <td>排序</td>
+                        <td>描述</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 10%">
+                            <a id="rptlst_lbModify_0" href="javascript:__doPostBack(&#39;rptlst$ctl00$lbModify&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;您确认要删除吗？&#39;);" id="rptlst_lbDelete_0" href="javascript:__doPostBack(&#39;rptlst$ctl00$lbDelete&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td style="width: 15%">仓库1
+                        </td>
+                        <td style="width: 15%">
+                            <a id="rptlst_lnkDown_0" href="javascript:__doPostBack(&#39;rptlst$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                        <td style="width: 60%; text-align: left;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 10%">
+                            <a id="rptlst_lbModify_1" href="javascript:__doPostBack(&#39;rptlst$ctl01$lbModify&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;您确认要删除吗？&#39;);" id="rptlst_lbDelete_1" href="javascript:__doPostBack(&#39;rptlst$ctl01$lbDelete&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td style="width: 15%">仓库2
+                        </td>
+                        <td style="width: 15%">
+                            <a id="rptlst_lnkUp_1" href="javascript:__doPostBack(&#39;rptlst$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                        <td style="width: 60%; text-align: left;">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</body>
+
+</html>

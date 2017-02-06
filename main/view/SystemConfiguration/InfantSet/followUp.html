@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=99fb985b-d0dc-446e-bf4c-4682ec2ed938', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function checkData() {
+        if (document.getElementById("tbParamName").value.length <= 0) {
+            alert("参数不能为空！");
+            return false;
+        } else {
+            return true;
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="<?php echo arU('SystemConfiguration/followUp'); ?>" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="ParametSetModel" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="FA206E5E" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="" />
+        </div>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                 item: [{
+                        Text: "家庭收入",
+                        Url: "<?php echo arU('SystemConfiguration/familyIncome'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿类型",
+                        Url: "<?php echo arU('SystemConfiguration/infantType'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "来源渠道",
+                        Url: "<?php echo arU('SystemConfiguration/sourceCanal'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "跟进方式",
+                        Url: "<?php echo arU('SystemConfiguration/followUp'); ?>",
+                        Selected: true
+                    }, {
+                        Text: "家长关系",
+                        Url: "<?php echo arU('SystemConfiguration/guardian'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿字段",
+                        Url: "<?php echo arU('SystemConfiguration/infantfields'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿点评",
+                        Url: "<?php echo arU('SystemConfiguration/infantComment'); ?>",
+                        Selected: false
+                    }, {
+                        Text: "幼儿标签设置",
+                        Url: "<?php echo arU('SystemConfiguration/infantLabels'); ?>",
+                        Selected: false
+                    }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 54px;">参数：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbParamName" type="text" id="tbParamName" value='<?php arEcho($result['name'],''); ?>' class="int" />&nbsp;<span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 54px;">描述：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbParamValue" type="text" id="tbParamValue" value="<?php arEcho($result['description'],''); ?>" class="int" />
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="hidden" name='type' value="<?php echo array_keys(ParametSetModel::$paramet_type)[1]; ?>">
+                    <?php if ($result) : ?>
+                    <input type="hidden" name='editId' value='<?php echo $result['id']; ?>'>
+                    <input type="submit" name="btnEdit" value="编 辑" onclick="return checkData();" id="btnEdit" class="button" />
+                    <?php else: ?>
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return checkData();" id="btnAdd" class="button" />
+                    <?php endif; ?>
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list">
+                <thead>
+                    <tr style="text-align: center;">
+                        <th>操作</th>
+                        <th>参数</th>
+                        <th style="width: 80px;">排序</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if($data):foreach($data as $follow): ?>
+                    <tr>
+                        <td style="width: 100px; text-align: center;">
+                            <a id="rptParam_ParamEdit_0" href="javascript:__doPostBack(&#39;ParametSetModel$<?php echo $follow['id']; ?>$lbtnEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;删除可能会导致部分幼儿丢失相关数据！\n确认要删除吗？&#39;);" id="rptParam_ParamDel_0" href="javascript:__doPostBack(&#39;ParametSetModel$<?php echo $follow['id']; ?>$lbtnDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>
+                            <?php echo $follow['name']; ?>
+                            <input type="hidden" name="rptParam$ctl00$hfParamGuid" id="rptParam_hfParamGuid_0" value="c0b9a7b2-39de-4361-9993-1a28b86e419a" />
+                        </td>
+                        <td style="text-align: center;">
+                            <a id="rptParam_lnkDown_0" href="javascript:__doPostBack(&#39;rptParam$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                        <td>
+                            <?php echo $follow['description']; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach;endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</body>
+
+</html>

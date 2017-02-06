@@ -1,0 +1,241 @@
+.sfdj-form{
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 12px;
+    .editMsg{
+        width: 100%;
+        th,td{
+            padding: 5px 0;
+        }
+    }
+    .artList{
+        width: 100%;
+        th{
+            border-bottom: $borderone;
+            border-top: $borderone;
+            border-right: $borderRLDashed;
+            border-left: $borderRLDashed;
+        }
+        tbody td{
+            text-align: center;
+            border-top: $borderone;
+            border-bottom: $borderone;
+            border-right: $borderRLDashed;
+            border-left: $borderRLDashed;
+        }
+        tfoot{
+            border-top: $borderone;
+            border-bottom: $borderone;
+        }
+    }
+}
+.textRight{
+    text-align: right;
+}
+.borderRight{
+    border-right: $borderone;
+}
+
+.borderRLDashed{
+    border-right: $borderRLDashed;
+    border-left: $borderRLDashed;
+}
+.borderTop{
+    border-top: $borderone;
+}
+.borderBottom{
+    border-bottom: $borderone;
+}
+.borderTb{
+    border-top: $borderone;
+    border-bottom: $borderone;
+}
+.submitBtn{
+    background-color: #75A801;
+    padding: 1px 15px;
+    border: 1px solid #75A801;
+    color: white;
+    font-size: 12px;
+    word-spacing: 3px;
+    cursor: pointer;
+}
+.tfdj-form,.sectab{
+    @extend .sfdj-form;
+}
+.tfdj-form {
+    .addpaddtop{
+        td{
+            padding-top: 10px;
+        }
+    }
+    .addpaddbot{
+        td{
+            padding-bottom: 10px;
+        }
+    }
+}
+.add-plus{
+    display: inline-block;
+    background: url('../img/add.png') no-repeat 0 0;
+    height: 12px;
+    width: 12px;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+.words{
+    display: inline-block;
+    line-height: 1;
+    &:before{
+        content: '*';
+        color: #ff6600;
+        line-height: 1;
+    }
+}
+
+.mouseTips{
+    display: inline-block;
+    position: relative;
+    &:before{
+        content: '[?]';
+        color: #9d9d9d;
+        line-height: 1;
+    }
+    .tips{
+        background-color: #FCFBE5;
+        border: 1px solid #DAD8D4;
+        font-size: 13px;
+        padding-left: 5px;
+        width: 330px;
+        line-height: 22px;
+        position: absolute;
+        z-index: 9999;
+    }
+}
+.ints{
+    width: 140px;
+}
+.lay-search{
+    display: table;
+    margin: 10px auto;
+    .lay-input{
+        display: table-cell;
+        border: 1px solid #75A801;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #555;
+        line-height: 1.42857143;
+        background-color: #fff;
+        background-image: none;
+    }
+    .lay-seaBtn{
+        display: table-cell;
+        padding: 6px 12px;
+        color: $colorWhite;
+        background-color: $themeColor;
+        line-height: 1.42857143;
+        height: 34px;
+        vertical-align: middle;
+    }
+    .lay-cell{
+        display: table-cell;
+        padding-left: 10px;
+        input,select{
+            width: 110px;
+            vertical-align: middle;
+            height: 22px;
+        }
+    }
+}
+.lay-table{
+    width: 100%;
+    th,td{
+        border: {
+            top: 1px solid #DAD8D4;
+            bottom: 1px solid #DAD8D4;
+            right: $borderRLDashed;
+            left: $borderRLDashed;
+        }
+        padding: 4px;
+    }
+    .lay-selBtn{
+        display: inline-block;
+        padding: 1px 8px;
+        background-color: $themeColor;
+        color: $colorWhite;
+    }
+}
+.lay-wrap{
+    .lay-table{
+        td{
+            text-align: center;
+        }
+    }
+    .lay-page{
+        padding-left: 15px;
+        a{
+            display: inline-block;
+            padding: 0 5px;
+            color: $colorWhite;
+            background-color: $themeColor;
+            line-height: normal;
+            margin-left: 5px;
+        }
+        span{
+            display: inline-block;
+        }
+        input{
+            width: 50px;
+            height: 18px;
+        }
+    }
+}
+.tableFun-body{
+    .listDiv{
+        padding-left: 10px;
+        border-top: 1px solid #dad8d4;
+        &:first-child{
+            border-top: none;
+        }
+        .className{
+            font-weight: bold;
+            height: 30px;
+            line-height: 30px;
+        }
+    }
+    .classList{
+        padding-left: 10px;
+        li{
+            padding: 2px 0;
+            > a{
+                display: block;
+                color: $fontColor;
+                padding: 2px 0;
+                &.active{
+                    background-color: $themeColor;
+                    color: $colorWhite;
+                }
+            }
+        }
+    }
+}
+.etm-Tab{
+    .nestingTable{
+        th,td{
+            padding: 4px 0;
+            height: auto;
+            border:{
+                bottom: $borderone;
+                top: $borderone;
+                right: $borderRLDashed;
+                left: $borderRLDashed;
+            }
+        }
+        th{
+            border-top: none;
+        }
+        td{
+            font-weight: 500;
+        }
+    }
+}

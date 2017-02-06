@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/Validator.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.etmTabs.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/camera.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jsAddress.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/area.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=76b695fa-7b49-4b69-b91c-6f5244d806a2', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <style type="text/css">
+        form,
+        body {
+            overflow: hidden;
+        }
+
+        #Images img {
+            border: none;
+        }
+
+        #Images a {
+            margin-bottom: 10px;
+            margin-left: 5px;
+            color: red;
+        }
+
+        #Images a:hover {
+            text-decoration: none;
+        }
+
+        .del {
+            position: absolute;
+            left: 5px;
+            top: -10px;
+        }
+
+        .item {
+            position: relative;
+            padding-bottom: 10px;
+        }
+    </style>
+    <style type="text/css">
+        #followContainer {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .spanMark {
+            border: solid 1px #ccc;
+            background-color: #fff;
+            padding: 0 3px 0 3px;
+            margin: 1px;
+            display: inline-block;
+            height: 20px;
+            line-height: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 5px;
+            margin: 5px 0px 15px 0px;
+        }
+
+        ul li {
+            float: left;
+            padding: 1px 5px 1px 5px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            height: 22px;
+            line-height: 22px;
+            font-size: 13px;
+        }
+
+        .li_Field {
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: #75A801;
+        }
+
+        .fixed {
+            background-color: #75A801;
+            color: white;
+        }
+
+        .A_Back {
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript">
+        var SProvince = '';
+        var SProvinces = '';
+
+        $(function() {
+            _init_area();
+            if (SProvince != '') {
+                $("#SProvince").val(SProvince);
+                change(1);
+                $("#SCity").val('');
+                $("#SArea").val(''); // 户籍 省市区域
+            } else {}
+            if (SProvinces != '') {
+                addressInit('SProvinces', 'SCitys', 'SAreas', '', '', ''); // 现住址 省市区域
+            } else {
+                addressInit('SProvinces', 'SCitys', 'SAreas', '广东', '广州市', '越秀区'); //现住址 省市区域
+            }
+            var memberGuid = '';
+            if (memberGuid == '') {
+                $("#tab").etmTabs({
+                    item: [{
+                        Url: "javascript:MemeberShow(1);",
+                        Selected: false,
+                        Text: "幼儿档案登记"
+                    }, {
+                        Url: "javascript:MemeberShow(0);",
+                        Selected: false,
+                        Text: "幼儿照片"
+                    }, {
+                        Url: "<?php echo arU('Baby/babyAdd');?>",
+                        Selected: false,
+                        Text: "幼儿导入"
+                    }]
+                });
+                aAdd();
+            } else {
+                $("#tab").etmTabs({
+                    item: [{
+                        Url: "javascript:MemeberShow(1);",
+                        Selected: false,
+                        Text: "幼儿档案登记"
+                    }, {
+                        Url: "javascript:MemeberShow(0);",
+                        Selected: false,
+                        Text: "幼儿照片"
+                    }, ]
+                });
+                UPhide();
+            }
+        });
+
+        function MemeberShow(type) {
+
+            if (type == "1") {
+                $("#BaseInfo").css("display", "block");
+                $("#Photos").css("display", "none");
+            }
+            if (type == "0") {
+                $("#BaseInfo").css("display", "none");
+                $("#Photos").css("display", "block");
+            }
+        }
+
+        function getMemberSource() {
+            if ($("#ddlSource").val() == "00000000-0000-0000-0000-000000000000") {
+                $("#ddlSourceInfo").empty();
+                $("#ddlSourceInfo").hide();
+            } else {
+                $.ajaxMethod("CRM_SourceList", {
+                        "Guid": $("#ddlSource").val()
+                    },
+                    function(data) {
+                        if (data != null) {
+                            $("#ddlSourceInfo").show();
+                            $("#ddlSourceInfo").html("<option value='00000000-0000-0000-0000-000000000000'>请选择</option>");
+                            var jsonData = jQuery.parseJSON(data);
+                            $.each(jsonData, function(i, n) {
+                                $("#ddlSourceInfo").append("<option value='" + n.SourceGuid + "'>" + n.SourceName + "</option>");
+                            });
+                        } else {
+                            $("#ddlSourceInfo").empty();
+                            $("#ddlSourceInfo").hide();
+                        }
+                    }, false, "text");
+            }
+        }
+        //鼠标移出时关闭
+        function onmouseoutexit() {
+            //$("#Ta_fieldExport").css("display", "none")
+        }
+
+        function rbCheck(v) {
+            if (v == 1)
+                $("#spanSchoolBus").show();
+            else {
+                $("#lbSiteInfo").html("");
+                $("#hfSiteGuid").val("");
+                $("#spanSchoolBus").hide();
+            }
+        }
+
+        function selectRoute(v) {
+            window.parent.showDialog("选择路线站点", "../Modules/Car/SelectRoute.aspx?multiLayer=" + v, "760px", "420px");
+        }
+
+        function setRoute(siteInfo, siteGuid) {
+            $("#lbSiteInfo").html(siteInfo);
+            $("#hfSiteGuid").val(siteGuid);
+        }
+    </script>
+    <script type="text/javascript">
+        //隐藏上升按钮
+        function UPhide() {
+            $(".up").removeClass("hidden");
+            $(".up").eq(0).addClass("hidden");
+        }
+
+        function re() {
+            $("#l1").height($(window).height()).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $("form").getNiceScroll().remove();
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]);
+            return null; //返回参数值
+        }
+        //添加家长信息
+        function aAdd() {
+            $.ajaxMethod("CRM_Member_Param", {
+                    "Guid": ""
+                },
+                function(data) {
+                    var jsonData = '{"Guardianship":"","GuardianGuid":"00000000-0000-0000-0000-000000000000","GuardianGroupGuid":"00000000-0000-0000-0000-000000000000","GuardianName":"","Mobile":"","WorkUnit":"","Education":"","SortID":"0"}';
+                    var trHtml = '<tr>';
+                    trHtml += '<td class="textAlignRight" style="width: 80px;" >&nbsp;&nbsp;姓名：</td>';
+                    trHtml += '<td class="borderRight" style="width: 270px;"  ><input type="text" name="pname" class="int" />&nbsp;&nbsp;' + data + '</td>';
+                    trHtml += '<td  class="textAlignRight" style="width: 100px;" >手机号码：</td>'
+                    trHtml += '<td><input type="text" style="width: 142px;" name="tel" class="int" /></td>';
+                    trHtml += '</tr><tr>';
+                    trHtml += '<td class="textAlignRight">&nbsp;&nbsp;学历：</td>';
+                    trHtml += '<td class="borderRight" >';
+                    trHtml += '<select name="education" class="int">';
+                    trHtml += '<option value="未知">请选择</option>';
+                    trHtml += '<option value="小学及以下">小学及以下</option>';
+                    trHtml += '<option value="初中">初中</option>';
+                    trHtml += '<option value="高中">高中</option>';
+                    trHtml += '<option value="中专">中专</option>';
+                    trHtml += '<option value="大专">大专</option>';
+                    trHtml += '<option value="本科">本科</option>';
+                    trHtml += '<option value="研究生">研究生</option>';
+                    trHtml += '<option value="博士及以上">博士及以上</option>';
+                    trHtml += '</select>';
+                    trHtml += '</td>';
+                    trHtml += '<td  class="textAlignRight">&nbsp;&nbsp;工作单位：</td>';
+                    trHtml += '<td><input type="text" style="width: 142px;" name="working" class="int" />';
+                    trHtml += '<a href="javascript:void(0)" title="删除" style="margin-left:5px" class="deleteList"><img src="/Images/del_c.png" /></a>';
+                    trHtml += '&nbsp;&nbsp;<a href="javascript:void(0)"  title="上升" class="up"><img src="/Images/up_c.png" /></a></td>';
+                    trHtml += '<input type="hidden" class="tt" name="hFieldInfo" value=\'' + jsonData + '\' />';
+                    trHtml += '<input type="hidden" class="int" name="tbGroupGuid" />';
+                    trHtml += '<input type="hidden" class="int" name="tbGuardianGuid" />';
+                    trHtml += '</tr>';
+                    $("#FieldList").append(trHtml);
+                    UPhide();
+                    re();
+                }, false, "text");
+        }
+        //同一家庭信息
+        function EditDlgs(memberGuid, navId) {
+            window.parent.showDialog("名单资料查看", "../Modules/CRM/MemberInfo.aspx?memberGuid=" + memberGuid + "&navId=" + navId, "976px", "540px");
+        }
+
+        $(function() {
+            $("#FieldList .deleteList").live("click", function() {
+                var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                if (jsonObj.Guardianship.length < 0) {
+                    var delFields = $("#hfDelField").val();
+                    if (delFields.length > 0)
+                        delFields = delFields + "," + jsonObj.Guardianship;
+                    else
+                        delFields = jsonObj.Guardianship;
+                    $("#hfDelField").val(delFields);
+                }
+                var temps = $(this).parent().parent();
+                temps.prev().remove();
+                temps.remove();
+                re();
+                UPhide();
+            });
+
+
+            $(".up").live("click", function() {
+                var curRowObj = $(this).parent().parent();
+                if (curRowObj.index() > 2) {
+                    var preRowObj = curRowObj.prev();
+                    var temps = preRowObj.prev().prev();
+                    if (temps.find("select").size() > 0) {
+                        var cu = curRowObj;
+                        curRowObj.remove();
+                        temps.before(preRowObj);
+                        temps.before(curRowObj);
+                    }
+                }
+                UPhide();
+            });
+
+            $("#FieldList input[name='tbMobile']").live("change", function() {
+                var fieldObj = $(this).parent().parent().next().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.Mobile = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+                var temp = $(this);
+                $.ajaxMethod("CRM_Member_Guardian", {
+                        "Moblie": jsonObj.Mobile
+                    },
+                    function(data) {
+                        if (data != "false") {
+                            if (temp.next('span').index() > 0) {
+                                // $(this).parent().next('p').remove();
+                                // temp.parent().next('span').remove();
+                            } else {
+                                var test = data.split(",");
+                                var temps = "<span><input name=\"checkall1\" type=\"checkbox\"   onClick=\"checkAddBox('" + test[0] + "',this);\"/>与<a href=\"javascript:EditDlgs('" + test[2] + "','" + test[0] + "')\">" + test[1] +
+                                    "</a>同一家庭</span>";
+                                temp.after(temps);
+                            }
+                        } else {
+                            temp.next('span').remove();
+                        }
+                    }, false, "text");
+
+            });
+
+            $("#FieldList select[name='ddlFieldType']").live("change", function() {
+                var fieldObj = $(this).parent().parent().next().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.Guardianship = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+
+            $("#FieldList input[name='tbGroupGuid']").live("blur", function() {
+                var fieldObj = $(this).parent().parent().next().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.GuardianGroupGuid = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+
+            $("#FieldList input[name='tbGuardianGuid']").live("blur", function() {
+                var fieldObj = $(this).parent().parent().next().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.GuardianGuid = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+
+            $("#FieldList input[name='tbGuardianName']").live("blur", function() {
+                var fieldObj = $(this).parent().parent().next().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.GuardianName = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+
+            $("#FieldList input[name='tbWorkUnit']").live("blur", function() {
+                var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.WorkUnit = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+
+            $("#FieldList select[name='tbEducation']").live("blur", function() {
+                var fieldObj = $(this).parent().parent().find("input[name='hFieldInfo']");
+                var jsonObj = jQuery.parseJSON(fieldObj.val());
+                jsonObj.Education = $(this).val();
+                fieldObj.val(JSON.stringify(jsonObj));
+            });
+        });
+
+        function checkAddBox(GuardianGroupGuid, ob) {
+
+            if (GuardianGroupGuid != "") {
+                var temps = false;
+                $(".tt").each(function() {
+                    var jsonObj = jQuery.parseJSON($(this).val());
+                    if (jsonObj.GuardianGroupGuid == GuardianGroupGuid) {
+                        temps = true;
+                    }
+                });
+                if (temps == false) {
+                    $(function() {
+                        $.ajaxMethod("CRM_Member_Guardians", {
+                                "GuardianGroupGuid":
+
+                                    GuardianGroupGuid,
+                                "type": 1
+                            },
+                            function(data) {
+                                var bo = $(ob).parent().parent().parent();
+                                bo.before(data);
+                                bo.next().remove();
+                                bo.remove();
+                                UPhide();
+                            }, false, "text");
+                        UPhide();
+                    });
+                } else {
+                    UPhide();
+                    //alert("您已经添加啦该家长信息");
+                }
+            }
+        }
+
+        function ShowHideName() {
+            var RealName = "";
+            RealName = $("#txtRealName").val();
+            if (RealName != "") {
+                $("#spanResult").hide();
+            }
+        }
+
+        function ShowHidetrSelectField() {
+            var num3 = "";
+            var num4 = "";
+            $(".trSelectField").each(function() {
+                num3 = num3 + $(this).val();
+                num4 = num4 + $(this).parent().find(".words").eq(1).html();
+                if (num4 == "不能为空" && num3 == "") {
+                    //$(this).parent().find(".words").eq(1).show();
+                } else {
+                    $(this).parent().find(".words").eq(1).hide();
+                }
+                num3 = "";
+                num4 = "";
+            });
+        }
+
+        function ShowHideTrField() {
+            var num1 = "";
+            var num2 = "";
+            $(".trField").each(function() {
+                num1 = num1 + $(this).val();
+                num2 = num2 + $(this).parent().find(".words").eq(1).html();
+                if (num2 == "不能为空" && num1 == "") {
+                    //$(this).parent().find(".words").eq(1).show();
+                } else {
+                    $(this).parent().find(".words").eq(1).hide();
+                }
+                num1 = "";
+                num2 = "";
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#txtIdentityCard").blur(function() {
+                var value = $(this).val();
+                if ($.trim(value) != "") {
+                    //身份证正则表达式(15位)
+                    var isIDCard1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
+                    //身份证正则表达式(18位)
+                    isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                    var isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                    if (!isIDCard2.test(value)) {
+                        $("#spanIdentityCard").html("身份证格式不对");
+                    } else {
+                        var birthday = value.substring(6, 10) + "-" + value.substring(10, 12) + "-" + value.substring(12, 14);
+                        $("#txtBirthDate").val(birthday);
+                        if (parseInt(value.substr(16, 1)) % 2 == 1) {
+                            //男
+                            $("input[name=rbSex][value='男']").attr("checked", true);
+
+                        } else {
+                            //女
+                            $("input[name=rbSex][value='女']").attr("checked", true);
+                        }
+                        $("#spanIdentityCard").html("");
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="<?php echo arU('Baby/zlcc'); ?>" id="form1">
+        <div id='l1' style="float: left; *position: relative; width: 100%">
+            <div id="tab"></div>
+            <table id="Ta_fieldExport" class="list" style="position: fixed; z-index: 6; width: 41%; display: none" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding-left: 15px; border-right: 0px;">
+
+                    </td>
+                    <td style="text-align: right; padding-right: 10px; border-left: 0px; background-color: rgb(255, 255, 255);">
+                        <a class="A_Back">
+                            <img src="/Images/del_c.png"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding-bottom: 5px;">
+                        <ul>
+
+                            <div style="float: left; width: 160px">
+                                <li>
+                                    <input name="cbMark" class="cbe9bcc0c5-74eb-4675-8810-d07ae49bcbbb" type="checkbox" onclick="AddBoxMark('e9bcc0c5-74eb-4675-8810-d07ae49bcbbb    ','体弱    ','#FFFFFF    ');" />
+                                </li>
+                                <li class='li_Field' style="background-color: #FFFFFF;" fieldexportguid='e9bcc0c5-74eb-4675-8810-d07ae49bcbbb'>
+                                    体弱
+                                </li>
+                            </div>
+
+                            <div style="float: left; width: 160px">
+                                <li>
+                                    <input name="cbMark" class="cb49f78fab-cb50-4d0b-a947-b109b12653a5" type="checkbox" onclick="AddBoxMark('49f78fab-cb50-4d0b-a947-b109b12653a5    ','聪明    ','#FFC34D    ');" />
+                                </li>
+                                <li class='li_Field' style="background-color: #FFC34D;" fieldexportguid='49f78fab-cb50-4d0b-a947-b109b12653a5'>
+                                    聪明
+                                </li>
+                            </div>
+
+                            <br />
+
+                            <div style="float: left; width: 160px">
+                                <li>
+                                    <input name="cbMark" class="cb83522b0e-54bd-4e11-9dd5-39bb62e98241" type="checkbox" onclick="AddBoxMark('83522b0e-54bd-4e11-9dd5-39bb62e98241    ','爱哭    ','#6666FF    ');" />
+                                </li>
+                                <li class='li_Field' style="background-color: #6666FF;" fieldexportguid='83522b0e-54bd-4e11-9dd5-39bb62e98241'>
+                                    爱哭
+                                </li>
+                            </div>
+
+                            <div style="float: left; width: 160px">
+                                <li>
+                                    <input name="cbMark" class="cbe1ac3747-37e9-4d06-aa68-79a8e9870549" type="checkbox" onclick="AddBoxMark('e1ac3747-37e9-4d06-aa68-79a8e9870549    ','CC    ','#1C1C1C    ');" />
+                                </li>
+                                <li class='li_Field' style="background-color: #1C1C1C;" fieldexportguid='e1ac3747-37e9-4d06-aa68-79a8e9870549'>
+                                    CC
+                                </li>
+                            </div>
+
+                            <br />
+
+                        </ul>
+                        <input type="hidden" name="hfStaffInfo1s" id="hfStaffInfo1s" />
+                    </td>
+                </tr>
+            </table>
+
+            <table id="BaseInfo" width="100%" class="edit">
+                <tr>
+                    <td>
+                        <table class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        基本资料
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight" style="width: 80px;">幼儿姓名：
+                                </td>
+                                <td class="borderRight" style="width: 270px;">
+                                    <input name="name" type="text" id="txtRealName" class="int" />
+                                    <input name="type" type="hidden" value="dangan" />
+                                    <span class="words">*</span>
+                                    <span class="words" id="spanResult"></span>
+                                </td>
+                                <td class="textAlignRight" style="width: 97px;">幼儿昵称：
+                                </td>
+                                <td class="">
+                                    <input name="nickname" type="text" id="txtNickName" class="int" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">幼儿生日：
+                                </td>
+                                <td class="borderRight">
+                                    <input name="birthday" type="text" id="txtBirthDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,minDate:&#39;1900-01-01&#39;})" />
+                                </td>
+                                <td class="textAlignRight">幼儿性别：
+                                </td>
+                                <td class="">
+                                    <span id="rbSex"><input id="rbSex_0" type="radio" name="sex" value="1" checked="checked" /><label for="rbSex_0">男</label><input id="rbSex_1" type="radio" name="sex" value="0" /><label for="rbSex_1">女</label></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">固定电话：
+                                </td>
+                                <td class="borderRight">
+                                    <input name="phone" type="text" id="txtPhone" class="int" onchange="return CheckPhone(&#39;txtPhone&#39;,&#39;spanPhone&#39;);" />
+                                    <span class="words" id="spanPhone"></span>
+                                </td>
+                                <td class="textAlignRight">家庭收入：
+                                </td>
+                                <td class="">
+                                    <select name="income" id="ddlInComeList" class="int" style="width: 142px;">
+                                        <option value="">请选择</option>
+                                        <option value="10000~99999">10000~99999</option>
+                                        <option value="5000~7000">5000~7000</option>
+                                        <option value="4000~5000">4000~5000</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">银行卡号：</td>
+                                <td class="borderRight">
+                                    <input name="bankcard" type="text" id="tbBCNumber" class="int" />
+                                </td>
+                                <td class="textAlignRight">身份证：
+                                </td>
+                                <td class="">
+                                    <input name="idcard" type="text" id="txtIdentityCard" class="int" />&nbsp;<span id="spanIdentityCard" class="words"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">卡号1：
+                                </td>
+                                <td class="borderRight">
+                                    <input name="card1" type="text" id="tbCardNo1" class="int" />
+                                </td>
+
+                                <td class="textAlignRight">卡号2：
+                                </td>
+                                <td>
+                                    <input name="card2" type="text" id="tbCardNo2" class="int" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">户籍地址：
+                                </td>
+                                <td colspan="3">
+                                    <select id="SProvince" name="householdpro" class="int">
+                                    </select>&nbsp;&nbsp;
+                                    <select id="SCity" name="householdicity" style="width: 100px;" class="int">
+                                    </select>&nbsp;&nbsp;
+                                    <select id="SArea" name="SArea" class="int" style="width: 142px; display: none;">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">现住址：
+                                </td>
+                                <td colspan="3">
+                                    <select id="SProvinces" name="nowprovinces" class="int">
+                                    </select>&nbsp;&nbsp;
+                                    <select id="SCitys" name="nowcity" style="width: 100px;" class="int">
+                                    </select>&nbsp;&nbsp;
+                                    <select id="SAreas" name="nowarea" class="int" name="SAreas" style="width: 142px;">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">详细地址：</td>
+                                <td colspan="3">
+                                    <textarea name="address" rows="2" cols="20" id="txtAddress" class="int" style="width: 514px; height: 35px;">
+                                    </textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table id="FieldList" class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        家长信息
+                                        <a onclick="aAdd()" href="javascript:void(0)">
+                                            <img alt="添加家长信息" title="添加家长信息" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;" />
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table class="edit" style="margin-top: -5px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        高级资料
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight" style="width: 80px;">幼儿来源：
+                                </td>
+                                <td class="borderRight" style="width: 270px;">
+                                    <select name="source" id="ddlSource" class="int" onchange="getMemberSource();">
+                                        <option value="">请选择</option>
+                                        <option value="富人区">富人区</option>
+                                        <option value="穷人区">穷人区</option>
+                                        <option value="学区居民">学区居民</option>
+
+                                    </select>
+                                    <select id="ddlSourceInfo" name="ddlSourceInfo" class="int" style="width:100px;display:none;">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </td>
+                                <td class="textAlignRight" style="width: 97px;">幼儿类型：
+                                </td>
+                                <td>
+                                    <select name="type" id="ddlMemberType" class="int">
+                                        <option value="">请选择</option>
+                                        <option value="在园幼儿">在园幼儿</option>
+                                        <option value="毕业幼儿">毕业幼儿</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">入学学期：
+                                </td>
+                                <td class="borderRight">
+                                    <select name="ssemester" id="ddlTerm" class="int">
+                                        <option value="">请选择</option>
+                                        <option value="2017下学期">2017下学期</option>
+                                        <option value="2017上学期">2017上学期</option>
+                                        <option value="2016下学期">2016下学期</option>
+
+                                    </select>
+                                </td>
+                                <td class="textAlignRight">入学日期：
+                                </td>
+                                <td>
+                                    <input name="sdata" type="text" id="tbEnrollDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="textAlignRight">离校日期：
+                                </td>
+                                <td class="borderRight">
+                                    <input name="esemester" type="text" id="tbGraduateDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" />
+                                </td>
+
+                                <td class="textAlignRight">当前班级：
+                                </td>
+                                <td>
+                                    <select name="class" id="ddlNowClass" class="int">
+                                        <option value="">请选择</option>
+                                        <option value="大班1班">大班1班</option>
+                                        <option value="托管1班">托管1班</option>
+                                        <option value="托管2班">托管2班</option>
+                                        <option value="小班1班">小班1班</option>
+                                        <option value="中班2班">中班2班</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="textAlignRight">校车接送：
+                                </td>
+                                <td colspan="3">
+                                    <input id="rbBusYes" type="radio" name="ifsbus" value="1" onclick="rbCheck(1);" />是
+                                    <input id="rbBusNo" type="radio" name="ifsbus" value="0" onclick="rbCheck(0);" />否
+                                    <span id="spanSchoolBus" style="margin-left: 10px; display:none;">
+                                    <input type="hidden" name="hfSiteGuid" id="hfSiteGuid" />
+                                    <span id="lbSiteInfo" class="words"></span>
+                                    <input type="button" class="button" value="选择路线站点" onclick="selectRoute('0    ');" />
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="textAlignRight">健康状况：
+                                </td>
+                                <td class="borderRight">
+                                    <textarea name="health" rows="2" cols="20" id="tbHealthInfo" class="int" style="width: 240px; height: 31px;">
+                                    </textarea>
+                                </td>
+                                <td class="textAlignRight">忌食过敏：
+                                </td>
+                                <td>
+                                    <textarea name="allergy" rows="2" cols="20" id="tbAvoidAllergyInfo" class="int" style="width: 262px; height: 31px;">
+                                    </textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textAlignRight">兴趣爱好：
+                                </td>
+                                <td class="borderRight">
+                                    <textarea name="interests" rows="2" cols="20" id="tbInterestInfo" class="int" style="width: 240px; height: 35px;">
+                                    </textarea>
+                                </td>
+                                <td class="textAlignRight">备注：
+                                </td>
+                                <td>
+                                    <textarea name="note" rows="2" cols="20" id="txtNote" class="int" style="width: 262px; height: 35px;">
+                                    </textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="borderBottom"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table id="Table1" class="edit" style="margin-top: -15px;">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="title1">
+                                        <div>&nbsp;</div>
+                                        其他信息
+                                    </div>
+                                </td>
+                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td class="textAlignRight" style="width:80px;" require="false" ctrltype="text" ctrlname="udMember_UD1">建议级别：</td>
+                                    <td colspan="3">
+                                        <input type="text" name="level" onblur="javascript:ShowHideTrField()" value="" class="int trField" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table id="Photos" width="100%" class="edit hidden">
+                <tr>
+                    <td class="textAlignRight">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div style="height: 530px; overflow: hidden; width: 910px; margin-left: -18px;" id="flash">
+                                        <div style="margin-left: -420px; margin-top: -280px;" id="flashObj">
+                                            <script type="text/javascript">
+                                                document.write(AC_FL_RunContent('width', '1300', 'height', '830', 'scale', 'exactfit', 'src',
+                                                    'http://vip.yj.etmcn.com/Scripts/camera/camera.swf?nt=1&inajax=1&appid=1&input=86da7a17-149d-48bc-b1d6-97fe06e6a031&ucapi=http%3a%2f%2fvip.yj.etmcn.com/Ashx/FileUpload.ashx?upImage=crm_Image',
+                                                    'id', 'mycamera', 'name', 'mycamera', 'quality', 'high', 'bgcolor', '#ffffff', 'wmode', 'transparent', 'menu', 'false', 'swLiveConnect', 'true', 'allowScriptAccess', 'always'));
+                                            </script>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <div id="Images" style="width: 130px; padding-top: 12px;"></div>
+                                    <input type="hidden" name="imageLists" id="imageLists" />
+                                    <input type="hidden" name="imageDelLists" id="imageDelLists" />
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" name="btnSave" value="全部保存" onclick="return getValidator();" id="btnSave" class="button" style="position: fixed; top: 10px; right: 15px; width: 85px;" />
+        </div>
+        <script type="text/javascript">
+            //删除标签
+            function delMark(obj) {
+                var s = $(obj).parent().attr("style");
+                var MarkGuid = $(obj).parent().attr("MarkGuid");
+                var i = s.indexOf("#");
+                var bgcolor = s.substr(i, 7);
+                var mark = $.trim($(obj).parent().text());
+                var c = $.trim($("#hfMarks").val());
+                $("#hfMarks").val(c.replace(bgcolor + MarkGuid + mark + "|", "").replace("|" + bgcolor + MarkGuid + mark, "").replace(bgcolor + MarkGuid + mark, ""));
+                $(obj).parent().remove();
+                $(".cb" + MarkGuid).attr('checked', false); //删除时复选框取消选中
+            }
+            //修改时选中复选框
+            function addcbChecked() {
+                var MGuids = '';
+                var marr = MGuids.split(',');
+                for (var i in marr) {
+                    $(".cb" + marr[i].replace(/^\"|\"$/g, '')).attr('checked', true);
+                }
+            }
+            //选中复选框添加内容
+            function AddBoxMark(MarkGuid, MarkInfo, bgColor) {
+                if (mycheckbox(MarkGuid) == true) {
+                    var colorStyle = 'style="background-color:' + bgColor + ';"' + " MarkGuid=" + MarkGuid;
+                    if (MarkInfo != "") {
+                        var addInfo = '<span class="spanMark ' + MarkGuid + '" ' + colorStyle + '>' + MarkInfo;
+                        addInfo += ' <img src="../../Images/del.png" onclick="delMark(this);" title="点击删除标签" style="vertical-align:middle;cursor:pointer;" />';
+                        addInfo += '</span>';
+                        $("#divMarks").append(addInfo);
+                        var c = $.trim($("#hfMarks").val());
+                        if (c.length > 0)
+                            $("#hfMarks").val(c + "|" + bgColor.trim() + MarkGuid.trim() + MarkInfo.trim());
+                        else
+                            $("#hfMarks").val(bgColor.trim() + MarkGuid.trim() + MarkInfo.trim());
+                    }
+                } else {
+                    $("." + MarkGuid).remove();
+                    var c = $.trim($("#hfMarks").val());
+                    $("#hfMarks").val($.trim(c.replace(bgColor.trim() + MarkGuid.trim() + MarkInfo.trim() + "|", "").replace("|" + bgColor.trim() + MarkGuid.trim() + MarkInfo.trim(), "").replace(bgColor.trim() + MarkGuid.trim() + MarkInfo.trim(), "")));
+                }
+            }
+            //判断是否选中复选框
+            function mycheckbox(MarkGuid) {
+                var falg = 0;
+                $("input[name='cbMark']:checkbox").each(function() {
+                    if ($(".cb" + MarkGuid).attr("checked")) {
+                        falg += 1;
+                    }
+                })
+                if (falg > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            //显示浮层
+            function xy(event) {
+
+                $("#Ta_fieldExport").css("top", event.clientY + 15);
+                $("#Ta_fieldExport").css("left", event.clientX);
+                $("#Ta_fieldExport").css("display", "block");
+            }
+            $(function() {
+                addcbChecked();
+                $(".A_Back").live("click", function() {
+                    $("#Ta_fieldExport").css("display", "none")
+                    $("#hfSelectedField").val("");
+                });
+            });
+
+            function getValidator() {
+                var flag = true;
+                //时间判断
+                var startDate = "";
+                var endDate = "";
+                startDate = $("#tbEnrollDate").val();
+                endDate = $("#tbGraduateDate").val();
+                if (startDate != "" && endDate != "") {
+                    var temp = new Date(startDate).getTime();
+                    var temp1 = new Date(endDate).getTime();
+                    if (temp > temp1) {
+                        alert("离校日期不能小于入学日期！");
+                        flag = false;
+                    }
+                }
+                $("#FieldList input[name='tbMobile']").each(function() {
+
+                    if ($.trim($(this).val()).length == 0) {
+                        //flag = true;
+                    } else {
+                        if ($(this).val().search(/^1\d{10}$/) == -1) {
+                            alert("请输入正确手机号");
+                            flag = false;
+                        }
+                    }
+                });
+                if (!CheckEmpty('txtRealName', 'spanResult') || !CheckMobile('txtMobile', 'spanMobile') || !CheckPhone('txtPhone', 'spanPhone') || !CheckEMail('txtEmail', 'spanEMail')) {
+                    flag = false;
+                }
+                return flag;
+            }
+        </script>
+        <script type="text/javascript">
+            $(function() {
+                $(".del").live("click", function() {
+                    var $this = $(this);
+                    var guid = $(this).attr("guid");
+                    var path = "/uploadfile/MemberImg/" + guid + "/";
+
+                    if ($.trim($("#imageDelLists").val()) == "") {
+                        $("#imageDelLists").val(guid);
+                    } else {
+                        $("#imageDelLists").val($("#imageDelLists").val() + "," + guid);
+                    }
+
+                    $this.parent().remove();
+                    if ($.trim($("#imageLists").val()) != "") {
+                        if ($("#imageLists").val().indexOf(",") == -1) {
+                            $("#imageLists").val("");
+                        } else {
+                            var tmp = $.trim($("#imageLists").val()).split(",");
+                            var newStr = "";
+                            for (var i = 0; i < tmp.length; i++) {
+                                if (tmp[i].indexOf(guid) == -1) {
+                                    if (newStr == "") {
+                                        newStr = tmp[i];
+                                    } else {
+                                        newStr += "," + tmp[i];
+                                    }
+                                }
+                            }
+                            $("#imageLists").val(newStr);
+                        }
+                    }
+
+                    alert("照片删除成功！");
+                    return;
+                });
+
+
+                if ($.trim($("#imageLists").val()) != "") {
+                    var tmp = $.trim($("#imageLists").val()).split(",");
+                    for (var i = 0; i < tmp.length; i++) {
+                        var guidStr = tmp[i];
+                        if (guidStr.indexOf("/") != -1) {
+                            guidStr = guidStr.substring(0, guidStr.lastIndexOf("/"));
+                            guidStr = guidStr.substring(guidStr.lastIndexOf("/") + 1);
+                            //alert(guidStr);
+                            $("#Images").append("<div class='item'> <a target='_blank' href='" + tmp[i] + "'><img src='" + tmp[i].replace("large", "medium") + "'/></a><a href='javascript:void(0);' style=' font-size: 40px;' class='del' guid=" +
+                                guidStr + ">×</a> </div>");
+                        }
+                    }
+                }
+            });
+
+            var userAgent = navigator.userAgent.toLowerCase();
+            var is_ie = (userAgent.indexOf('msie') != -1 && !is_opera) && userAgent.substr(userAgent.indexOf('msie') + 5, 3);
+
+            var guidStr = "86da7a17-149d-48bc-b1d6-97fe06e6a031";
+
+            function updateavatar() {
+
+                var path = "/uploadfile/MemberImg/" + guidStr + "/";
+                $("#Images").append("<div class='item'> <a target='_blank' href='" + path + "large.jpg'><img src='" + path + "medium.jpg'/></a><a href='javascript:void(0);' style=' font-size: 40px;' class='del' guid=" + guidStr + ">×</a> </div>");
+                var newguidStr = newGuid();
+                var html = AC_FL_RunContent('width', '1300', 'height', '830', 'scale', 'exactfit', 'src',
+                    'http://vip.yj.etmcn.com/Scripts/camera/camera.swf?nt=1&inajax=1&appid=1&input=86da7a17-149d-48bc-b1d6-97fe06e6a031&ucapi=http%3a%2f%2fvip.yj.etmcn.com/Ashx/FileUpload.ashx?upImage=crm_Image'.replace(
+                        "86da7a17-149d-48bc-b1d6-97fe06e6a031", newguidStr), 'id', 'mycamera', 'name', 'mycamera', 'quality', 'high', 'bgcolor', '#ffffff', 'wmode', 'transparent', 'menu', 'false', 'swLiveConnect', 'true', 'allowScriptAccess',
+                    'always');
+                $("#flashObj").html(html);
+
+                guidStr = newguidStr;
+                if ($.trim($("#imageLists").val()) == "") {
+                    $("#imageLists").val(path + "large.jpg");
+                } else {
+                    $("#imageLists").val($("#imageLists").val() + "," + path + "large.jpg");
+
+                }
+                $("#photo").eq(0).focus();
+            }
+            //updateavatar();
+
+            function show() {
+                //dialog("上传图片", "iframe:../upload.aspx?action=photo", "400px", "200px", "iframe");
+                window.parent.showDialog("上传图片", "<?php echo arU('Baby/zpsc'); ?>", "400px", "200px");
+            }
+
+            function finish(filepath) {
+                document.getElementById('limg').innerHTML = "<span id=\"limg\"><a target=\"_blank\" href=\"../uploadfile/Photo/" + filepath + "\">查看</a></span>";
+                BoxClose();
+            }
+
+            function newGuid() {
+                var guid = "";
+                for (var i = 1; i <= 32; i++) {
+                    var n = Math.floor(Math.random() * 16.0).toString(16);
+                    guid += n;
+                    if ((i == 8) || (i == 12) || (i == 16) || (i == 20))
+                        guid += "-";
+                }
+                return guid;
+            }
+        </script>
+    </form>
+</body>
+</html>

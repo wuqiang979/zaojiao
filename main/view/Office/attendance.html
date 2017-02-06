@@ -1,0 +1,235 @@
+
+    <div class="top" style="margin:10px">
+    <form action="<?php echo arU(''); ?>" method="get">
+        员工姓名：
+        <?php
+            // 调用用html seg 直接输出 select标签
+            arSeg(
+                array(
+                    // seg文件
+                    'segKey' => 'Html/select',
+                    // <select name="name">
+                    'name' => 'mid',
+                    // 适配器数据 数组
+                    //'map' => U_company_school_member_recordModel::$MARRAGEED_MAP,
+                    // map 多维数组适配器
+                      'mapbundle' => array($teacher, 'mid', 'realname'),
+                    // 选中的value selected = selected
+                    // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                    'selected' => arRequest('mid')
+                )
+            );
+        ?>
+        日期：
+        <input name="time1" type="text" value="<?php echo arRequest('time1');?>" id="tbStartDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width: 70px" /> -
+                    <input name="time2" value="<?php echo arRequest('time2');?>" type="text" id="tbEndDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width: 70px" />
+        <input type="submit" value="搜索"  class="button" />
+        <input type="button" name="btnAdd" value="打 卡" onclick="return sign();" id="btnAdd" class="button" />
+    </form>
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>教师姓名</td>
+                        <td>日期</td>
+                        <td>上班时间</td>
+                        <td>上班备注</td>
+                        <td>下班时间</td>
+                        <td>下班备注</td>
+                        <td>加班时长</td>
+                        <td>备注</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if($list):foreach($list as $auth):?>
+                    <tr>
+                        <td class="caozuo">
+                           <a href='javascript:modify(<?php echo json_encode($auth); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $auth['aid'] ?>')">删除</a></td> 
+                        <td><?php arEcho($auth['mname']['realname'],'-'); ?></td>
+                        <td><?php arEcho($auth['day'],'-'); ?></td>
+                        <td><?php if($auth['on']): echo date('H:i', (int)$auth['on']); else: echo '-'; endif;//arEcho(date('H:i', (int)$auth['on']),'-'); ?></td>
+                        <td><?php arEcho($auth['remarkon'],'-'); ?></td>
+                        <td><?php if($auth['off']): echo date('H:i', (int)$auth['off']); else: echo '-'; endif;//arEcho(date('H:i', (int)$auth['off']),'-'); ?></td>
+                        <td><?php arEcho($auth['remarkoff'],'-'); ?></td>
+                        <td><?php arEcho($auth['overtime'],'-'); ?></td>
+                        <td><?php arEcho($auth['remark'],'-'); ?></td>
+                    </tr>
+                <?php endforeach;endif; ?>
+                </tbody>
+                <tr>
+                    <td colspan="9"><?php echo $pagelist; ?></td>
+                </tr>
+            </table>
+
+        </div>
+
+<!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">
+                打卡类型：
+                    <?php
+                      // 调用用html seg 直接输出 select标签
+                      arSeg(
+                         array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'type',
+                            // 适配器数据 数组
+                             'map' => TeacherAttendanceModel::$ATTENDANCETYPE_MAP ,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array($school, 'sid', 'name'),
+                            // 选中的value selected = selected
+                            // 'selected' => $auth['sid']
+                         )
+                      );
+                    ?>
+                </td>
+                <td style="width: 288px; float:left">迟到/早退事由:
+                    <input name="reason" type="text"  />
+                </td>
+                <td style="width: 228px; float:left">是否加班:
+                    <input type="radio" name="overtime" value="yes" />是
+                    <!-- <input type="radio" name="overtime" value="no" />否 -->
+                </td>
+                <td style="width: 228px;float:left">
+                    <input type="submit"  value="打 卡" class="button" />
+                </td>
+            </tr>
+        </table>
+</form>
+<!--弹出框 修改-->
+<form action="<?php echo arU(''); ?>" id="edit_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">教师姓名:
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'mid',
+                            // 适配器数据 数组
+                            //'map' => U_company_school_member_recordModel::$MARRAGEED_MAP,
+                            // map 多维数组适配器
+                              'mapbundle' => array($teacher, 'mid', 'realname'),
+                            // 选中的value selected = selected
+                            // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                            // 'selected' => arRequest('mid')
+                        )
+                    );
+                ?>
+                        <input name="aid" type="hidden"/>
+                        <input name="on" type="hidden"/>
+                        <input name="off" type="hidden"/>
+                </td>
+                <td style="width: 228px;float:left">日期:
+                        <input name="day" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">
+                上班时间:
+                    <?php
+                      // 调用用html seg 直接输出 select标签
+                      arSeg(
+                         array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'editon',
+                            // 适配器数据 数组
+                             'map' => TeacherAttendanceModel::$KAOQINEDIT_MAP ,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array($school, 'sid', 'name'),
+                            // 选中的value selected = selected
+                            // 'selected' => $auth['sid']
+                         )
+                      );
+                    ?>
+                </td>
+                <td style="width: 228px;float:left">
+                下班时间:
+                    <?php
+                      // 调用用html seg 直接输出 select标签
+                      arSeg(
+                         array(
+                            // seg文件
+                            'segKey' => 'Html/select',
+                            // <select name="name">
+                            'name' => 'editoff',
+                            // 适配器数据 数组
+                             'map' => TeacherAttendanceModel::$KAOQINEDIT_MAP ,
+                            // map 多维数组适配器
+                            // 'mapbundle' => array($school, 'sid', 'name'),
+                            // 选中的value selected = selected
+                            // 'selected' => $auth['sid']
+                         )
+                      );
+                    ?>
+                </td>
+                <td style="width: 228px;float:left">
+                备注:
+                    <input name="remark" type="text"/>
+                </td>
+                
+                <td style="width: 228px;float:left">
+                    <input type="submit"  value="确 定" class="button" />
+                </td>
+            </tr>
+        </table>
+</form>
+
+<script>
+    // 增加
+    function sign()
+    {
+        $("[name='nid']").attr('value', '');
+        layer.open({
+            title:'打卡',
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(nid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('delAttendance') ?>', {aid:nid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#edit_window') //这里content是一个DOM
+        });
+
+    }
+
+
+</script>

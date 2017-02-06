@@ -1,0 +1,88 @@
+.main {
+    font-family: '微软雅黑';
+}
+.ws-warpper h4 {
+    font-size: 19px;
+    margin: 10px 0;
+    padding-left: 15px;
+    border-left: 3px solid green;
+}
+.memberinfo {
+    padding: 5px;
+}
+.memberinfo .input-group {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+.memberinfo .input-group label {
+    margin-left: 12px;
+}
+.memberinfo .input-group span {
+    margin: 0 10px;
+}
+.ws-btns a {
+    margin-top: 1.5rem;
+    padding: 5px 0;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.ws-user .portrait .portrait_img {
+    position: absolute;
+    top: 30%;
+    text-align: center;
+}
+.ws-user .portrait .banner {
+    position: relative;
+    margin-bottom: .6rem;
+}
+.portrait .txt{
+    font-size: 16px;
+    color: orangered;
+    text-align: center;
+}
+.userinfo {
+    margin-top: 3.5rem;
+    background-color: #9BABB1;
+    margin-bottom:2rem;
+}
+.userinfo .list:first-child {
+    border-top: 1px solid #dedfe0;
+}
+.userinfo .list {
+    border-bottom: 2px solid white;
+    padding: 1rem 2rem;
+}
+.userinfo .list a {
+    display: block;
+    color: #f66;
+    background-color: rgba(146, 90, 90, 0.84);
+    border-radius: 5px;
+    padding:5px 0;
+}
+.userinfo .list .icon img{
+    width: 34px;
+}
+.userinfo .list .name {
+    font-size: 16px;
+    color: #000;
+    padding-left: .5rem;
+    margin-top: .4rem;
+    color: white;
+}
+.userinfo .list a span {
+    float: right;
+    margin-right: .34rem;
+    line-height: inherit;
+    color: #0078D7;
+    font-size: 1.8rem
+}
+
+form{
+    padding:  1.2rem 1rem;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-top:10px;
+}
+.list-wrapper{
+    margin: 8px 0;
+}

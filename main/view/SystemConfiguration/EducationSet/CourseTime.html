@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=acb0df76-c113-4b1a-b5eb-b5759469168d', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <style type="text/css">
+    ul {
+        list-style: none;
+        padding-left: 18px;
+    }
+
+    ul li {
+        float: left;
+        padding: 1px 2px 1px 5px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <form method="post" action="TimeNode.aspx?isLeft=8&amp;navId=acb0df76-c113-4b1a-b5eb-b5759469168d" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNjgwOTA3MjQwD2QWAgIDD2QWCAIBDxYCHgRUZXh0BZoNPHNjcmlwdCBzcmM9Ii4uLy4uL1NjcmlwdHMvalF1ZXJ5LmV0bVRhYnMuanMiPjwvc2NyaXB0PjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4kKGZ1bmN0aW9uICgpIHskKCIjcyIpLmV0bVRhYnMoe2l0ZW06IFt7IFRleHQ6ICLlrabmnJ/orr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1Rlcm0uYXNweD9pc0xlZnQ9MSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlubTnuqforr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0dyYWRlLmFzcHg/aXNMZWZ0PTImbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K++56iL6K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9MZXNzb24uYXNweD9pc0xlZnQ9MyZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmiY3oibror77nqIvorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xpa2VMZXNzb24uYXNweD9pc0xlZnQ9NCZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmlZnlrqTorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1Jvb20uYXNweD9pc0xlZnQ9NSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLkvJHlgYforr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1NldFJlc3REYXlzLmFzcHg/aXNMZWZ0PTYmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6K++56iL5L2T57O76K6+572uIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9UZWFjaC9Db3Vyc2VTeXNTZXQuYXNweD9pc0xlZnQ9NyZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLkuIror77oioLngrkiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL1RpbWVOb2RlLmFzcHg/aXNMZWZ0PTgmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IHRydWUgfSx7IFRleHQ6ICLor77nqIvlhbbku5borr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0NvdXJzZVRpbWVMZW4uYXNweD9pc0xlZnQ9OSZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor7flgYfnsbvlnovorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xlYXZlVHlwZVNldC5hc3B4P2lzTGVmdD0xMCZuYXZJZD1hY2IwZGY3Ni1jMTEzLTRiMWEtYjVlYi1iNTc1OTQ2OTE2OGQiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLor7flgYforr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1RlYWNoL0xlYXZlQ2hlY2tTZXQuYXNweD9pc0xlZnQ9MTEmbmF2SWQ9YWNiMGRmNzYtYzExMy00YjFhLWI1ZWItYjU3NTk0NjkxNjhkIiwgU2VsZWN0ZWQ6IGZhbHNlIH0sXX0pO30pOzwvc2NyaXB0PjxkaXYgaWQ9J3MnPjwvZGl2PmQCAw8QZBAVDgUwN+eCuQUwOOeCuQUwOeeCuQUxMOeCuQUxMeeCuQUxMueCuQUxM+eCuQUxNOeCuQUxNeeCuQUxNueCuQUxN+eCuQUxOOeCuQUxOeeCuQUyMOeCuRUOAjA3AjA4AjA5AjEwAjExAjEyAjEzAjE0AjE1AjE2AjE3AjE4AjE5AjIwFCsDDmdnZ2dnZ2dnZ2dnZ2dnZGQCBQ8QZBAVDAUwMOWIhgUwNeWIhgUxMOWIhgUxNeWIhgUyMOWIhgUyNeWIhgUzMOWIhgUzNeWIhgU0MOWIhgU0NeWIhgU1MOWIhgU1NeWIhhUMAjAwAjA1AjEwAjE1AjIwAjI1AjMwAjM1AjQwAjQ1AjUwAjU1FCsDDGdnZ2dnZ2dnZ2dnZ2RkAgsPZBYCAgEPFgIeC18hSXRlbUNvdW50AgYWDGYPZBYEZg8VAQUwOTo0MGQCAQ8PFgIeC0NvbW1hbmROYW1lBQUwOTo0MGRkAgEPZBYEZg8VAQUwOTo1MGQCAQ8PFgIfAgUFMDk6NTBkZAICD2QWBGYPFQEFMTA6MTVkAgEPDxYCHwIFBTEwOjE1ZGQCAw9kFgRmDxUBBTEwOjIwZAIBDw8WAh8CBQUxMDoyMGRkAgQPZBYEZg8VAQUxNToyMGQCAQ8PFgIfAgUFMTU6MjBkZAIFD2QWBGYPFQEFMTU6NDVkAgEPDxYCHwIFBTE1OjQ1ZGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgYFFXJwdE5vZGUkY3RsMDAkbGlua0RlbAUVcnB0Tm9kZSRjdGwwMSRsaW5rRGVsBRVycHROb2RlJGN0bDAyJGxpbmtEZWwFFXJwdE5vZGUkY3RsMDMkbGlua0RlbAUVcnB0Tm9kZSRjdGwwNCRsaW5rRGVsBRVycHROb2RlJGN0bDA1JGxpbmtEZWyQXBI+dPOX+itSwsA0pEavnk84A1+ZZhVKAqJNPvcxYQ==" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="24BC3F66" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdACLO15TgczwsvNg0lGXbirn1Mgf6fdtNPN2kVG0jeNdxxnv3VtCaR+INx2AsmjHZIBdJJQ0FRHsTcKdjrwUb0JYPSyNQbFei5bogwIx2oXuupyudX7fooQ3o5h3lvm2FR5iRJZDy6ufag0PLFxqasjhUEzmYM64Y2IKYY0hYtmB5f3M8d/Frizpa6XQoQuHkacIv6L0ZiUGQgs63ldJxy7j3FNRoucflatxRDZ3V6Bl9xbWhWvHRnc9k2Xafy0F5gF9nF25quLB0sEB8jyFxQAr7Yn6kHkomzpwstyfHaWL8E8aEmwka5ok/xJRSAI297zjoLX9CKe6n75biikQyxTyGTWRLPBrXh58XjUR9Z7qFHqu0S4/jEM/g6lvLuM1HbdiPiVM5ZCJ0ogJZX6amMUMN4V+pt545tWD6IT3fWI1JmLt6+Tyq6CjPA1ieQtNwyyvENZFyNmooPdVg6aWhVKQg5HKE7wJQqO3gM75zrxk36BXetFPz76U6AaroXZtoDr6l0/zHIBQYBjQsQq8E1gkCiOETOW4hpwKF+sNDUqruuI2flOtjYF51ZgRWwjFn4K2TXELZyrW99YRLW0+m1iffuZk8NSwxfw024SgCh4Lz5+4QzL2WFDLjQMXQc8tEYOOXBOx5kzjMBuzhfutOV3ZYTjNuXYXbcQdfo4Yq3zFM/nzm1MH1QLAACCxJUUXvNd9reHuuQPpdJA1vjVwnVQ04HdtNRJV2XQbQdAb/cxZY6VLLxEyW26U+kmun+e2r/eo=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+               item: [{
+                    Text: "学期设置",
+                    Url: "<?php echo arU('SystemConfiguration/termSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "年级设置",
+                    Url: "<?php echo arU('SystemConfiguration/gradeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/courseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "才艺课程设置",
+                    Url: "<?php echo arU('SystemConfiguration/ArtcourseSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "教室设置",
+                    Url: "<?php echo arU('SystemConfiguration/classroomSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "休假设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaySet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "课程体系设置",
+                    Url: " <?php echo arU('SystemConfiguration/CourseSystemSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "上课节点",
+                    Url: "<?php echo arU('SystemConfiguration/CourseTime'); ?>",
+                    Selected: true
+                }, {
+                    Text: "课程其他设置",
+                    Url: "<?php echo arU('SystemConfiguration/CourseOthersSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假类型设置",
+                    Url: "<?php echo arU('SystemConfiguration/holidaytypeSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "请假设置",
+                    Url: "<?php echo arU('SystemConfiguration/ApholidaySet'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:78px;">
+                    上课节点：
+                </td>
+                <td class="borderRight" style="width:126px;">
+                    <select name="ddlStartHour" id="ddlStartHour">
+                        <option value="07">07点</option>
+                        <option value="08">08点</option>
+                        <option value="09">09点</option>
+                        <option value="10">10点</option>
+                        <option value="11">11点</option>
+                        <option value="12">12点</option>
+                        <option value="13">13点</option>
+                        <option value="14">14点</option>
+                        <option value="15">15点</option>
+                        <option value="16">16点</option>
+                        <option value="17">17点</option>
+                        <option value="18">18点</option>
+                        <option value="19">19点</option>
+                        <option value="20">20点</option>
+                    </select>
+                    <select name="ddlStartMinute" id="ddlStartMinute">
+                        <option value="00">00分</option>
+                        <option value="05">05分</option>
+                        <option value="10">10分</option>
+                        <option value="15">15分</option>
+                        <option value="20">20分</option>
+                        <option value="25">25分</option>
+                        <option value="30">30分</option>
+                        <option value="35">35分</option>
+                        <option value="40">40分</option>
+                        <option value="45">45分</option>
+                        <option value="50">50分</option>
+                        <option value="55">55分</option>
+                    </select>
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="submit" name="btnAdd" value="添 加" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div class="borderTop" style="margin-top:5px;"></div>
+        <div id="P_Data">
+            <ul>
+                <li>
+                    09:40
+                    <input type="image" name="rptNode$ctl00$linkDel" id="rptNode_linkDel_0" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+                <li>
+                    09:50
+                    <input type="image" name="rptNode$ctl01$linkDel" id="rptNode_linkDel_1" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+                <li>
+                    10:15
+                    <input type="image" name="rptNode$ctl02$linkDel" id="rptNode_linkDel_2" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+                <li>
+                    10:20
+                    <input type="image" name="rptNode$ctl03$linkDel" id="rptNode_linkDel_3" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+                <li>
+                    15:20
+                    <input type="image" name="rptNode$ctl04$linkDel" id="rptNode_linkDel_4" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+                <li>
+                    15:45
+                    <input type="image" name="rptNode$ctl05$linkDel" id="rptNode_linkDel_5" title="删除" Text="删除" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/del.png" onclick="return confirm(&#39;确认要删除吗？&#39;);" />
+                </li>
+            </ul>
+        </div>
+    </form>
+</body>
+
+</html>

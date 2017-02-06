@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head id="Head1">
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/flexigrid.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=3da22a0f-7b10-48c0-bf19-f3faac9e4cf0', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function DeleteMore() {
+            var AttendanceFeeGuids = "";
+            $(".trSelected").each(function() {
+                AttendanceFeeGuids = AttendanceFeeGuids + $(this).find("td").eq(0).find("div").eq(0).find("input").eq(0).val() + ",";
+            });
+            if (AttendanceFeeGuids == "") {
+                alert("未选中项");
+            } else {
+                var s = AttendanceFeeGuids.substring(0, AttendanceFeeGuids.length - 1);
+                if (confirm("确定要删除吗？")) {
+                    $.ajaxMethod("AttendanceFee_Delete", {
+                            "AttendanceFeeGuids": s
+                        },
+                        function(data) {
+                            if (data == "删除成功") {
+                                alert("删除成功");
+                            } else {
+                                alert(data);
+                            }
+                        },
+                        true, "text");
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="AttendanceFeeHistory.aspx?navId=3da22a0f-7b10-48c0-bf19-f3faac9e4cf0" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUIMTkyMDc3OTUPZBYCAgMPZBYGAgQPEGQQFQgJ6K+36YCJ5oupCuWkp+ePrTHnj60K5omY566hMeePrQrmiZjnrqEy54+tCuWwj+ePrTHnj60K5bCP54+tMuePrQrkuK3nj60x54+tCuS4reePrTLnj60VCCQwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAkMjQ5ZGIzMTctMzU4MS00MjNkLTgwODUtOTY0MjI0NDkyYzUwJDYwMzQyZTZkLTAzYmItNDM2YS1hNDRkLTkxMDk0YTBhODgwNiRjNDEwNmI0NC1hZTYxLTQ0YTQtODM3NC03MDg5Y2ZmYTNlNjMkNWE0YzA0ZmYtNWIyYy00M2ZkLWJlZjMtOWE0ZjNiZjk2NzNlJDI2N2UxM2NlLTMzZDYtNGY0MS1iNTEwLWVkNjMxZTE4OGNkNiQ2N2YwODA1Yi03MjIxLTQxMjItYWMzNi1mNGZlNThmYjk2MzAkMjQ3MDBmODItNjM0MC00NDBjLWJmNDYtOWJmZDljOGI1N2VjFCsDCGdnZ2dnZ2dnZGQCBQ8QZBAVAwnor7fpgInmi6kG5a2m6LS5Bue7rei0uRUDJDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCQxNDhmMTcwNC0zYjA3LTQ5YWYtYTk4NS0yMTljZjBlNTUwYjckZmU3ODM5ZjktY2FmMy00MDVmLWE4NjAtNTA1ZjgzNmQ5NDg5FCsDA2dnZ2RkAgcPEGQQFQQJ6K+36YCJ5oupBGRlbW8G5p2O5qKFBndhbmRvdRUEJDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCQzNmJkZWUyMC02MDE2LTRmNGUtYTI5MC01ODJjMTE0M2E1YjckNjU2NzFlNzMtZjlkMC00NTQ1LTkzZmYtOGI4MTdjYWQ4ODBmJGM3MTBhMGFlLTFmZGMtNDU4Zi1hNzA1LTY3NjQ4MWRjYjJmMBQrAwRnZ2dnZGRk9UsYhUyzHqWB7eBXR3cpLMe4DVw9apQixM0KQjXqa7U="
+            />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="4FE5CE76" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABihFYThVQ6+JneEZ7uXZ70zWL7ILxMbuCC1VJBe/wvRUNjWAwOOAvhz/ESbI+Wmd7TsVCGd6OlFCz6uP3q3IbTMvn4KVQ81hOzrn1cKjlMchx3Niep0JyNFjdwBud1Vlo9BeoR1/iSqgZjNcPrPbluH3/F1iE5EPbEG1q7L42a9FR48x1DPeB4hMi8hz6cenkBgAg6ZIy1fiPBd9UNS8qQAFvSzMozDjnEn2Cn87C0D4v0vr2t8DnQl0XllPPptpz7ivawEsBPL7tk9ZIKd+jP+0Q4pHWarnIRs4vCmIN8Hkp8j44tHfUwAFH/z8U5BzSAinJhr1lBMtI9tGeYf706daA0wlR3PHGdwJ/pW5nkdsalhtjQL9arruz7LbBZrVbpcRsOcbQBqVhpSkmygKRiKuIfQLvaJKgnRNriHDEWY2STK41U7JzbvXhY4lhZBVzUURhrx0sZaYn+VjtrCK5B+RqcvhUCv+ReCN3jpu/V23O9uYreTL8ZAHdAt6e/BsMwUaXrpUhsSkqQBSudWPS5wSOy62jWVYWza3uNPY4xsYA=="
+            />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">幼儿姓名：</td>
+                <td class="borderRight" style="width: 103px;">
+                    <input name="txtMemberName" type="text" id="txtMemberName" class="int" style="width:82px;" />
+                </td>
+                <td class="textAlignRight" style="width: 114px;">
+                    <select name="ddlTimeType" id="ddlTimeType" style="width:80px;">
+                        <option value="settleDate">结算日期</option>
+                        <option value="createDate">经办时间</option>
+                        <option value="checkDate">审批时间</option>
+
+                    </select>&nbsp;：</td>
+                <td class="borderRight" style="width: 172px;">
+                    <input name="txtDate1" type="text" id="txtDate1" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px;" /> -
+                    <input name="txtDate2" type="text" id="txtDate2" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px;" />
+                </td>
+                <td class="textAlignRight" style="width:54px">班级：</td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlClass" id="ddlClass" style="width:142px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="249db317-3581-423d-8085-964224492c50">大班1班</option>
+                        <option value="60342e6d-03bb-436a-a44d-91094a0a8806">托管1班</option>
+                        <option value="c4106b44-ae61-44a4-8374-7089cffa3e63">托管2班</option>
+                        <option value="5a4c04ff-5b2c-43fd-bef3-9a4f3bf9673e">小班1班</option>
+                        <option value="267e13ce-33d6-4f41-b510-ed631e188cd6">小班2班</option>
+                        <option value="67f0805b-7221-4122-ac36-f4fe58fb9630">中班1班</option>
+                        <option value="24700f82-6340-440c-bf46-9bfd9c8b57ec">中班2班</option>
+
+                    </select>
+                </td>
+                <td class="borderRight" rowspan="2" style="padding-left: 20px;">
+                    <input type="button" class="button" value="搜 索" id="btnSearch" /> &nbsp; &nbsp; &nbsp;
+
+                </td>
+
+            </tr>
+
+            <tr>
+                <td class="textAlignRight">结算科目：</td>
+                <td class="borderRight">
+                    <select name="ddlTuitionItem" id="ddlTuitionItem" style="width:84px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="148f1704-3b07-49af-a985-219cf0e550b7">学费</option>
+                        <option value="fe7839f9-caf3-405f-a860-505f836d9489">续费</option>
+
+                    </select>
+                </td>
+                <td class="textAlignRight">
+                    <select name="ddlUserType" id="ddlUserType" style="width:80px;">
+                        <option value="createUser">经办人</option>
+                        <option value="checkUser">审批人</option>
+
+                    </select>&nbsp;：
+                </td>
+                <td class="borderRight">
+                    <select name="ddlUserValue" id="ddlUserValue" style="width:154px;">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="36bdee20-6016-4f4e-a290-582c1143a5b7">demo</option>
+                        <option value="65671e73-f9d0-4545-93ff-8b817cad880f">李梅</option>
+                        <option value="c710a0ae-1fdc-458f-a705-676481dcb2f0">wandou</option>
+
+                    </select>
+                </td>
+            </tr>
+
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"幼儿姓名","Name":"MemberName","Width":90,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":true,"LinkStrForamtBindColumn":"3da22a0f-7b10-48c0-bf19-f3faac9e4cf0,AttendanceFeeGuid","LinkStrForamt":"AttendanceFeeInfo.aspx?navId={0}&AttendanceFeeGuid={1}","LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"班级","Name":"ClassName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"结算月份","Name":"Months","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"出勤天数","Name":"AttendanceDays","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"DoStatusBy","Display":"状态","Name":"DoStatus","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"审核人","Name":"CheckUserName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"审核时间","Name":"CheckTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"经办时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"经办人","Name":"CreatorName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]'
+        />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"3da22a0f-7b10-48c0-bf19-f3faac9e4cf0"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Finance/AttendanceFeeHistory.aspx?navId=3da22a0f-7b10-48c0-bf19-f3faac9e4cf0' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='AttendanceFeeHistory' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='AttendanceFeeHistoryAttendanceFeeHistory' />
+        <script type='text/javascript'>
+            var etmFormId = 'form1';
+
+            function fixIE9() {
+                if ($.browser.msie && $.browser.version == 9) {
+                    $('#form1 select').each(function() {
+                        var name = $(this).attr('name');
+                        if (name != undefined && name.length > 0) {
+                            var value = $(this).val();
+                            if (value == null) {
+                                value = $(this).find('option:first').attr('value');
+                                $(this).val(value);
+                            }
+                        }
+                    });
+                }
+            }
+
+            function RefreshGrid() {
+                $('#Test').flexOptions().flexReload();
+            };
+
+            function addFormData() {
+                fixIE9();
+                var dt = $('#form1').serializeArray();
+                $('#Test').flexOptions({
+                    params: dt
+                });
+                return true;
+            }
+            $(function() {
+                $('#btnSearch').click(function() {
+                    $('#Test').flexOptions({
+                        newp: 1
+                    }).flexReload();
+                    return false;
+                });
+            });
+            $('#Test').flexigrid({
+                url: 'http://vip.yj.etmcn.com/Ajax/AttendanceFeeHistory',
+                sortname: 'CreateTime',
+                sortorder: 'desc',
+                usepager: true,
+                useRp: true,
+                rpOptions: [20, 30, 50, 100, 200],
+                rp: 30,
+                colModel: [{
+                    display: '幼儿姓名',
+                    name: 'MemberName',
+                    etmname: 'MemberName',
+                    width: 90,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: true,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '班级',
+                    name: 'ClassName',
+                    etmname: 'ClassName',
+                    width: 120,
+                    sortable: false,
+                    align: 'center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '结算月份',
+                    name: 'Months',
+                    etmname: 'Months',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '出勤天数',
+                    name: 'AttendanceDays',
+                    etmname: 'AttendanceDays',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '状态',
+                    name: 'DoStatus',
+                    etmname: 'DoStatusBy',
+                    width: 120,
+                    sortable: false,
+                    align: 'center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '审核人',
+                    name: 'CheckUserName',
+                    etmname: 'CheckUserName',
+                    width: 120,
+                    sortable: false,
+                    align: 'center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '审核时间',
+                    name: 'CheckTime',
+                    etmname: 'CheckTime',
+                    width: 120,
+                    sortable: false,
+                    align: 'center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: 'yyyy-MM-dd',
+                    ColumnType: 'DateTime',
+                    IsJsAddColumn: false
+                }, {
+                    display: '经办时间',
+                    name: 'CreateTime',
+                    etmname: 'CreateTime',
+                    width: 120,
+                    sortable: false,
+                    align: 'center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: 'yyyy-MM-dd',
+                    ColumnType: 'DateTime',
+                    IsJsAddColumn: false
+                }, {
+                    display: '经办人',
+                    name: 'CreatorName',
+                    etmname: 'CreatorName',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }],
+                width: $(window).width(),
+                height: $(window).height() - 210 + 60,
+                onSubmit: addFormData
+            });
+        </script>
+    </form>
+</body>
+
+</html>

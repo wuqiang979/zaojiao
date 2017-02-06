@@ -1,0 +1,91 @@
+<div class="tableFun-head" style="background-color: #F4F4F4;font-size: 12px;border-bottom:1px #DAD8D4 solid;">
+    <div class="sectab" style="padding: 10px 0;">
+        <table class="editMsg">
+            <tr>
+                <td class="textRight" width="80px;">教师姓名：</td>
+                <td class="borderRight" width="170px;">
+                    <input type="text" name="name" style="width:140px;">
+                </td>
+                <td class="textRight" width="80px;">登记时间：</td>
+                <td class="borderRight" width="170px;">
+                    <input type="text" name="name" style="width:75px;" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                    -
+                    <input type="text" name="name" style="width:75px;" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                </td>
+                <td style="padding-left:15px;">
+                    <a href="javascript:" class="submitBtn">搜索</a>
+                    <a href="javascript:" class="submitBtn">添加</a>
+                    <a href="javascript:" class="submitBtn">批量删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div name="表格" class="tableFun-body">
+    <table class="etm-Tab">
+        <tr>
+            <th style="width: 50px;">
+                <input type="checkbox" name="hobby" value="" onclick="wholecheck()" />
+            </th>
+            <th>操作</th>
+            <th>请假人</th>
+            <th>请假时间</th>
+            <th>请假时长</th>
+            <th>请假事由</th>
+            <th>登记时间</th>
+        </tr>
+        <tr class="for-hover">
+            <td style="width: 50px;">
+                <input type="checkbox" name="hobby"/>
+            </td>
+            <td>芒果</td>
+            <td>李梅</td>
+            <td>2016-05-13 19:17</td>
+            <td>芒果</td>
+            <td>课程体系A</td>
+            <td>教师</td>
+        </tr>
+    </table>
+</div>
+<div class="tableFun-footer" style="font-size: 12px;background-color: #F4F4F4;height: 30px;line-height: 30px;width:100%;border-bottom:1px #DAD8D4 solid;border-top:1px #DAD8D4 solid;">
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px ;">
+            <span style="margin:0px 5px 0px 25px;">显示</span>
+    <select name="" id="">
+        <option value="">10</option>
+        <option value="">20</option>
+        <option value="">30</option>
+    </select>
+    <span>条/页</span>
+    </span>
+    <a href="javascript:" style="color: #46626A;margin-left:10px; ">首页</a>
+    <span style="border-right: 1px #DAD8D4 solid;padding-right: 10px;">
+        <a href="javascript:" style="color: #46626A;margin-left:10px; ">上一页</a>
+    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;">
+        第 <input style="width: 50px;height: 15px;vertical-align: baseline;" placeholder="1" type="text"> 页
+        <input style="vertical-align: baseline;" type="button" class="etm-button" value="转 到">
+         <span style="font-size: 12px;">共 <span>1</span> 页</span>
+    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;">
+        <a href="javascript: "  style="color: #46626A;margin-right:10px;">下一页</a>
+        <a href="javascript: "  style="color: #46626A;">末尾页</a>
+    </span>
+    <span style="border-right: 1px #DAD8D4 solid;padding: 0px 10px 0px 10px;margin-right: 10px;">
+        <input style="vertical-align: baseline;" type="button" class="etm-button" value="刷 新">
+    </span>
+    显示从 <span>1</span>条数据 到 <span>1</span>条数据 共 <span>1</span> 数据
+</div>
+<script>
+    $(function() {
+        $('.tableFun-body').height( $('.main').outerHeight() - $('.tableFun-head').outerHeight() - $('.tableFun-footer').outerHeight());
+
+        $(".tableFun-body").mCustomScrollbar({
+            axis: "x",
+            theme: "dark-thin",
+            autoExpandScrollbar: true,
+            advanced: {
+                autoExpandHorizontalScroll: true
+            }
+        });
+    });
+</script>

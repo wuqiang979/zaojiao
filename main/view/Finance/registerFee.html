@@ -1,0 +1,357 @@
+	<div class="top" style="margin:10px">
+		<form enctype="multipart/form-data" method="post" action="<?php echo arU();?>" >
+			<table class="edit">
+	            <tr>
+	                <td class="textAlignRight">幼儿：</td>
+	                <td colspan="5">
+	                    <span id="lbMember"></span>
+	                <?php
+	                    // 调用用html seg 直接输出 select标签
+	                    arSeg(
+	                        array(
+	                            // seg文件
+	                            'segKey' => 'Html/select',
+	                            // <select name="name">
+	                            'name' => 'bid',
+	                            // 加ID属性
+				                'extra' => 'id="choseBaby"',
+	                            // 适配器数据 数组
+	                            // 'map' => BabyChargeModel::$CHARGETYPE_MAP,
+	                            // map 多维数组适配器
+	                            'mapbundle' => array($choseBaby, 'bid', 'name'),
+	                            // 选中的value selected = selected
+	                            // 'selected' => 
+	                        )
+	                    );
+	                ?>
+	                </td>
+	            </tr>
+	            <tr> 
+	                <td class="textAlignRight" style="width: 80px;">收费日期：
+	                </td>
+	                <td class="borderRight" style="width: 205px;">
+	                    <input name="chargeday" type="text" value="<?php echo date('Y-m-d', time());?>" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,onpicked:function(dp){pickedFuncChar(dp.cal.getNewDateStr());}})" />
+	                    <span class="words">&nbsp;*</span>
+	                </td>
+	                <td class="textAlignRight" style="width: 80px;">经办人：
+	                </td>
+	                <td class="borderRight" style="width: 205px;">
+	                    <!-- <select name="operator" class="int">
+	                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+	                        <option selected="selected" value="36bdee20-6016-4f4e-a290-582c1143a5b7">demo</option>
+	                        <option value="65671e73-f9d0-4545-93ff-8b817cad880f">李梅</option>
+	                        <option value="c710a0ae-1fdc-458f-a705-676481dcb2f0">wandou</option>
+
+	                    </select>
+	                    &nbsp;<span class="words">*</span> -->
+	                    <span><?php if($realname): echo $realname; endif;?></span>
+	                </td>
+	                <td class="textAlignRight" style="width: 80px">折扣：
+	                </td>
+	                <td>
+	                    <input name="discount" type="text" class="int" style="text-align: right;" />
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">收费帐号：
+	                </td>
+	                <td class="borderRight" >
+	                <?php
+	                    // 调用用html seg 直接输出 select标签
+	                    arSeg(
+	                        array(
+	                            // seg文件
+	                            'segKey' => 'Html/select',
+	                            // <select name="name">
+	                            'name' => 'chargetype',
+	                            // 适配器数据 数组
+	                            'map' => BabyChargeModel::$CHARGETYPE_MAP,
+	                            // map 多维数组适配器
+	                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+	                            // 选中的value selected = selected
+	                            // 'selected' => isset( $auth['hiringway'] )? $auth['hiringway'] :''
+	                            // 'selected' => $auth['hiringway']
+	                        )
+	                    );
+	                ?>
+	                &nbsp;<span class="words">*</span>
+	                <dav id="backCards"></div>
+	                </td>
+
+	                <td class="textAlignRight">应收金额：
+	                </td>
+	                <td class="borderRight">
+	                    <input name="shouldcharges" type="text" class="int" style="text-align: right;" />&nbsp;<span class="words">*</span>
+	                </td>
+	                <td class="textAlignRight">实收金额：
+	                </td>
+	                <td class="borderRight">
+	                    <input name="actualcharges" type="text" class="int" style="text-align: right;" />&nbsp;<span class="words">*</span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">幼儿类型：
+	                </td>
+	                <td class="borderRight">
+	                    <?php
+					      // 调用用html seg 直接输出 select标签
+					      arSeg(
+					         array(
+					            // seg文件
+					            'segKey' => 'Html/select',
+					            // <select name="name">
+					            'name' => 'babytype',
+					            // 适配器数据 数组
+					            'map' => BabyModel::$ATTENTION_TYPE_MAP,
+					            // map 多维数组适配器
+					            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+					            // 选中的value selected = selected
+					            // 'selected' => $enrollment['attention_type']
+					         )
+					      );
+					?>
+	                </td>
+	                <td class="textAlignRight">到期日期：</td>
+	                <td class="borderRight">
+	                    <input name="daydue" type="text" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" />
+	                </td>
+	                <td class="textAlignRight">代扣单：</td>
+	                <td>
+	                    <input type="checkbox" name="withholdingsingle" value="1" />
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">单据号：</td>
+	                <td class="borderRight">
+	                    <input name="serialnumber" type="text" class="int" />
+	                </td>
+	                <td class="textAlignRight">使用定金：</td>
+	                <td class="borderRight">
+	                    <input type="checkbox" name="earnest" value="1" />
+	                </td>
+	            </tr>
+	            <tr>
+		            <td class="textAlignRight">收费模式：</td>
+	                <td colspan="5">
+	                <?php
+	                    // 调用用html seg 直接输出 select标签
+	                    arSeg(
+	                        array(
+	                            // seg文件
+	                            'segKey' => 'Html/select',
+	                            // <select name="name">
+	                            'name' => 'chargeway',
+	                            // 适配器数据 数组
+	                            'map' => BabyChargeModel::$CHARGEWAY_MAP,
+	                            // map 多维数组适配器
+	                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+	                            // 选中的value selected = selected
+	                            // 'selected' => isset( $auth['hiringway'] )? $auth['hiringway'] :''
+	                            // 'selected' => $auth['hiringway']
+	                        )
+	                    );
+	                ?>
+	                    <span id="spanTerm">
+	                        <?php
+						      // 调用用html seg 直接输出 select标签
+						      arSeg(
+						         array(
+						            // seg文件
+						            'segKey' => 'Html/select',
+						            // <select name="name">
+						            'name' => 'studyyear',
+						            // 适配器数据 数组
+						            // 'map' => BabyModel::$ATTENTION_TYPE_MAP,
+						            // map 多维数组适配器
+						            'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+						            // 选中的value selected = selected
+						            //'selected' => $enrollment['profile']['school_year_id']
+						         )
+						      );
+						?>
+	                    </span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">备注：
+	                </td>
+	                <td colspan="5">
+	                    <textarea name="remark" rows="2" cols="20" id="tbNotes" class="int" style="width: 678px; height: 47px;">
+	                    </textarea>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" class="borderBottom"></td>
+	            </tr>
+	            <!-- <tr>
+	                <td colspan="6" style="padding-left: 20px;">才艺课程：
+	                    <a href="javascript:void(0)">
+	                        <img alt="点击添加课程" title="点击添加课程" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+	                    </a>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6">
+	                    <table class="list" style="text-align: center;">
+	                        <thead>
+	                            <tr>
+	                                <th>课程名称</th>
+	                                <th>价格</th>
+	                                <th>折扣</th>
+	                                <th>小计</th>
+	                                <th>折后小计</th>
+	                                <th>操作</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+
+	                        </tbody>
+	                        <tfoot>
+	                            <tr>
+	                                <td colspan="3" style="text-align: right;">总计：</td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td></td>
+	                            </tr>
+	                        </tfoot>
+	                    </table>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" class="borderBottom"></td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" style="padding-left: 20px;">收费科目：
+	                    <a href="javascript:void(0)">
+	                        <img alt="点击添加收费科目" title="点击添加收费科目" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+	                    </a>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6">
+	                    <table class="list" style="text-align: center;">
+	                        <thead>
+	                            <tr>
+	                                <th>科目名称</th>
+	                                <th>价格</th>
+	                                <th>折扣</th>
+	                                <th>小计</th>
+	                                <th>折后小计</th>
+	                                <th>操作</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+
+	                        </tbody>
+	                        <tfoot>
+	                            <tr>
+	                                <td></td>
+	                                <td></td>
+	                                <td style="text-align: right;">总计：</td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td></td>
+	                            </tr>
+	                        </tfoot>
+	                    </table>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" class="borderBottom"></td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" style="padding-left: 45px;">物料：
+	                    <a href="javascript:void(0)">
+	                        <img alt="点击添加物料" title="点击添加物料" src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/add.png" style="border: 0; vertical-align: middle;">
+	                    </a>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6">
+	                    <table class="list" style="text-align: center;">
+	                        <thead>
+	                            <tr>
+	                                <th>物料名称</th>
+	                                <th>价格</th>
+	                                <th>购买数量</th>
+	                                <th>赠送数量</th>
+	                                <th>折扣</th>
+	                                <th>小计</th>
+	                                <th>折后小计</th>
+	                                <th>操作</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+
+	                        </tbody>
+	                        <tfoot>
+	                            <tr>
+	                                <td colspan="5" style="text-align: right;">总计：</td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td style="text-align: right;">
+	                                    <span></span></td>
+	                                <td></td>
+	                            </tr>
+	                        </tfoot>
+	                    </table>
+	                </td>
+	            </tr> -->
+	            <tr>
+	                <td colspan="6" style="text-align: center;">
+	                    <input type="submit" value="提 交" class="button" />
+	                </td>
+	            </tr>
+	        </table>
+		</form>
+	</div>
+<script type="text/javascript">
+            function rbCheck(v) {
+                if (v == "M") {
+                    $("#spanMonth").removeClass("hidden");
+                    $("#spanTerm").addClass("hidden");
+                } else if (v == "T") {
+                    $("#spanMonth").addClass("hidden");
+                    $("#spanTerm").removeClass("hidden");
+                }
+            }
+</script>
+
+<script type="text/javascript">
+$(function(){
+    $('#choseBaby').change(function(){
+        var bid = $('#choseBaby').val();
+        $.ajax({
+            type: 'POST',
+            url: '',
+            data:{   
+                'sign':'choseBaby',
+                'bid': bid
+            },
+            datatype: 'json',
+            success: function(data) {
+            data=JSON.parse(data);
+            // alert(data[1]);
+            var par = $('#backCards');
+            var del = $('#addchargecard');
+            par.empty($(del));
+            var str = '<select id="addchargecard" name="chargecard"  class="int">'+
+                    '<option value="">请选择银行卡</option>';
+            for(var key in data){
+                // alert(data[key]);
+                str+='<option value="'+data[key]+'">'+data[key]+'</option>';
+            }
+                    
+            str+='/<select';
+            par.append($(str));
+
+            }
+        });
+    });
+        
+});
+</script>

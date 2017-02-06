@@ -1,0 +1,242 @@
+<!-- 意外伤害记录 -->
+<!-- 显示内容 start -->
+<div class="top" style="margin: 5px 0;">
+    <span>幼儿姓名：</span>
+    <input type="text" name="searchtext" class="int">
+    <input type="button" value="搜 索" class="button" onclick="return search();" />
+    <input type="button" value="添 加" class="button" onclick="return add();" />
+</div>
+<div id="P_Data">
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td style="width: 120px;">操作</td>
+                <td>序号</td>
+                <td>幼儿姓名</td>
+                <td>幼儿编号</td>
+                <td>班级</td>
+                <td>发生日期</td>
+                <td>发生情况</td>
+                <td>处理</td>
+                <td>结局</td>
+                <td>分析</td>
+                <td>登记人</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($res):foreach($res as $accr):?>
+            <tr>
+                <td>
+                    <a href='javascript:modify(<?php echo json_encode($accr); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $accr['arid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($accr['arid']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['baby']['name']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['bid']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['class']['class_name']);?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d',$accr['accident_time']));?>
+                </td>
+                <td>
+                    <?php arEcho($accr['accident_detail']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['deal']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['ending']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['analyze']);?>
+                </td>
+                <td>
+                    <?php arEcho($accr['member']['realname']);?>
+                </td>
+            </tr>
+            <?php endforeach;endif;?>
+            <tr>
+                <?php if(!$res):?>
+                <p style="color: red;">搜索到0条记录！</p>
+                <?php endif;?>
+            </tr>
+        </tbody>
+    </table>
+    <?php if(isset($page)){echo($page->show());}?>
+</div>
+<!-- 显示内容 end -->
+<!-- 弹窗内容 start -->
+<form action="<?php echo arU(''); ?>" method="post" id="edit_window" style="display:none;width:868px;">
+    <table class="list" style="text-align:center;">
+        <tr>
+            <td>幼儿班级：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    arSeg(
+                        array(
+                        // seg文件
+                        'segKey' => 'Html/select2',
+                        // <select name="name">
+                        'name' => 'cid',
+                        'id' => 'cid',
+                        // 适配器数据 数组
+                        // 'map' => AdModel::$TYPE_MAP,
+                        // map 多维数组适配器
+                        'mapbundle' => array($cs, 'cid', 'SY'),
+                        // 选中的value selected = selected
+                        // 'selected' => $ad['type']
+                        )
+                    );
+                ?>
+            </td>
+            <td>幼儿：</td>
+            <td>
+                <?php
+                    // 调用用html seg 直接输出 select标签
+                    @arSeg(
+                        array(
+                        'segKey' => 'Html/select2',
+                        'name' => 'bid',
+                        'id'    => 'bid',
+                        'map'   => '',
+                        )
+                    );
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>发生日期：</td>
+            <td>
+                <input type="text" class="int" name="accident_time" onclick="laydate({istoday: true,max:laydate.now(),})">
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>发生情况：</td>
+            <td>
+                <textarea name="accident_detail" id="" cols="50" rows="5"></textarea>
+            </td>
+            <td>处理：</td>
+            <td>
+                <textarea name="deal" id="" cols="50" rows="5"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>结局：</td>
+            <td>
+                <textarea name="ending" id="" cols="50" rows="5"></textarea>
+            </td>
+            <td>分析：</td>
+            <td>
+                <textarea name="analyze" id="" cols="50" rows="5"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+            <td>
+                <!-- 隐藏表单 -->
+                <input type="text" class="int" name="type" style="display: none;">
+                <input type="text" class="int" name="arid" style="display: none;">
+
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- 弹窗内容 end -->
+<!-- js方法 start -->
+<script>
+// 添加
+function add() {
+    $("[name='type']").attr('value', 'add');
+    layer.open({
+        title: '添加 - 意外伤害记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// data
+function modify(data) {
+    $("[name='type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+        if (i == 'accident_time') {
+            $("[name='" + i + "']").val(timetostr(data[i]));
+        }
+    }
+
+    layer.open({
+        title: '修改 - 意外伤害记录',
+        type: 1,
+        skin: 'layui-layer-lan', //皮肤
+        offset: '30px', //顶部距离
+        area: '900px',
+        content: $('#edit_window')
+    });
+
+}
+// 搜索
+function search() {
+    var searchtext = $("[name='searchtext']").val();
+    window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchtext;
+}
+// 删除
+function del(arid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('accidentRecordDel') ?>', {arid: arid},
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+
+function timetostr(time) {
+    var date = new Date(time * 1000);
+    return date.toLocaleDateString().replace('/', '-').replace('/', '-');
+}
+</script>
+<script>
+$("[name='cid']").change(function() {
+    var cid = document.getElementById('cid').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择',''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- js方法 end -->
+<pre>
+<?php 
+// var_dump($res);
+ ?>
+</pre>

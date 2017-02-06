@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <meta charset="utf-8">
+        <title>乐育谷云平台</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/login.css">
+        <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery/jquery-1.12.4.min.js"></script>
+    </head>
+    <body>
+        <form class="lh-form-login" name="form1" action="<?php echo arU('Account/loginMang');?>" method="post">
+			<div class="lh-form-title">
+				<span >乐育谷云平台</span>
+                <span class="errorTip">账号或密码错误！</span>
+			</div>
+			<div class="lh-form-item">
+				<span>
+					<img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/user.png"/>
+				</span>
+				<input name="username" type="text" id="username" placeholder="手机号码">
+			</div>
+			<div class="lh-form-item">
+				<span>
+					<img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/key22.png"/>
+				</span>
+				<input name="password" type="password" id="password" placeholder="密码">
+			</div>
+			<div class="lh-btn-wrap">
+                <a href="javascript:" onclick="document.form1.submit();" class="btnSign">登&nbsp;&nbsp;录</a>
+			</div>
+            <div style="text-align:right;">
+                <a href="<?php echo arU('Account/register');?>" style="display:inline-block;margin-right:65px;color:#666;">注册</a>
+            </div>
+		</form>
+        <script type="text/javascript">
+            $(function(){
+                $('.lh-form-item input').focus(function(){
+                    $(this).removeClass('no')
+                })
+                // $('.btnSign').on('click',function(){
+                //     reg()
+                //     if($('.no').length == 0){
+                //         //执行ajax请求验证
+                //     }
+                // })
+            })
+
+            function reg(){
+                var phone = $('#username').val()
+                if(!(/^1[3|4|5|7|8]\d{9}$/.test(phone))){
+                    $('#username').addClass('no')
+                }else {
+                    $('#username').removeClass('no')
+                }
+                if ($('#password').val() == '') {
+                    $('#password').addClass('no')
+                }else {
+                    $('#password').removeClass('no')
+                }
+            }
+        </script>
+    </body>
+</html>

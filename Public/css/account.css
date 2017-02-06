@@ -1,0 +1,132 @@
+body {
+  font-family: 'Microsoft Yahei',"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #3f3f3f;
+  background-color: #fff;
+  -webkit-text-size-adjust: none;
+}
+body, dd, dl, dt, form, h1, h2, h3, h4, input, li, ol, p, ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  vertical-align: middle;
+  font-weight: 400;
+}
+* {
+  box-sizing: border-box;
+}
+img {
+  vertical-align: middle;
+}
+a{
+    text-decoration: none;
+}
+.clearfix:after {
+  content: '';
+  display: block;
+  clear: both;
+  height: 0;
+}
+.clearfix {
+  zoom: 1;
+}
+.wrap{
+    width: 980px;
+    margin: 0 auto;
+}
+.left{
+    float: left;
+}
+.right{
+    float: right;
+}
+.form-item{
+    position: relative;
+}
+.form-item .form-label{
+    position: absolute;
+    display: inline;
+    font-size: 12px;
+    color: rgb(151, 151, 166);
+    left: 14px;
+    top: 20px;
+    height: 32px;
+    line-height: 32px;
+    text-align: left;
+    pointer-events: none;
+    opacity: 1;
+}
+.form-item .form-input,
+.form-item .form-textarea,
+.form-item .form-select{
+    height: 32px;
+    border: 1px solid #75A801;
+    width: 338px;
+    line-height: 32px;
+    color: #9797A6;
+    font-size: 12px;
+    margin-top: 20px;
+    padding-left: 10px;
+}
+.form-item .form-input:focus,
+.form-item .form-textarea:focus,
+.form-item .form-select:focus {
+  border-color: #75A801;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.yourMsg{
+    padding-top: 140px;
+}
+.msg{
+    border-right: 1px solid #E6E6E6;
+    width: 440px;
+}
+.msg .form-item .form-textarea{
+    resize: none;
+    height: 100px;
+    line-height: 15px;
+    padding: 10px;
+    padding-top: 10px;
+    overflow: hidden;
+}
+.btnGetPW{
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+    color: #fff;
+    font-size: 12px;
+    margin-top: 20px;
+    background-color: #75A801;
+    vertical-align: middle;
+    padding: 0 10px;
+    margin-left: 38px;
+}
+.register{
+    padding-left: 40px;
+    width: 540px;
+}
+.register .explanation{
+    font-size: 12px;
+    color: #9797A6;
+    margin-top: 40px;
+}
+.register .explanation p{
+    line-height: 1.8;
+}
+.form-item .form-star{
+    position: absolute;
+    top: 30px;
+    margin-left: 8px;
+}
+.form-item .form-star:after{
+    content: '*';
+    line-height: 1;
+    color: #ff7b30;
+    font-size: 18px;
+}
+.no{
+    border: 1px solid red !important;
+}

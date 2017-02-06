@@ -1,0 +1,15 @@
+<div>
+    <select name="aa" id="select">
+        <option value="1">选择1</option>
+        <option value="2">选择2</option>
+        <option value="3">选择3</option>
+        <option value="4">选择4</option>
+    </select>
+</div>
+<!-- js -->
+<script>
+$("aa").change(function() {
+    $(this).css("background-color", "#FFFFCC");
+    alert($(this).val());
+});
+</script>

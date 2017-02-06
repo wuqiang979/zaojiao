@@ -1,0 +1,162 @@
+
+    <div class="top" style="margin:10px">
+    <form action="<?php echo arU('searchNotice'); ?>" method="get">
+        标题：
+        <input name="headline" type="text" value="<?php echo arRequest('headline');?>" id="txtTitle" class="int" />
+        所属分类：
+        <?php
+            // 调用用html seg 直接输出 select标签
+            arSeg(
+                array(
+                    // seg文件
+                    'segKey' => 'Html/select',
+                    // <select name="name">
+                    'name' => 'classify',
+                    // 适配器数据 数组
+                    'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+                    // map 多维数组适配器
+                    // 'mapbundle' => array($teacher, 'mid', 'realname'),
+                    // 选中的value selected = selected
+                    // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                    'selected' => arRequest('classify'),
+                )
+            );
+        ?>
+        <input type="submit" value="搜索"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </form>
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>学校</td>
+                        <td>标题</td>
+                        <td>副标题</td>
+                        <td>所属分类</td>
+                        <td>通知对象</td>
+                        <td>创建人</td>
+                        <td>录入时间</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if($list):foreach($list as $auth):?>
+                    <tr>
+                        <td class="caozuo">
+                            <a href='javascript:modify(<?php echo json_encode($auth); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $auth['nid'] ?>')">删除</a></td>
+                        <td><?php arEcho($auth['s_name'],'-'); ?></td>
+                        <td><?php arEcho($auth['headline'],'-'); ?></td>
+                        <td><?php arEcho($auth['subheading'],'-'); ?></td>
+                        <td><?php if($auth['classify'] == 1){echo '行政管理';}elseif($auth['classify'] == 2){echo '教师通知';}elseif($auth['classify'] == 3){echo '学生通知';}; ?></td>
+                        <td><?php arEcho($auth['notifyobject'],'-'); ?></td>
+                        <td><?php arEcho($auth['founder'],'-'); ?></td>
+                        <td><?php arEcho(date('Y-m-d H:i', $auth['writetime']),'-'); ?></td>
+                    </tr>
+                <?php endforeach;endif; ?>
+                </tbody>
+                <tr>
+                    <td colspan="8"><?php echo $pagelist; ?></td>
+                </tr>
+            </table>
+
+        </div>
+
+<!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">
+                    标题：<input name="headline" type="text"/>
+                    <input name="nid" type="hidden" value="" />
+                </td>
+
+                <td style="float:left">
+                    副标题：<input name="subheading" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">所属分类 ：
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                                // seg文件
+                                'segKey' => 'Html/select',
+                                // <select name="name">
+                                'name' => 'classify',
+                                // 适配器数据 数组
+                                 'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+                                // map 多维数组适配器
+                                // 'mapbundle' => array($teacher, 'mid', 'realname'),
+                                // 选中的value selected = selected
+                                // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+                                'selected' => arRequest('classify'),
+                            )
+                        );
+                    ?>
+                </td>
+
+                <td style="width: 228px;float:left">通知对象:
+                    <input name="notifyobject" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">创建人:
+                    <input name="founder" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">
+                    <input type="submit"  value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='nid']").attr('value', '');
+        layer.open({
+            title:'添加通知',
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(nid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('delNotice') ?>', {nid:nid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+
+</script>

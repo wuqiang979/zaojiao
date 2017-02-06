@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/flexigrid.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function EditDlgl(ProgramGuid) {
+            window.parent.showDialog("教研培训登记", "../Modules/Teach/ProgramEdit.aspx?sc=btn&navId=b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c&ProgramGuid=" + ProgramGuid, "590px", "340px");
+            return false;
+        }
+        $(function() {
+            $(".ProgramDelete").live("click", function() {
+                if (confirm("确定要删除吗？")) {
+                    $.ajaxMethod("Teach_ProgramDelete", {
+                            "ProgramGuid": $(this).attr("ProgramGuid"),
+                            "Title": $(this).attr("Title")
+                        },
+                        function(data) {
+                            alert(data);
+                        },
+                        true, "text");
+                }
+            });
+        });
+
+        function ShowtTrInfo(ProgramGuid) {
+            window.parent.showDialog("教学培训查看", "../Modules/Teach/ProgramInfo.aspx?ProgramGuid=" + ProgramGuid, "750px", "400px");
+        }
+
+        function Del() {
+            var ProgramGuid = "";
+            var Title = "";
+            var count = 0;
+            var dostatus = "";
+            $("input[name='selectItem']:checkbox:checked").each(function() {
+                ProgramGuid += $(this).parent().parent().attr("ProgramGuid") + ",";
+                Title += $(this).parent().parent().attr("Title") + ","
+                count += 1;
+            });
+            if (count == 0) {
+                alert("请选择一条记录");
+                return false;
+            } else {
+                if (confirm("确定要删除吗")) {
+                    $.ajaxMethod("Teach_ProgramDelete_More", {
+                            "ProgramGuid": ProgramGuid,
+                            "Title": Title
+                        },
+                        function(data) {
+                            alert(data);
+                        },
+                        true, "text");
+                } else {
+                    alert("记录状态为 " + getStatusName(dostatus) + "，无法删除！");
+                }
+            }
+            return false;
+        }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="ProgramList.aspx?navId=b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE2NjYzMDg4OTkPZBYCAgMPZBYEAgQPDxYCHgdWaXNpYmxlZ2RkAgUPDxYCHwBnZGRkMTwf6QWXvbcNpzmTreE2wf51bfl2MuHumuFzFUnYrnA=" />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="05E7921E" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAePLiQHJO8XNHGH/eT76qYuT9wgFBQ/XNQQxkwNbCInF2pb4EH2AYnaj3VVck69wn7FPPOhXxBQBF3IHrBKbJ0X0/0wJmIIlQcZSJ6JYh2tv5NcQtnKtb31hEtbT6bWJ987Sm1SHUeCNEDEgIHUfUJeCdtrJYsdcwKicWwrG4mGkcLXbukMCPGvoQvItM119mU="
+            />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:66px;">
+                    发起人：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbPromoterName" type="text" id="tbPromoterName" class="int" />
+                </td>
+                <td class="textAlignRight" style="width:78px;">
+                    课程体系：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbCourseSysName" type="text" id="tbCourseSysName" class="int" />
+                </td>
+                <td class="textAlignRight" style="width:78px;">
+                    登记时间：
+                </td>
+                <td class="borderRight" style="width:170px;">
+                    <input name="tbStartDate" type="text" id="tbStartDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px" /> -
+                    <input name="tbEndDate" type="text" id="tbEndDate" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" style="width:70px" />
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="button" class="button" value="搜 索" id="btnSearch" />&nbsp;
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return EditDlgl(&#39;&#39;);" id="btnAdd" class="button" />&nbsp;
+                    <input type="submit" name="btnDel" value="批量删除" onclick="return Del();" id="btnDel" class="button" />
+                </td>
+            </tr>
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"","Name":"ProgramGuid","Width":35,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":true,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":"ProgramGuid,Title","IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"ProgramAct","Display":"操作","Name":"ProgramGuid,Title,b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"ProgramLink","Display":"计划标题","Name":"ProgramGuid,Title","Width":180,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"发起人","Name":"PromoterName","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"ProgramTimeBy","Display":"计划时间","Name":"StartTime,EndTime","Width":220,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"课程体系","Name":"CourseSystemName","Width":100,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"培训内容","Name":"Notes","Width":320,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"登记人","Name":"CreatorName","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd HH:mm","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"登记时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]'
+        />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Teach/ProgramList.aspx?navId=b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='ProgramList' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='ProgramListProgramList' />
+        <script type='text/javascript'>
+            var etmFormId = 'form1';
+
+            function fixIE9() {
+                if ($.browser.msie && $.browser.version == 9) {
+                    $('#form1 select').each(function() {
+                        var name = $(this).attr('name');
+                        if (name != undefined && name.length > 0) {
+                            var value = $(this).val();
+                            if (value == null) {
+                                value = $(this).find('option:first').attr('value');
+                                $(this).val(value);
+                            }
+                        }
+                    });
+                }
+            }
+
+            function RefreshGrid() {
+                $('#Test').flexOptions().flexReload();
+            };
+
+            function addFormData() {
+                fixIE9();
+                var dt = $('#form1').serializeArray();
+                $('#Test').flexOptions({
+                    params: dt
+                });
+                return true;
+            }
+            $(function() {
+                $('#btnSearch').click(function() {
+                    $('#Test').flexOptions({
+                        newp: 1
+                    }).flexReload();
+                    return false;
+                });
+            });
+            $('#Test').flexigrid({
+                url: 'http://vip.yj.etmcn.com/Ajax/ProgramList',
+                sortname: 'CreateTime',
+                sortorder: 'desc',
+                usepager: true,
+                useRp: true,
+                rpOptions: [20, 30, 50, 100, 200],
+                rp: 30,
+                colModel: [{
+                    display: '',
+                    name: 'ProgramGuid',
+                    etmname: 'ProgramGuid',
+                    width: 35,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: true,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '操作',
+                    name: 'ProgramGuid,Title,b214ad0a-1c6a-4a8e-ad24-1e84470b0d5c',
+                    etmname: 'ProgramAct',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '计划标题',
+                    name: 'ProgramGuid,Title',
+                    etmname: 'ProgramLink',
+                    width: 180,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '发起人',
+                    name: 'PromoterName',
+                    etmname: 'PromoterName',
+                    width: 100,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '计划时间',
+                    name: 'StartTime,EndTime',
+                    etmname: 'ProgramTimeBy',
+                    width: 220,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '课程体系',
+                    name: 'CourseSystemName',
+                    etmname: 'CourseSystemName',
+                    width: 100,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '培训内容',
+                    name: 'Notes',
+                    etmname: 'Notes',
+                    width: 320,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '登记人',
+                    name: 'CreatorName',
+                    etmname: 'CreatorName',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '登记时间',
+                    name: 'CreateTime',
+                    etmname: 'CreateTime',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: 'yyyy-MM-dd HH:mm',
+                    ColumnType: 'DateTime',
+                    IsJsAddColumn: false
+                }],
+                width: $(window).width(),
+                height: $(window).height() - 185 + 60,
+                onSubmit: addFormData
+            });
+        </script>
+
+    </form>
+
+</body>
+
+</html>

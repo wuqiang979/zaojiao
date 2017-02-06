@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function CheckData() {
+        if ($("#txtItemName").val() == "") {
+            alert("项目名称不能为空！");
+            return false;
+        } else return true;
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="SalaryItem.aspx?isLeft=6&amp;navId=24f47ff1-5a6c-4fd4-8d86-8234095a67ea" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTkzNDA2NDQwMA9kFgICAw9kFgQCAQ8WAh4EVGV4dAX4BzxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi5pS25YWl56eR55uuIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0NoYXJnZUl0ZW0uYXNweD9pc0xlZnQ9MSZmbGFnPTEmbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi5pSv5Ye656eR55uuIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0NoYXJnZUl0ZW0uYXNweD9pc0xlZnQ9MiZmbGFnPTImbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi6LSi5Yqh6LSm5Y+3IiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9GaW5hbmNlL0FjY291bnQuYXNweD9pc0xlZnQ9MyZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLmlLbotLnnp5Hnm64iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0ZpbmFuY2UvVHVpdGlvbkl0ZW0uYXNweD9pc0xlZnQ9NCZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlrqHmoLjorr7nva4iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0ZpbmFuY2UvVHVpdGlvbkluQ2hlY2tTZXQuYXNweD9pc0xlZnQ9NSZuYXZJZD0yNGY0N2ZmMS01YTZjLTRmZDQtOGQ4Ni04MjM0MDk1YTY3ZWEiLCBTZWxlY3RlZDogZmFsc2UgfSx7IFRleHQ6ICLlt6XotYTmnoTmiJAiLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL1NhbGFyeS9TYWxhcnlJdGVtLmFzcHg/aXNMZWZ0PTYmbmF2SWQ9MjRmNDdmZjEtNWE2Yy00ZmQ0LThkODYtODIzNDA5NWE2N2VhIiwgU2VsZWN0ZWQ6IHRydWUgfSxdfSk7fSk7PC9zY3JpcHQ+PGRpdiBpZD0ncyc+PC9kaXY+ZAIPD2QWAgIBDxYCHgtfIUl0ZW1Db3VudAIDFgZmD2QWDAIBDw8WAh4PQ29tbWFuZEFyZ3VtZW50BSQ0ZmVlM2QxZi04MTBhLTRmMjUtYjQzYS1jNzQzM2FhZmFlZDJkZAIDDw8WAh8CBSQ0ZmVlM2QxZi04MTBhLTRmMjUtYjQzYS1jNzQzM2FhZmFlZDJkZAIEDxUDDOWfuuacrOW3pei1hAPliqAG6YeR6aKdZAIFDw8WBB4LQ29tbWFuZE5hbWUFJDRmZWUzZDFmLTgxMGEtNGYyNS1iNDNhLWM3NDMzYWFmYWVkMh4HVmlzaWJsZWhkZAIHDw8WAh8DBSQ0ZmVlM2QxZi04MTBhLTRmMjUtYjQzYS1jNzQzM2FhZmFlZDJkZAIIDxUBAGQCAQ9kFgwCAQ8PFgIfAgUkNWFmMjdlNDItZmU2ZS00NjUzLWI0MzktYWIxNjExOGZlMDk5ZGQCAw8PFgIfAgUkNWFmMjdlNDItZmU2ZS00NjUzLWI0MzktYWIxNjExOGZlMDk5ZGQCBA8VAwblpZbph5ED5YqgBumHkeminWQCBQ8PFgIfAwUkNWFmMjdlNDItZmU2ZS00NjUzLWI0MzktYWIxNjExOGZlMDk5ZGQCBw8PFgIfAwUkNWFmMjdlNDItZmU2ZS00NjUzLWI0MzktYWIxNjExOGZlMDk5ZGQCCA8VAQBkAgIPZBYMAgEPDxYCHwIFJDI3NWFjZDUxLTI4NjMtNDA1YS1hYzg2LTJhYzhhYThkNzJlNmRkAgMPDxYCHwIFJDI3NWFjZDUxLTI4NjMtNDA1YS1hYzg2LTJhYzhhYThkNzJlNmRkAgQPFQMM56S+5L+d5omj5YePA+WHjwbph5Hpop1kAgUPDxYCHwMFJDI3NWFjZDUxLTI4NjMtNDA1YS1hYzg2LTJhYzhhYThkNzJlNmRkAgcPDxYEHwMFJDI3NWFjZDUxLTI4NjMtNDA1YS1hYzg2LTJhYzhhYThkNzJlNh8EaGRkAggPFQEAZGTtwLmAQEEo98maswcVwN5MX3wZu+DQmdy7CG3XepE0uw==" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="020D8341" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABTtYgo4V/kFRnXv7wuWZqjjV3oNuWG+wBoWVN/CS0RFhhk941xg3iW3gzVfjs2gT6DqKmXw3bpv3wqpFvXSv3wB9LUVu+bvIPhNW+GlQXC3ro7U3Vc0WZ+wxclqyPFfzmM1ZDJ3qWHTe5P0jGNE1IauTphUrwOehvkcpcu4YuaqpZj8RGQ6XPgrleT3UGr9U7lM4IrRRtQdDZPipm4EnwCXge0demJ6V7goGflyCdYqCt8ofgk3pL91hMF7ia2b1mCnpmbsdOt/BI7e6ERr+22AlbmTSej21Kqqy25biu65eMBbS/qlcBOX60vPssy6BK5fuhUKvlCS+pFjoSCQ153nKTTUIUO5vP6jBElW1GlZttQGbtvfbHJ5adHI6fkljBfW0oDuMTlH5wsZ8cl7NeEGlN3fR8Jq8kxwk1dOCrc430x7ADtYahICBQOq/+XU++Gm0HnLroEw7OjsbaMWEOB5" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "收入科目",
+                    Url: "<?php echo arU('SystemConfiguration/IncomeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "支出科目",
+                    Url: "<?php echo arU('SystemConfiguration/CostAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "财务账号",
+                    Url: "<?php echo arU('SystemConfiguration/financeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "收费科目",
+                    Url: "<?php echo arU('SystemConfiguration/chargeAccount'); ?>",
+                    Selected: false
+                }, {
+                    Text: "审核设置",
+                    Url: "<?php echo arU('SystemConfiguration/checkSet'); ?>",
+                    Selected: false
+                }, {
+                    Text: "工资构成",
+                    Url: "<?php echo arU('SystemConfiguration/SalaryConstitute'); ?>",
+                    Selected: true
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px">项目名称：
+                </td>
+                <td class="borderRight" style="width: 176px">
+                    <input name="txtItemName" type="text" id="txtItemName" class="int" style="width:150px;" /><span class="words">&nbsp;*</span></td>
+                <td class="textAlignRight" style="width: 78px">参数类型：
+                </td>
+                <td class="borderRight" style="width:196px">
+                    <span id="rblParamType"><input id="rblParamType_0" type="radio" name="rblParamType" value="0" checked="checked" /><label for="rblParamType_0">金额（元）</label><input id="rblParamType_1" type="radio" name="rblParamType" value="1" /><label for="rblParamType_1">提成（百分比）</label></span>
+                </td>
+                <td style="padding-left:20px" rowspan="2">
+                    <input type="submit" name="btnSearch" value="添 加" onclick="return CheckData();" id="btnSearch" class="button" />
+                </td>
+            </tr>
+            <tr>
+                <td class="textAlignRight">备注：</td>
+                <td class="borderRight">
+                    <input name="txtNotes" type="text" id="txtNotes" class="int" style="width:150px;" />
+                </td>
+                <td class="textAlignRight">计算类型：
+                </td>
+                <td class="borderRight">
+                    <span id="rblChargeType"><input id="rblChargeType_0" type="radio" name="rblChargeType" value="0" checked="checked" /><label for="rblChargeType_0">加</label><input id="rblChargeType_1" type="radio" name="rblChargeType" value="1" /><label for="rblChargeType_1">减</label></span>
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td>操作</td>
+                        <td>项目名称</td>
+                        <td>计算类型</td>
+                        <td>参数类型</td>
+                        <td>排序</td>
+                        <td>备注</td>
+                    </tr>
+                </thead>
+                <tr>
+                    <td style="width: 15%">
+                        <a id="rpt_List_lkModify_0" href="javascript:__doPostBack(&#39;rpt_List$ctl00$lkModify&#39;,&#39;&#39;)">[修改]</a>&nbsp;
+                        <a onclick="return confirm(&#39;您确定删除吗？&#39;);" id="rpt_List_lkDetele_0" href="javascript:__doPostBack(&#39;rpt_List$ctl00$lkDetele&#39;,&#39;&#39;)">[删除]</a>
+                    </td>
+                    <td style="width: 15%">
+                        基本工资</td>
+                    <td style="width: 10%">
+                        加
+                    </td>
+                    <td style="width: 10%">
+                        金额
+                    </td>
+                    <td style="width: 10%">
+                        <a id="rpt_List_lnkDown_0" href="javascript:__doPostBack(&#39;rpt_List$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                    </td>
+                    <td style="width: 40%"></td>
+                </tr>
+                <tr>
+                    <td style="width: 15%">
+                        <a id="rpt_List_lkModify_1" href="javascript:__doPostBack(&#39;rpt_List$ctl01$lkModify&#39;,&#39;&#39;)">[修改]</a>&nbsp;
+                        <a onclick="return confirm(&#39;您确定删除吗？&#39;);" id="rpt_List_lkDetele_1" href="javascript:__doPostBack(&#39;rpt_List$ctl01$lkDetele&#39;,&#39;&#39;)">[删除]</a>
+                    </td>
+                    <td style="width: 15%">
+                        奖金</td>
+                    <td style="width: 10%">
+                        加
+                    </td>
+                    <td style="width: 10%">
+                        金额
+                    </td>
+                    <td style="width: 10%">
+                        <a id="rpt_List_lnkUp_1" href="javascript:__doPostBack(&#39;rpt_List$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        <a id="rpt_List_lnkDown_1" href="javascript:__doPostBack(&#39;rpt_List$ctl01$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                    </td>
+                    <td style="width: 40%"></td>
+                </tr>
+                <tr>
+                    <td style="width: 15%">
+                        <a id="rpt_List_lkModify_2" href="javascript:__doPostBack(&#39;rpt_List$ctl02$lkModify&#39;,&#39;&#39;)">[修改]</a>&nbsp;
+                        <a onclick="return confirm(&#39;您确定删除吗？&#39;);" id="rpt_List_lkDetele_2" href="javascript:__doPostBack(&#39;rpt_List$ctl02$lkDetele&#39;,&#39;&#39;)">[删除]</a>
+                    </td>
+                    <td style="width: 15%">
+                        社保扣减</td>
+                    <td style="width: 10%">
+                        减
+                    </td>
+                    <td style="width: 10%">
+                        金额
+                    </td>
+                    <td style="width: 10%">
+                        <a id="rpt_List_lnkUp_2" href="javascript:__doPostBack(&#39;rpt_List$ctl02$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                    </td>
+                    <td style="width: 40%"></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</body>
+
+</html>

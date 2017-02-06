@@ -1,0 +1,90 @@
+<div class="table-secondline">
+    <span class="table-secondline-span">公司名称: <input class="table-secondline-input" type="text">
+                    </span>
+    <input style="margin:0px 20px 0 20px; " class="etm-button" type="button" value="搜素">
+    <input class="etm-button" type="button" value="添加">
+</div>
+<div name="表格">
+    <table cellspacing="0" class="etm-Tab" cellpadding="0">
+        <tr>
+            <td>操作</td>
+            <td>公司名称</td>
+            <td>公司简码</td>
+            <td>法人</td>
+            <td>上级公司</td>
+            <td>联系方式</td>
+            <td>地址</td>
+            <td>园区数量</td>
+            <td>类型子公司</td>
+            <td>录入时间</td>
+            <td>备注</td>
+        </tr>
+        <tr class="for-hover">
+            <td>
+                <a href="javascript: " style="color: #FF6600;"  onclick="modifyinfo();">[修改]</a>
+                <a href="javascript: " style="color: #FF6600;"  onclick="">[删除]</a>
+            </td>
+            <td>
+                广州it幼教
+            </td>
+            <td>001</td>
+            <td>莉莉</td>
+            <td>华为</td>
+            <td>18923456781</td>
+            <td>广州市</td>
+            <td>1 / 1</td>
+            <td>子公司</td>
+            <td>2016-04-01 14:18</td>
+            <td>暂无</td>
+        </tr>
+    </table>
+</div>
+<!-- 后台添加的部分 -->
+<!-- 后台添加的部分 -->
+<div class="etm-inner-bottom">
+    <span class="etm-inner-bottom-span">
+                            <span style="margin:0px 5px 0px 25px;">显示</span>
+    <select name="" id="">
+        <option value="">10</option>
+        <option value="">20</option>
+        <option value="">30</option>
+    </select>
+    <span>条/页</span>
+    </span>
+    <a href="../../main/view/index.html" style="color: #46626A;margin-left:10px; ">首页</a>
+    <span class="etm-inner-bottom-span" style="padding-right: 10px;">
+                        <a href="../../main/view/index.html" style="color: #46626A;margin-left:10px; ">上一页</a>
+                    </span>
+    <span class="etm-inner-bottom-span">
+                        第 <input style="width: 50px;height: 15px;vertical-align: baseline;" placeholder="1" type="text"> 页
+                        <input style="vertical-align: baseline;" type="button" class="etm-button" value="转 到">
+                    <!-- 页数更改 -->
+                         <span style="font-size: 12px;">共 <span>1</span> 页</span>
+    <!-- 页数更改 -->
+    </span>
+    <span class="etm-inner-bottom-span">
+                            <a href="javascript: "  style="color: #46626A;margin-right:10px;">下一页</a>
+                            <a href="javascript: "  style="color: #46626A;">末尾页</a>
+                    </span>
+    <span class="etm-inner-bottom-span" style="margin-right: 10px;">
+                        <input style="vertical-align: baseline;" type="button" class="etm-button" value="刷 新">
+                    </span>
+    <!--  -->
+    显示从 <span>1</span>条数据 到 <span>1</span>条数据 共 <span>1</span> 数据
+    <!--  -->
+</div>
+<script>
+
+function modifyinfo() {
+    layer.open({
+        type: 2,
+        title: '',
+        shadeClose: true,
+        shade: 0.8,
+        area: ['1000px', '510px'],
+        content: '/zaojiao/Api/ModiCom' //iframe的url
+    });
+
+}
+
+</script>

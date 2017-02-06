@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <meta charset="utf-8">
+        <title>乐育谷云平台</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/account.css">
+        <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery/jquery-1.12.4.min.js"></script>
+    </head>
+    <body>
+        <div class="wrap">
+            <form class="yourMsg clearfix" name="form1" method="post" action="<?php echo arU('Account/register');?>">
+                <div class="left msg">
+                    <h3>1、您的相关信息</h3>
+                    <div class="form-item">
+                        <label class="form-label" for="name">输入您的品牌/机构名称</label>
+                        <input class="form-input" id="name" type="text" name="name">
+                        <span class="form-star"></span>
+                    </div>
+                    <div class="form-item">
+                    <div>
+                    员工数量
+                    </div>
+                     <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'staff_type',
+            // 适配器数据 数组
+            'map' => CompanyModel::$STAFF_TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+            'extra' => 'class="form-input"',
+         )
+      );
+?>
+                        <span class="form-star"></span>
+                    </div>
+                    <div class="form-item">
+                    <div>
+                    教室数量
+                    </div>
+                       <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'class_room_type',
+            // 适配器数据 数组
+            'map' => CompanyModel::$CLASS_ROOM_TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+            'extra' => 'class="form-input"',
+         )
+      );
+?>
+                        <span class="form-star"></span>
+                    </div>
+                    <div class="form-item">
+                    <div>
+                    园区/门店数量
+                    </div>
+                         <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'school_num_type',
+            // 适配器数据 数组
+            'map' => CompanyModel::$SCHOOL_NUM_TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+            'extra' => 'class="form-input"',
+         )
+      );
+?>
+                        <span class="form-star"></span>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label" for="tbInfo" style="height: 15px; line-height: 15px;top:30px;">您希望早教为您解决：<br>如：提高招生效率、一卡通智能考勤、员工绩效工资结算、<br>校务运营管理、多园区数据同步、互联网+教育解决方案……</label>
+                        <textarea name="remarks" id="tbInfo" class="form-textarea" style=""></textarea>
+                    </div>
+                </div>
+                <div class="left register">
+                    <h3>2、注册账号</h3>
+                    <div class="form-item">
+                        <label class="form-label" for="phone">输入您的手机号码</label>
+                        <input class="form-input" id="phone" type="text" name="phone" autocomplete= off>
+                        
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label" for="code">手机动态验证码</label>
+                        <input class="form-input" type="text" name="PhoneCode" autocomplete= off>
+                        <a href="javascript:;" id="sendcode">获取手机动态验证码</a>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label" for="password">密码</label>
+                        <input class="form-input" id="password" type="password" name="password" style="width:190px;" autocomplete=off>
+                        <a href="javascript:;" class="btnGetPW">注册</a>
+                    </div>
+                    <div class="explanation">
+                        <p>说明：</p>
+                        <p>已申请过密码，可直接登录，忘记密码，可再次申请</p>
+                        <p>如有其他疑问，请致电4000 313 400（仅收市话费）或添加企业QQ：4000313400咨询</p>
+                    </div>
+                    <div class="" style="height:95px;">
+
+                    </div>
+                    <p>微信扫码关注我们</p>
+                    <div class="form-item">
+                        <!-- <input class="form-input" type="submit" value="已有账号直接登录体验" style="background-color:#75A801;color:#fff;cursor: pointer;width:200px;padding:0;"> -->
+                        <a href="<?php echo arU('Account/login');?>" style="background-color:#75A801;color:#fff;cursor: pointer;width:200px;padding:5px 0;display:inline-block;text-align:center;">已有账号直接登录体验</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript">
+            $(function(){
+                $('#phone').val('');
+                $('#password').val('');
+
+                $('.form-input,.form-textarea').keyup(function(event){
+                    if($(this).val() != ''){
+                        $(this).prev().hide()
+                    }else{
+                        $(this).prev().show()
+                    }
+                })
+
+                $('.form-select, .form-input').focus(function(){
+                    $(this).removeClass('no')
+                })
+                function select(){
+                    $('.form-select').each(function(){
+                        if($(this).val() == -1){
+                            $(this).addClass('no')
+                        }else{
+                            $(this).removeClass('no')
+                        }
+                    })
+                    $('.msg .form-input').each(function(){
+                        if($(this).val() == ''){
+                            $(this).addClass('no')
+                        }else{
+                            $(this).removeClass('no')
+                        }
+                    })
+                }
+                function regPhone(){
+                    var phone = $('#phone').val()
+                    if(!(/^1[3|4|5|7|8]\d{9}$/.test(phone))){
+                        $('#phone').addClass('no')
+                    }else {
+                        $('#phone').removeClass('no')
+                    }
+                }
+                $('#phone').blur(function(){
+                    regPhone()
+                })
+                // $('#password').blur(function(){
+                //     var phone = $('#password').val()
+                //     if(!(/(?!^[^A-z0-9]+$)^.{6,18}$/.test(phone))){
+                //         $('#password').addClass('no')
+                //     }else {
+                //         $('#password').removeClass('no')
+                //     }
+                // })
+                $('.btnGetPW').on('click',function(){
+                    regPhone()
+                    select()
+                    var pw = $('#password').val();
+                    if(!/^[A-z0-9]{6,18}$/g.test(pw)){
+                        $('#password').addClass('no')
+                    }else{
+                        $('#password').removeClass('no')
+                    }
+                    if($('.no').length == 0){
+                        $('.yourMsg').submit()
+                    }else {
+                        alert('请完善信息！')
+                    }
+                })
+            });
+
+            //发送短信
+            $(function(){
+                $('#sendcode').click(function(){
+                    var phone = $('#phone').val();
+                    if(phone){
+                        if((/^1[3|4|5|7|8]\d{9}$/.test(phone))){
+                            $.ajax({
+                                type: 'POST',
+                                url: '',
+                                data:{
+                                    'sign':'sendcode',
+                                    'phone': phone
+                                },
+                                datatype: 'json',
+                                success: function(data) {
+                                    data=JSON.parse(data);
+                                    // alert(data);
+                                    if(data == 0){
+                                        alert('获取手机验证码失败');
+                                    }else if(data == 2){
+                                        alert('手机号不能为空');
+                                    }else{
+                                        Phone();
+                                    }
+                                }
+                            });
+                        }else{
+                            alert('手机号格式不正确');
+                        }
+                        
+                    }else{
+                        alert('手机号不能为空');
+                    }
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     url: '',
+                    //     data:{
+                    //         'sign':'sendcode',
+                    //         'phone': phone
+                    //     },
+                    //     datatype: 'json',
+                    //     success: function(data) {
+                    //         data=JSON.parse(data);
+                    //         // alert(data);
+                    //         if(data == 0){
+                    //             alert('获取手机验证码失败');
+                    //         }else if(data == 2){
+                    //             alert('手机号不能为空');
+                    //         }else{
+                    //             Phone();
+                    //         }
+                    //     }
+                    // });
+                });
+
+            });
+
+            var iTime=120;
+            var timer=null;
+            function Phone(){
+                clearInterval(timer);
+                timer=setInterval(function(){
+                    iTime--;
+                    $('#sendcode').html(iTime);
+                    // console.log(iTime);
+                    if (iTime==0) {
+                        iTime=120;
+                        $('#sendcode').html('重新发送');
+                        clearInterval(timer);
+                    }
+                },1000);
+            }
+        </script>
+    </body>
+</html>

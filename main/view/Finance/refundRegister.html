@@ -1,0 +1,188 @@
+	<div class="top" style="margin:10px">
+		<form enctype="multipart/form-data" method="post" action="<?php echo arU();?>" >
+			<table class="edit">
+	            <tr>
+	                <td class="textAlignRight">幼儿：</td>
+	                <td colspan="5">
+	                    <span id="lbMember"></span>
+	                    <?php
+				            // 调用用html seg 直接输出 select标签
+				            arSeg(
+				                array(
+				                    // seg文件
+				                    'segKey' => 'Html/select',
+				                    // <select name="name">
+				                    'name' => 'bid',
+				                    // 加ID属性
+				                    'extra' => 'id="choseBaby"',
+				                    // 适配器数据 数组
+				                    // 'map' => U_company_school_noticeModel::$CLASSIFY_MAP,
+				                    // map 多维数组适配器
+				                     'mapbundle' => array($choseBaby, 'bid', 'name'),
+				                    // 选中的value selected = selected
+				                    // 'selected' => isset( $auth['belongclass'] )? $auth['belongclass'] :''
+				                )
+				            );
+				        ?>
+	                </td>
+	            </tr>
+	            <tr> 
+	                <td class="textAlignRight" style="width: 80px;">退费日期：
+	                </td>
+	                <td class="borderRight" style="width: 205px;">
+	                    <input name="returnday" type="text" value="<?php echo date('Y-m-d', time());?>" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,onpicked:function(dp){pickedFuncChar(dp.cal.getNewDateStr());}})" />
+	                    <span class="words">&nbsp;*</span>
+	                </td>
+	                <td class="textAlignRight" style="width: 80px;">经办人：
+	                </td>
+	                <td class="borderRight" style="width: 205px;">
+	                    <span><?php if($realname): echo $realname; endif;?></span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">退费帐号：
+	                </td>
+	                <td class="borderRight">
+	                <?php
+	                    // 调用用html seg 直接输出 select标签
+	                    arSeg(
+	                        array(
+	                            // seg文件
+	                            'segKey' => 'Html/select',
+	                            // <select name="name">
+	                            'name' => 'returntype',
+	                            // 适配器数据 数组
+	                            'map' => BabyChargeModel::$CHARGETYPE_MAP,
+	                            // map 多维数组适配器
+	                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+	                            // 选中的value selected = selected
+	                            // 'selected' => isset( $auth['hiringway'] )? $auth['hiringway'] :''
+	                            // 'selected' => $auth['hiringway']
+	                        )
+	                    );
+	                ?>
+	                &nbsp;<span class="words">*</span>
+	                <dav id="backCards"></div>
+	                </td>
+	                <td class="textAlignRight" style="width: 80px;">退费金额：</td>
+	                <td class="borderRight" style="width: 205px;">
+	                	<input name="returncharge" type="text" />元
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">单据号：</td>
+	                <td class="borderRight">
+	                    <input name="serialnumber" type="text" class="int" />
+	                </td>
+	            </tr>
+	            <tr>
+		            <td class="textAlignRight">退费模式：</td>
+	                <td colspan="5">
+	                <?php
+	                    // 调用用html seg 直接输出 select标签
+	                    arSeg(
+	                        array(
+	                            // seg文件
+	                            'segKey' => 'Html/select',
+	                            // <select name="name">
+	                            'name' => 'returnway',
+	                            // 适配器数据 数组
+	                            'map' => BabyChargeModel::$CHARGEWAY_MAP,
+	                            // map 多维数组适配器
+	                            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+	                            // 选中的value selected = selected
+	                            // 'selected' => isset( $auth['hiringway'] )? $auth['hiringway'] :''
+	                            // 'selected' => $auth['hiringway']
+	                        )
+	                    );
+	                ?>
+	                    <!-- <input id="rdbTimeStepT" type="radio" name="chargeway" value="2" onclick="rbCheck(&#39;T&#39;);" />按学期 -->
+	                    <!-- <span id="spanMonth">
+	                        <input name="txtMonth" type="text" id="txtMonth" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM&#39;})" style="width:70px;" />
+	                    </span> -->
+	                    <span id="spanTerm">
+	                        <?php
+						      // 调用用html seg 直接输出 select标签
+						      arSeg(
+						         array(
+						            // seg文件
+						            'segKey' => 'Html/select',
+						            // <select name="name">
+						            'name' => 'studyyear',
+						            // 适配器数据 数组
+						            // 'map' => BabyModel::$ATTENTION_TYPE_MAP,
+						            // map 多维数组适配器
+						            'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+						            // 选中的value selected = selected
+						            //'selected' => $enrollment['profile']['school_year_id']
+						         )
+						      );
+						?>
+	                    </span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">备注：
+	                </td>
+	                <td colspan="5">
+	                    <textarea name="remark" rows="2" cols="20" id="tbNotes" class="int" style="width: 678px; height: 47px;">
+	                    </textarea>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" class="borderBottom"></td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" style="text-align: center;">
+	                    <input type="submit" value="提 交" class="button" />
+	                </td>
+	            </tr>
+	        </table>
+		</form>
+	</div>
+<script type="text/javascript">
+            function rbCheck(v) {
+                if (v == "M") {
+                    $("#spanMonth").removeClass("hidden");
+                    $("#spanTerm").addClass("hidden");
+                } else if (v == "T") {
+                    $("#spanMonth").addClass("hidden");
+                    $("#spanTerm").removeClass("hidden");
+                }
+            }
+</script>
+
+<script type="text/javascript">
+$(function(){
+    $('#choseBaby').change(function(){
+        var bid = $('#choseBaby').val();
+        $.ajax({
+            type: 'POST',
+            url: '',
+            data:{   
+                'sign':'choseBaby',
+                'bid': bid
+            },
+            datatype: 'json',
+            success: function(data) {
+            data=JSON.parse(data);
+            // alert(data[1]);
+            var par = $('#backCards');
+            var del = $('#addchargecard');
+            par.empty($(del));
+            var str = '<select name="backcard" id="addchargecard" class="int">'+
+                    '<option value="">请选择银行卡</option>';
+            for(var key in data){
+                // alert(data[key]);
+                str+='<option value="'+data[key]+'">'+data[key]+'</option>';
+            }
+                    
+            str+='/<select';
+            par.append($(str));
+
+            }
+        });
+    });
+        
+});
+</script>

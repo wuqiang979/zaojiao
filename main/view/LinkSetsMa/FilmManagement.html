@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>
+    </title>
+    <link href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css" rel="stylesheet" type="text/css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script type="text/javascript">
+    </script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE">
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+
+
+
+
+    <script type='text/javascript'>
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=d45da1ce-a7cf-41ca-8586-9156aab6d6d6', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    function show(companyGuid, navId) {
+        window.parent.showDialog("分公司管理", "../Modules/SysConfig/SubCompanyEdit.aspx?companyGuid=" + companyGuid + "&navId=" + navId, "800px", "400px");
+    }
+    $(function() {
+        $(".CompanyDelete").live("click", function() {
+            if (confirm("确认要删除吗？【警告：该公司下的园区需要重新指定所属公司】")) {
+                $.ajaxMethod("SysConfig_CompanyDelete", {
+                        "CompanyGuid": $(this).attr("CompanyGuid")
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            }
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="SubCompanyList.aspx?navId=d45da1ce-a7cf-41ca-8586-9156aab6d6d6" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMTI3NDU1MDY0ZGRAw30fylDm8zA1hpB6k9DWhAUVowfc4enZm7SbwFS3Vg==" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C4E5DD55" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAIQT91a8cGGoy9mzsXOpHhfjP1KX3jLle1ZioC7dr31jUZkLfp5siYJd8QLMFjep5+T4jqodo3xwQyXJY0ZnWMH" />
+        </div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width:78px;">
+                    公司名称：
+                </td>
+                <td class="borderRight" style="width:160px;">
+                    <input name="tbCompanyName" type="text" id="tbCompanyName" class="int" />
+                </td>
+                <td style="padding-left:20px;">
+                    <input type="button" class="button" id="btnSearch" value="搜 索" />&nbsp;
+                    <input type="button" value="添 加" class="button" onclick="show('','d45da1ce-a7cf-41ca-8586-9156aab6d6d6');" />
+                </td>
+            </tr>
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"CompanyAct","Display":"操作","Name":"CompanyGuid,d45da1ce-a7cf-41ca-8586-9156aab6d6d6","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"公司名称","Name":"CompanyName","Width":230,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"公司简码","Name":"ShortCode","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"法人","Name":"FaRen","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"上级公司","Name":"ParentName","Width":160,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"联系方式","Name":"Phone","Width":93,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"地址","Name":"Address","Width":200,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"SchoolCount","Display":"园区数量","Name":"AuthCount,OpenedCount","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"类型","Name":"CompanyType","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd HH:mm","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"录入时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"备注","Name":"Notes","Width":200,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]' />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"d45da1ce-a7cf-41ca-8586-9156aab6d6d6"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/SysConfig/SubCompanyList.aspx?navId=d45da1ce-a7cf-41ca-8586-9156aab6d6d6' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='SysConfig_SubCompanyList' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='SysConfig_SubCompanyListSysConfig_SubCompanyList' />
+        <script type='text/javascript'>
+        var etmFormId = 'form1';
+
+        function fixIE9() {
+            if ($.browser.msie && $.browser.version == 9) {
+                $('#form1 select').each(function() {
+                    var name = $(this).attr('name');
+                    if (name != undefined && name.length > 0) {
+                        var value = $(this).val();
+                        if (value == null) {
+                            value = $(this).find('option:first').attr('value');
+                            $(this).val(value);
+                        }
+                    }
+                });
+            }
+        }
+
+        function RefreshGrid() {
+            $('#Test').flexOptions().flexReload();
+        };
+
+        function addFormData() {
+            fixIE9();
+            var dt = $('#form1').serializeArray();
+            $('#Test').flexOptions({
+                params: dt
+            });
+            return true;
+        }
+        $(function() {
+            $('#btnSearch').click(function() {
+                $('#Test').flexOptions({
+                    newp: 1
+                }).flexReload();
+                return false;
+            });
+        });
+        $('#Test').flexigrid({
+            url: 'http://vip.yj.etmcn.com/Ajax/SysConfig_SubCompanyList',
+            sortname: 'CreateTime',
+            sortorder: 'asc',
+            usepager: true,
+            useRp: true,
+            rpOptions: [20, 30, 50, 100, 200],
+            rp: 30,
+            colModel: [{
+                display: '操作',
+                name: 'CompanyGuid,d45da1ce-a7cf-41ca-8586-9156aab6d6d6',
+                etmname: 'CompanyAct',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '公司名称',
+                name: 'CompanyName',
+                etmname: 'CompanyName',
+                width: 230,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '公司简码',
+                name: 'ShortCode',
+                etmname: 'ShortCode',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '法人',
+                name: 'FaRen',
+                etmname: 'FaRen',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '上级公司',
+                name: 'ParentName',
+                etmname: 'ParentName',
+                width: 160,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '联系方式',
+                name: 'Phone',
+                etmname: 'Phone',
+                width: 93,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '地址',
+                name: 'Address',
+                etmname: 'Address',
+                width: 200,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '园区数量',
+                name: 'AuthCount,OpenedCount',
+                etmname: 'SchoolCount',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '类型',
+                name: 'CompanyType',
+                etmname: 'CompanyType',
+                width: 80,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }, {
+                display: '录入时间',
+                name: 'CreateTime',
+                etmname: 'CreateTime',
+                width: 120,
+                sortable: false,
+                align: 'Center',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: 'yyyy-MM-dd HH:mm',
+                ColumnType: 'DateTime',
+                IsJsAddColumn: false
+            }, {
+                display: '备注',
+                name: 'Notes',
+                etmname: 'Notes',
+                width: 200,
+                sortable: false,
+                align: 'left',
+                checkbox: false,
+                IsLink: false,
+                LinkClass: '',
+                OperationButtons: '',
+                SubStringLength: 0,
+                hide: false,
+                BindId: '',
+                IsForDDL: false,
+                IsCanHide: true,
+                FormatString: '',
+                ColumnType: 'String',
+                IsJsAddColumn: false
+            }],
+            width: $(window).width(),
+            height: $(window).height() - 175 + 60,
+            onSubmit: addFormData
+        });
+        </script>
+    </form>
+</body>
+
+</html>

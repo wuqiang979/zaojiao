@@ -1,0 +1,266 @@
+
+    <div class="top" style="margin:10px">
+        <input type="text" name="searchtext" >
+        <input type="button" value="搜索" onclick="return search();"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>用户名</td>
+                        <td>真实姓名</td>
+                        <td>联系方式</td>
+                        <td>角色</td>
+                        <td>所属学校</td>
+                        <td>部门</td>
+                        <td>岗位</td>
+                        <td>最后登录时间</td>
+                        <td>登录次数</td>
+                        <td>最后登录ip</td>
+                        <td>在线时长</td>
+                        <td>是否在线</td>
+                        <td>最后活动时间</td>
+                        <td>注册时间</td>
+
+                        <td>状态</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if($members):foreach($members as $member): ?>
+                    <tr>
+                        <td class="caozuo">
+                           <a href='javascript:modify(<?php echo json_encode($member); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $member['mid'] ?>')">删除</a>|
+                           <a href="javascript:loadurl('<?php echo arU('Mine/info', array('nonav' => 1,'mid' => $member['mid'])); ?>','资料')">查看资料</a>
+                        </td>
+                        <td><?php arEcho($member['account_name'],'未定义'); ?></td>
+                        <td><?php arEcho($member['realname'],'未定义'); ?></td>
+                        <td><?php arEcho($member['mobile'], '-'); ?></td>
+                        <td><?php arEcho($member['rgid'], CompanySchoolMemberModel::$ROLE_MAP); ?></td>
+                        <td><?php arEcho($member['school']['name'], '-'); ?></td>
+
+                          <td>
+
+                            <a href="javascript:loadurl('<?php echo arU('departmentsAssign', array('mid' => $member['mid'])); ?>', '分配部门')">
+                            <?php if (isset($member['profile']['departs'])): ?>
+
+                            <?php foreach ($member['profile']['departs'] as $departs): ?>
+                                <?php echo $departs['name'] ?>|
+                            <?php endforeach ?>
+                            <?php else :?>
+                                未分配
+                            <?php endif ?>
+                            </a>
+
+                        </td>
+                        <td>
+                        <a href="javascript:loadurl('<?php echo arU('postsAssign', array('mid' => $member['mid'])); ?>', '分配岗位')">
+                            <?php if (isset($member['profile']['posts'])): ?>
+
+                            <?php foreach ($member['profile']['posts'] as $posts): ?>
+                                <?php echo $posts['name'] ?>|
+                            <?php endforeach ?>
+                            <?php else :?>
+                                未分配
+                            <?php endif ?>
+                            </a>
+                        </td>
+
+                        <td><?php arEcho(date('Y-m-d H:i:s', $member['last_logintime']), '-'); ?></td>
+                        <td><?php arEcho($member['logintimes'], '0'); ?></td>
+                        <td><?php arEcho($member['loginip'], '-'); ?></td>
+                        <td><?php arEcho(sprintf('%0.2f', $member['onlinetime'] / 60), '0.00'); ?>分钟</td>
+                        <td><?php arEcho($member['isonline'], array('否', '是')); ?></td>
+                        <td><?php arEcho(date('Y-m-d H:i:s', $member['last_activitytime']),' '); ?></td>
+                        <td><?php echo date('Y-m-d H:i:s', $member['reg_time']); ?></td>
+                        <td><?php arEcho($member['status'], CompanySchoolMemberModel::$STATUS_MAP); ?></td>
+                    </tr>
+                    <?php endforeach;endif; ?>
+                </tbody>
+            </table>
+            <div class="page"><?php echo $page->show(); ?></div>
+        </div>
+
+<!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">
+                    登录名：<input name="account_name" type="text"/>
+                    <input name="mid" type="hidden" value="" />
+                </td>
+
+                <td style="width: 228px;float:left">
+                    登录密码：<input name="pwd" type="text"/>
+                </td>
+
+                 <td style="width: 228px;float:left">真实姓名:
+                    <input name="realname" type="text" />
+                </td>
+                 <td style="width: 228px;float:left">联系方式:
+                    <input name="mobile" type="text" />
+                </td>
+
+                <td style="width: 228px;float:left">园区:
+                                        <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'sid',
+            // 适配器数据 数组
+            // 'map' => CompanySchoolMemberModel::$STATUS_MAP,
+            // map 多维数组适配器
+            'mapbundle' => array($schools, 'sid', 'name'),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+
+                <td style="width: 228px;float:left">状态:
+                                  <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'status',
+            // 适配器数据 数组
+            'map' => CompanySchoolMemberModel::$STATUS_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                <td style="width: 228px;float:left">
+                    <input type="submit" name="btnAdd" value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<!--分配管理员-->
+<div id="assignadmin_window" style="display:none;padding:10px">
+    用户名
+    <input type="text" name="adminuser">
+    <input type="hidden" name="adminsid">
+    <br>
+    密码
+    <input type="text" name="adminpwd">
+    <br>
+    真实姓名
+    <input type="text" name="realname">
+    <br>
+    联系电话
+    <input type="text" name="adminmobile">
+    <br>
+    <input type="button" name="save" onclick="saveadmin();" value="保存">
+</div>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='mid']").attr('value', '');
+        layer.open({
+            title:'添加成员',
+            type: 1,
+            area:['900px', '380px'],
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(mid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('memberDel') ?>', {mid:mid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'800px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 搜索
+    function search()
+    {
+        var searchText = $("[name='searchtext']").val();
+        window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchText;
+    }
+
+    // 分配管理员
+    function assign(data)
+    {
+        $("[name='adminsid']").attr('value', data.sid);
+        $("[name='adminuser']").attr('value', '');
+
+        if (data.adminuser) {
+            $("[name='adminuser']").attr('value', data.adminuser.account_name);
+            $("[name='adminmobile']").attr('value', data.adminuser.mobile);
+            $("[name='realname']").attr('value', data.adminuser.realname);
+        }
+        layer.open({
+            title:'分配管理员',
+            type: 1,
+            area:'500px',
+            content: $('#assignadmin_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 保存管理员信息
+    function saveadmin()
+    {
+        var sid = $("[name='adminsid']").val();
+        var adminuser = $("[name='adminuser']").val();
+        var adminpwd = $("[name='adminpwd']").val();
+        var realname = $("[name='realname']").val();
+        var mobile = $("[name='adminmobile']").val();
+        if (sid && adminuser && adminpwd) {
+            $.post('<?php echo arU('addmemberManager') ?>', {realname: realname, mobile: mobile, sid: sid, adminuser: adminuser, adminpwd: adminpwd}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('添加成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+            }, 'json');
+        } else {
+            layer.alert('参数不能为空');
+        }
+    }
+</script>

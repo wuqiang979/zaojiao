@@ -1,0 +1,118 @@
+
+.my-search-form{
+    padding:{
+        left: 5px;
+    }
+    overflow: hidden;
+    .my-search{
+        width: 100%;
+        padding: 35px 0;
+        border-bottom: $borderone;
+    }
+    .search-active{
+        width: 48%;
+        margin: 0 auto;
+        position: relative;
+        // display: table;
+        .form-icontrol{
+            height: 50px;
+            // display: table-cell;
+            margin-left: -40px;
+            border: 1px solid $themeColor;
+            &:focus{
+                border-color: $themeColor;
+            }
+        }
+        .submit{
+            width: 80px;
+            height: 50px;
+            padding: 0;
+            border: 0;
+            // display: table-cell;
+            position: absolute;
+            right: -40px;
+            top: 0;
+            background-color: $themeColor;
+            color: $colorWhite;
+        }
+    }
+    .my-factory{
+        padding-top: 10px;
+        .factory-title{
+            border-bottom: $borderone;
+            height: 30px;
+            line-height: 30px;
+            position: relative;
+            background-color: #F4F4F4;
+            span{
+                padding-left: 10px;
+            }
+            a{
+                position: absolute;
+                right: 10px;
+                &.refresh{
+                    height: 16px;
+                    width: 16px;
+                    top: 5px;
+                }
+            }
+        }
+    }
+    .factory-left{
+        width: 60%;
+        padding-right: 10px;
+        .factory-lt,.factory-lb{
+            width: 100%;
+        }
+        .factory-lt-left,.factory-lt-right{
+            width: 49%;
+            border: $borderone;
+        }
+        .factory-lb{
+            border: $borderone;
+            margin-top: 10px;
+        }
+    }
+    .factory-lt-left,.factory-lt-right{
+        table{
+            width: 100%;
+            td{
+                padding: 6px;
+            }
+        }
+    }
+    .factory-right{
+        width: 40%;
+        border: $borderone;
+    }
+    .my-calendar{
+        // padding-bottom: 15px;
+        .calendar-select{
+            padding: 5px 0 5px 10px;
+            vertical-align: middle;
+            input,select{
+                width: 50px;
+                border: $borderone;
+                height: 22px;
+                vertical-align: middle;
+            }
+            a{
+                display: inline-block;
+                padding: 0 15px;
+                background-color: $themeColor;
+                color: $colorWhite;
+            }
+        }
+        table{
+            width: 100%;
+            th{
+                padding: 4px 6px;
+                border: $borderone;
+            }
+            td{
+                height: 95px;
+                border: $borderone;
+            }
+        }
+    }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>
+    </title>
+    <script>
+    //            function proxyExecuteFun(funName, arg1) {
+    //                if ((arg1 == null && window[funName]()) || (arg1 != null && window[funName](arg1))) {
+    //                    window.parent.showsending(true, "执行中，请耐心等待...");
+    //                    return true;
+    //                }
+    //                return false;
+    //            };
+    //            $(function () {
+    //                $(".button").each(function () {
+    //                    if ($(this).attr("type") == "submit" && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+    //                        var tmpClick = $(this).attr("onclick");
+    //                        if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+    //                            tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+    //                            if (tmpClick.indexOf("()") != -1) {
+    //                                var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+    //                                $(this).attr("onclick", "return proxyExecuteFun('" + funName + "')");
+    //                            }
+    //                        }
+    //                    }
+    //                });
+    //
+    //            });
+    </script>
+    <script>
+    //    $(function() {
+    ////        function proxyExecuteFun(funName, arg1) {
+    ////            alert(funName);
+    ////            alert(arg1 == null ? "33" : "not null");
+    ////            if ((arg1 == null && window[funName]()) || (arg1 != null && window[funName](arg1))) {
+    ////                window.parent.showsending(true, "执行中，请耐心等待...");
+    ////                return true;
+    ////            }
+    ////            return false;
+    ////        };
+    //
+    //        //                   $(".button").live("click", function () {
+    //        //                       if ($(this).attr("type") == "submit" && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+    //        //                           var tmpClick = $(this).attr("onclick");
+    //        //                           if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+    //        //                               tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+    //        //                               if (tmpClick.indexOf("()") == -1) {
+    //        //                                   return;
+    //        //                               }
+    //        //                               var arguments = null;
+    //        //                               var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+    //        //                               alert("funName:" + funName);
+    //        //
+    //        ////                               if (tmpClick.indexOf("()") == -1) {
+    //        ////                                   arguments = tmpClick.substring(tmpClick.indexOf("("));
+    //        ////                                   arguments = arguments.substring(0, tmpClick.lastIndexOf(")"));
+    //        ////                                   alert("arg:" + arguments);
+    //        ////                               }
+    //        //                               $(this).attr("onclick", "return proxyExecuteFun('" + funName + "'," + arguments + ")");
+    //        //                               return;
+    //        //                               //                       if (proxyExecuteFun(funName, arguments)) {
+    //        //                               //                           return;
+    //        //                               //                       }
+    //        //                           }
+    //        //                           window.parent.showsending(true, "执行中，请耐心等待...");
+    //        //                       }
+    //        //                   });
+    //    })
+    </script>
+</head>
+
+<body>
+    <form method="post" action="Tips.aspx" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTEzNDM3NzkxOWRkBuPbiV/dL3OOgQD/5KgWEeJ1w/skYyocvZtdIcaUzR4=" />
+        </div>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="D350849A" />
+        </div>
+        <div>
+            没权限访问当前页面
+        </div>
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/flexigrid.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jQuery.etmTabs.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=72e13dc7-f394-444c-9d2a-e1304f70d5ff', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#tab").etmTabs({
+                item: [{
+                    Url: "<?php echo arU('Senate/commonClass');?>",
+                    Selected: false,
+                    Text: "常规班"
+                }, {
+                    Url: "<?php echo arU('Senate/commonClass');?>",
+                    Selected: true,
+                    Text: "才艺班"
+                }]
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        navId = '72e13dc7-f394-444c-9d2a-e1304f70d5ff';
+
+        function ShowAdd() {
+            window.parent.showDialog("班级修改", "../Modules/Teach/ClassEdit.aspx?sc=btn&navId=72e13dc7-f394-444c-9d2a-e1304f70d5ff&ClassType=1", 620, 450);
+            return false;
+        }
+
+        function ShowMerge() {
+            var count = 0;
+            var classGuid = "";
+            $("input[name='selectItem']:checkbox:checked").each(function() {
+                classGuid += $(this).val() + ",";
+                count += 1;
+            });
+            if (count == 0 || count == 1) {
+                alert("请选择多个班级");
+                return false;
+            }
+            classGuid = classGuid.substring(0, classGuid.length - 1);
+            window.parent.showDialog("班级合并", "../Modules/Teach/ClassMerge.aspx?sc=btn&navId=72e13dc7-f394-444c-9d2a-e1304f70d5ff&ClassType=1&ClassGuidList=" + classGuid, 620, 450);
+
+
+        }
+
+        function Delete(ClassGuid) {
+            if (confirm("确定要删除吗？")) {
+                $.ajaxMethod("Teach_ClassDelete", {
+                        "ClassGuid": ClassGuid
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            }
+        }
+
+        function BatchDel() {
+            var count = 0;
+            var classGuid = "";
+            $("input[name='selectItem']:checkbox:checked").each(function() {
+                classGuid += $(this).val() + ",";
+                count += 1;
+            });
+
+
+            if (count == 0) {
+                alert("请选择一条数据");
+                return false;
+            }
+            classGuid = classGuid.substring(0, classGuid.length - 1);
+            if (confirm("确定要删除吗？")) {
+                $.ajaxMethod("Teach_ClassDelete_More", {
+                        "ClassGuid": classGuid
+                    },
+                    function(data) {
+                        alert(data);
+                    },
+                    true, "text");
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="ClassList_TuoGuang.aspx?navId=72e13dc7-f394-444c-9d2a-e1304f70d5ff&amp;ClassType=1" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTI2NTE4NDM3OA9kFgICAw9kFgZmDxBkEBUDCeivt+mAieaLqQzpkqLnkLTmiY3oiboM57uY55S75omN6Im6FQMkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJDc2MWUyMjI0LTY4YmEtNGM5Ni05ODY5LTFmOGVjODNmZjhiOCQ0OTlhZDI3YS0xY2QzLTQ4ZTUtODliNC01MDc5MzA2NDE2N2EUKwMDZ2dnZGQCAQ8QZBAVEQnor7fpgInmi6kJMjAwNn4yMDA3CTIwMDd+MjAwOAkyMDA4fjIwMDkJMjAwOX4yMDEwCTIwMTB+MjAxMQkyMDExfjIwMTIJMjAxMn4yMDEzCTIwMTN+MjAxNAkyMDE0fjIwMTUJMjAxNX4yMDE2CTIwMTZ+MjAxNwkyMDE3fjIwMTgJMjAxOH4yMDE5CTIwMTl+MjAyMAkyMDIwfjIwMjEJMjAyMX4yMDIyFREkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwCTIwMDZ+MjAwNwkyMDA3fjIwMDgJMjAwOH4yMDA5CTIwMDl+MjAxMAkyMDEwfjIwMTEJMjAxMX4yMDEyCTIwMTJ+MjAxMwkyMDEzfjIwMTQJMjAxNH4yMDE1CTIwMTV+MjAxNgkyMDE2fjIwMTcJMjAxN34yMDE4CTIwMTh+MjAxOQkyMDE5fjIwMjAJMjAyMH4yMDIxCTIwMjF+MjAyMhQrAxFnZ2dnZ2dnZ2dnZ2dnZ2dnZ2RkAgMPDxYCHgdWaXNpYmxlZ2RkZIk8el/H7sfHNnPSx0NzzYADP2yXLRTustZeo0jmda7d"
+            />
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="823475C0" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABepQ8NjBojN3COZ4tJJGZbzdLCG46EsVb1v5ZUy2fW8CJWWuUZaZ6qMop8xc1Inp3MrAtp209W/1BiNm6XfFJfe4Skt+1Vu4Y0RlOKT07lnOI/lgbJsbnyR1bRZn8ryLj6dIiINJ73jbYyA7HNBnNoWuxYCp2Tl2x42qZAEHJnh4ypiZsvLbCCxTn2RbIf4NQESV3lBlKB3XbnN51ZXhK2Sx18IBE58mBAWexlhdiBZX6BxBSbvNCxFUwl4c+QOZQfw7nTibHaMF/YxdcSBzUNpslPYojK+8VXwhcxkSZYI/ImPpEK0eSXvU6o5qGYmztWDuTW0BkTCb6T2m9Rr9rkq2C0RA2cVtdQGcj2brRKZNe5a8JwcGO7GLzOuvJITMSeq9hmqtw6gg6+mbjfw0nJ7PYS2Urq9iKYvr5HB1yHh1fT6KFPAiHNGyyY+CGEEGY1wa5mHS44n1sFofZWCfLwek1xC2cq1vfWES1tPptYn38Fn1+ixLEHrr+0RAzzU/Gi9EbzG+DQLGVHssgI8UwcR"
+            />
+        </div>
+        <div id="tab"></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">才艺课程：</td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlLikeLesson" id="ddlLikeLesson" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="761e2224-68ba-4c96-9869-1f8ec83ff8b8">钢琴才艺</option>
+                        <option value="499ad27a-1cd3-48e5-89b4-50793064167a">绘画才艺</option>
+
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 54px;">学年：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlClassYear" id="ddlClassYear" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="2006~2007">2006~2007</option>
+                        <option value="2007~2008">2007~2008</option>
+                        <option value="2008~2009">2008~2009</option>
+                        <option value="2009~2010">2009~2010</option>
+                        <option value="2010~2011">2010~2011</option>
+                        <option value="2011~2012">2011~2012</option>
+                        <option value="2012~2013">2012~2013</option>
+                        <option value="2013~2014">2013~2014</option>
+                        <option value="2014~2015">2014~2015</option>
+                        <option value="2015~2016">2015~2016</option>
+                        <option value="2016~2017">2016~2017</option>
+                        <option value="2017~2018">2017~2018</option>
+                        <option value="2018~2019">2018~2019</option>
+                        <option value="2019~2020">2019~2020</option>
+                        <option value="2020~2021">2020~2021</option>
+                        <option value="2021~2022">2021~2022</option>
+
+                    </select>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">班级名称：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbClassName" type="text" id="tbClassName" class="int" />
+                </td>
+                <td style="padding-left: 20px;">
+                    <input type="button" id="btnSearch" class="button" value="搜 索" />&nbsp;&nbsp;
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return ShowAdd();" id="btnAdd" class="button" />&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7" style="padding-left: 25px;">
+                    <input type='button' onClick="return BatchDel();" id='btnBatchDel' class='button button' etmClass='' style='' value='批量删除' />&nbsp;&nbsp;
+                    <input type='button' onClick="return ShowMerge();" id='btnMerge' class='button button' etmClass='' style='' value='合 并' />
+                </td>
+            </tr>
+
+        </table>
+        <table id='Test' style='display:none;'></table>
+        <input type='text' style='display:none;' id='etmparams' name='etmparams' value='[{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"","Name":"ClassGuid","Width":35,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":true,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":"DoStatus","IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"ClassAct","Display":"操作","Name":"ClassGuid,DoStatus,72e13dc7-f394-444c-9d2a-e1304f70d5ff,ClassType","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"班级名称","Name":"ClassName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":true,"LinkStrForamtBindColumn":"72e13dc7-f394-444c-9d2a-e1304f70d5ff,ClassGuid","LinkStrForamt":"ClassInfo.aspx?navId={0}&&ClassGuid={1}","LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"才艺课程","Name":"ClassLessonName","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":"ClassTeacher","Display":"老师","Name":"ClassGuid","Width":160,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"学年","Name":"ClassYear","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"班级容量(人)","Name":"ClassCapacity","Width":80,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"right","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":null,"ColumnType":"String","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"备注","Name":"Notes","Width":320,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"left","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false},{"IsCanHide":true,"FormatString":"yyyy-MM-dd HH:mm","ColumnType":"DateTime","PageColumnGuid":"00000000-0000-0000-0000-000000000000","PageName":null,"SortId":0,"IsSetValueEqualName":false,"VirtualColumn":null,"Display":"录入时间","Name":"CreateTime","Width":120,"Sortable":false,"ColumnHeader_BindId":null,"ColumnHeader_IsBindDropDownList":false,"Align":"Center","Checkbox":false,"IsLink":false,"LinkStrForamtBindColumn":null,"LinkStrForamt":null,"LinkClass":"","OperationButtons":"","SubStringLength":0,"BindAttrs":null,"IsJsAddColumn":false}]'
+        />
+        <input type='text' style='display:none;' id='etmUrlparams' name='etmUrlparams' value='[{"Key":"navId","Value":"72e13dc7-f394-444c-9d2a-e1304f70d5ff"},{"Key":"ClassType","Value":"1"}]' />
+        <input type='text' style='display:none;' id='etmPageUrl' name='etmPageUrl' value='http://vip.yj.etmcn.com/Modules/Teach/ClassList_TuoGuang.aspx?navId=72e13dc7-f394-444c-9d2a-e1304f70d5ff&ClassType=1' />
+        <input type='text' style='display:none;' id='pagename' name='pagename' value='Teach_ClassList_TuoGuang' />
+        <input type='text' style='display:none;' id='pageamethod' name='pageamethod' value='Teach_ClassList_TuoGuangTeach_ClassList_TuoGuang' />
+        <script type='text/javascript'>
+            var etmFormId = 'form1';
+
+            function fixIE9() {
+                if ($.browser.msie && $.browser.version == 9) {
+                    $('#form1 select').each(function() {
+                        var name = $(this).attr('name');
+                        if (name != undefined && name.length > 0) {
+                            var value = $(this).val();
+                            if (value == null) {
+                                value = $(this).find('option:first').attr('value');
+                                $(this).val(value);
+                            }
+                        }
+                    });
+                }
+            }
+
+            function RefreshGrid() {
+                $('#Test').flexOptions().flexReload();
+            };
+
+            function addFormData() {
+                fixIE9();
+                var dt = $('#form1').serializeArray();
+                $('#Test').flexOptions({
+                    params: dt
+                });
+                return true;
+            }
+            $(function() {
+                $('#btnSearch').click(function() {
+                    $('#Test').flexOptions({
+                        newp: 1
+                    }).flexReload();
+                    return false;
+                });
+            });
+            $('#Test').flexigrid({
+                url: 'http://vip.yj.etmcn.com/Ajax/Teach_ClassList_TuoGuang',
+                sortname: 'CreateTime',
+                sortorder: 'desc',
+                usepager: true,
+                useRp: true,
+                rpOptions: [20, 30, 50, 100, 200],
+                rp: 30,
+                colModel: [{
+                    display: '',
+                    name: 'ClassGuid',
+                    etmname: 'ClassGuid',
+                    width: 35,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: true,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '操作',
+                    name: 'ClassGuid,DoStatus,72e13dc7-f394-444c-9d2a-e1304f70d5ff,ClassType',
+                    etmname: 'ClassAct',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '班级名称',
+                    name: 'ClassName',
+                    etmname: 'ClassName',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: true,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '才艺课程',
+                    name: 'ClassLessonName',
+                    etmname: 'ClassLessonName',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '老师',
+                    name: 'ClassGuid',
+                    etmname: 'ClassTeacher',
+                    width: 160,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '学年',
+                    name: 'ClassYear',
+                    etmname: 'ClassYear',
+                    width: 80,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '班级容量(人)',
+                    name: 'ClassCapacity',
+                    etmname: 'ClassCapacity',
+                    width: 80,
+                    sortable: false,
+                    align: 'right',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '备注',
+                    name: 'Notes',
+                    etmname: 'Notes',
+                    width: 320,
+                    sortable: false,
+                    align: 'left',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: '',
+                    ColumnType: 'String',
+                    IsJsAddColumn: false
+                }, {
+                    display: '录入时间',
+                    name: 'CreateTime',
+                    etmname: 'CreateTime',
+                    width: 120,
+                    sortable: false,
+                    align: 'Center',
+                    checkbox: false,
+                    IsLink: false,
+                    LinkClass: '',
+                    OperationButtons: '',
+                    SubStringLength: 0,
+                    hide: false,
+                    BindId: '',
+                    IsForDDL: false,
+                    IsCanHide: true,
+                    FormatString: 'yyyy-MM-dd HH:mm',
+                    ColumnType: 'DateTime',
+                    IsJsAddColumn: false
+                }],
+                width: $(window).width(),
+                height: $(window).height() - 250 + 60,
+                onSubmit: addFormData
+            });
+        </script>
+
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<!-- 学年管理 -->
+<!-- 显示内容 start -->
+<!-- 搜索栏 -->
+<div>
+    <!-- <form method="post" action="<?php echo arU('');?>"> -->
+        <!-- <input type="text" class="int" name="search"> -->
+        <!-- <input type="submit" value="搜 索" class="button" onclick=""> -->
+        <input type="button" value="添 加" class="button" onclick="return add();" id="btnAdd">
+    <!-- </form> -->
+</div>
+<!-- 列表 -->
+<div>
+    <table class="list" style="text-align: center;">
+        <thead>
+            <tr>
+                <td style="width: 80px;">操作</td>
+                <td>序号</td>
+                <td>学年</td>
+                <td>创建时间</td>
+                <td>状态</td>
+                <td>备注</td>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if($res):foreach($res as $k=>$v): ?>
+            <tr>
+                <td class="caozuo">
+                    <a href='javascript:modify(<?php echo json_encode($v); ?>)'>修改</a> |
+                    <a href="javascript:del('<?php echo $v['yid'] ?>')">删除</a>
+                </td>
+                <td>
+                    <?php arEcho($v['yid'],'-'); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['first_school_year'].'~'.$v['last_school_year']); ?>
+                </td>
+                <td>
+                    <?php arEcho(date('Y-m-d H:m:s',$v['create_time'])); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['status'],EduSchoolYearModel::$STATUS_SCHOOL_YEAR); ?>
+                </td>
+                <td>
+                    <?php arEcho($v['note'],'-'); ?>
+                </td>
+            </tr>
+            <?php endforeach;endif; ?>
+        </tbody>
+    </table>
+</div>
+<div>
+    <?php if($page){echo($page->show());} ?>
+</div>
+<!-- 显示内容 end -->
+<!-- 弹窗内容 start -->
+<form style="display: none;width: 268px;" method="post" action="<?php echo arU('');?>" id="change_status">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>状态：</td>
+            <td>
+                <?php
+		      // 调用用html seg 直接输出 select标签
+		      arSeg(
+		         array(
+		            // seg文件
+		            'segKey' => 'Html/select',
+		            // <select name="name">
+		            'name' => 'status',
+		            // 适配器数据 数组
+		            'map' => EduSchoolYearModel::$STATUS_SCHOOL_YEAR,
+		            // map 多维数组适配器
+		            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+		            // 选中的value selected = selected
+		            // 'selected' => $ad['type']
+		         )
+		      );
+			?>
+            </td>
+            <td>
+                <input type="hidden" name="type">
+                <input type="hidden" name="yid">
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<form style="display: none;width: 868px;" method="post" action="<?php echo arU('');?>" id="edit_window">
+    <table class="list" style="text-align: center;">
+        <tr>
+            <td>学年：</td>
+            <td>
+                <input type="text" class="int" name="first_school_year"> ~
+                <input type="text" class="int" name="last_school_year">
+            </td>
+            <td>状态：</td>
+            <td>
+            <?php
+		      // 调用用html seg 直接输出 select标签
+		      arSeg(
+		         array(
+		            // seg文件
+		            'segKey' => 'Html/select',
+		            // <select name="name">
+		            'name' => 'status',
+		            // 适配器数据 数组
+		            'map' => EduSchoolYearModel::$STATUS_SCHOOL_YEAR,
+		            // map 多维数组适配器
+		            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+		            // 选中的value selected = selected
+		            // 'selected' => $ad['type']
+		         )
+		      );
+			?>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>备注：</td>
+            <td>
+                <input type="text" class="int" style="width: 297px;" name="note">
+            </td>
+            <td colspan="3"></td>
+            <td>
+                <input type="hidden" name="type" class="int">
+                <input type="hidden" name="yid" class="int">
+                <input type="submit" class="button" value="提 交">
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- 弹窗内容 end -->
+<!-- js内容 start -->
+<script>
+function add() {
+	$(".int").attr('value', '');
+    $("[name = 'type']").attr('value', 'add');
+    layer.open({
+        title: '添加学年',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 修改
+function modify(data) {
+    $("[name = 'type']").attr('value', 'modify');
+    // 填充表单万能写法
+    for (var i in data) {
+        $("[name='" + i + "']").val(data[i]);
+    }
+
+    layer.open({
+        title: '修改学年',
+        type: 1,
+        skin: 'layui-layer-lan',
+        area: '900px',
+        content: $('#edit_window')
+    });
+}
+// 删除
+function del(yid) {
+    layer.confirm('确认删除?', function(index) {
+        $.get('<?php echo arU('schoolYearDel') ?>', {yid: yid
+            },
+            function(res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+    });
+}
+</script>
+<!-- js内容 end -->

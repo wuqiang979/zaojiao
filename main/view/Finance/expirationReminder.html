@@ -1,0 +1,208 @@
+	<div class="top" style="margin:10px">
+		<form enctype="multipart/form-data" method="get" action="<?php echo arU();?>" >
+			<table class="search">
+	            <tr>
+	                <td class="textAlignRight" style="width: 78px;">到期日期：
+	                </td>
+	                <td class="borderRight" style="width: 172px;">
+	                    <input type="text" class="int" id="tbStartDate" name="charge1" value="<?php echo arRequest('charge1');?>" style="width: 70px;" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" /> -
+	                    <input type="text" class="int" id="tbEndDate" name="charge2" value="<?php echo arRequest('charge2');?>" style="width: 70px;" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+	                </td>
+	            <tr>
+	                <td class="textAlignRight">幼儿姓名：
+	                </td>
+	                <td class="borderRight">
+	                    <input type="text" class="int" style="width:152px;" id="tbMemberName" value="<?php echo arRequest('babyname');?>" name="babyname" />
+	                </td>
+	                <td style="padding-left: 20px">
+	                    <input type="submit" id="btnSearch" style="width:80px;" class="button" value="搜 索" /> &nbsp;
+	                </td>    
+	            </tr>
+	        </table>
+	    </form>
+    </div>
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                    	<td>操作</td>
+                        <td>单据号</td>
+                        <td>幼儿姓名</td>
+                        <td>收费金额</td>
+                        <td>收费日期</td>
+                        <td>到期日期</td>
+                        <td>备注</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if($charge):foreach($charge as $auth):?>
+                    <tr>
+                        <td>
+                        	<a href='javascript:modify(<?php echo json_encode($auth); ?>)'>查看</a>|
+                        </td>
+                        <td><?php arEcho($auth['serialnumber'],'-'); ?></td>
+                        <td><?php arEcho($auth['bname'],'-'); ?></td>
+                        <td><?php arEcho($auth['actualcharges'],'-'); ?></td>
+                        <td><?php arEcho($auth['chargeday'],'-'); ?></td>
+                        <td><?php arEcho($auth['daydue'],'-'); ?></td>
+                        <td><?php arEcho($auth['remark'],'-'); ?></td>
+                    </tr>
+                <?php endforeach;endif; ?>
+                </tbody>
+                <tr>
+                    <td colspan="11"><?php echo $pagelist; ?></td>
+                </tr>
+            </table>
+        </div>
+<!--弹出框 修改-->
+<div id="add_window" style="display:none;width:800px;" >
+			<table class="edit">
+			<input name="ccid" type="hidden" />
+	            <tr>
+	                <td class="textAlignRight">幼儿：</td>
+	                <td colspan="5">
+	                    <span id="lbMember"></span>
+	                    <input name="bname" value="" /><span class="words">&nbsp;*</span>
+	                </td>
+	            </tr>
+	            <tr> 
+	                <td class="textAlignRight" style="width: 80px;">收费日期：
+	                </td>
+	                <td class="borderRight" style="width: 205px;">
+	                    <input name="chargeday" type="text" value="<?php echo date('Y-m-d', time());?>" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;,onpicked:function(dp){pickedFuncChar(dp.cal.getNewDateStr());}})" />
+	                   
+	                </td>
+	                <td class="textAlignRight" style="width: 80px">折扣：
+	                </td>
+	                <td>
+	                    <input name="discount" type="text" class="int" style="text-align: right;" />
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">收费帐号：
+	                </td>
+	                <td class="borderRight" id="backCards">
+	                <?php if($chargetype && is_array($chargetype)): foreach($chargetype as $tkey => $type):?>
+	                	<input type="radio" name="chargetypeEdit" value="<?php echo $tkey;?>" <?php if(isset($auth['chargetype']) && $auth['chargetype'] == $tkey): echo 'checked';endif;?> /><?php echo $type;?>
+	                <?php endforeach;endif;?>
+	                <br>
+	                <?php if(isset($auth['chargecard']) && $auth['chargecard']): ?>
+					银行卡号：<input name="chargecard" type="text" value="<?php echo $auth['chargecard']; ?>" />
+	                <?php endif;?>
+	                </td>
+
+	                <td class="textAlignRight">应收金额：
+	                </td>
+	                <td class="borderRight">
+	                    <input name="shouldcharges" type="text" value="" class="int" style="text-align: right;" />
+	                </td>
+	                <td class="textAlignRight">实收金额：
+	                </td>
+	                <td class="borderRight">
+	                    <input name="actualcharges" type="text" class="int" style="text-align: right;" />
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">幼儿类型：
+	                </td>
+	                <td class="borderRight">
+	                    <?php
+					      // 调用用html seg 直接输出 select标签
+					      arSeg(
+					         array(
+					            // seg文件
+					            'segKey' => 'Html/select',
+					            // <select name="name">
+					            'name' => 'babytype',
+					            // 适配器数据 数组
+					            'map' => BabyModel::$ATTENTION_TYPE_MAP,
+					            // map 多维数组适配器
+					            // 'mapbundle' => array(array(), 'keyfield', 'showfield'),
+					            // 选中的value selected = selected
+					            // 'selected' => $enrollment['attention_type']
+					         )
+					      );
+					?>
+	                </td>
+	                <td class="textAlignRight">到期日期：</td>
+	                <td class="borderRight">
+	                    <input name="daydue" type="text" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" />
+	                </td>
+	                <td class="textAlignRight">代扣单：</td>
+	                <td>
+	                    <input type="checkbox" name="withholdingsingleEdit" value="1" <?php if(isset($auth['withholdingsingle']) && $auth['withholdingsingle']==1): echo 'checked="checked"'; endif; ;?> />
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">单据号：</td>
+	                <td class="borderRight">
+	                    <input name="serialnumber" type="text" class="int" />
+	                </td>
+	                <td class="textAlignRight">使用定金：</td>
+	                <td class="borderRight">
+	                    <input type="checkbox" name="earnestEdit" value="1" <?php if(isset($auth['earnest']) && $auth['earnest']==1): echo 'checked="checked"'; endif; ;?> />
+	                </td>
+	            </tr>
+	            <tr>
+		            <td class="textAlignRight">收费模式：</td>
+	                <td colspan="5">
+	                <?php if($chargeway && is_array($chargeway)): foreach($chargeway as $wkey => $way):?>
+	                    <input id="<?php if($wkey == 1): echo 'rdbTimeStepM'; else: echo 'rdbTimeStepT';endif;?>" type="radio" name="chargewayEdit" value="<?php echo $wkey;?>" <?php if(isset($auth['chargeway']) && $auth['chargeway']== $wkey): echo 'checked';endif;?> onclick="rbCheck(&#39;<?php if($wkey == 1): echo 'M'; else: echo 'T';endif;?>&#39;);" /><?php echo $way;?>
+	                <?php endforeach;endif;?>
+	                    <!-- <input id="rdbTimeStepT" type="radio" name="chargeway" value="2" onclick="rbCheck(&#39;T&#39;);" />按学期 -->
+	                    <!-- <span id="spanMonth">
+	                        <input name="txtMonth" type="text" id="txtMonth" class="int" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM&#39;})" style="width:70px;" />
+	                    </span> -->
+	                    <span id="spanTerm" class="hidden">
+	                        <?php
+						      // 调用用html seg 直接输出 select标签
+						      arSeg(
+						         array(
+						            // seg文件
+						            'segKey' => 'Html/select',
+						            // <select name="name">
+						            'name' => 'studyyear',
+						            // 适配器数据 数组
+						            // 'map' => BabyModel::$ATTENTION_TYPE_MAP,
+						            // map 多维数组适配器
+						            'mapbundle' => array($schoolYear, 'yid', 'school_year'),
+						            // 选中的value selected = selected
+						            //'selected' => $auth['studyyear']
+						         )
+						      );
+						?>
+	                    </span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td class="textAlignRight">备注：
+	                </td>
+	                <td colspan="5">
+	                    <textarea name="remark" rows="2" cols="20" id="tbNotes" class="int" style="width: 678px; height: 47px;">
+	                    </textarea>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td colspan="6" class="borderBottom"></td>
+	            </tr>
+	        </table>
+		</div> 
+<script type="text/javascript">
+	// data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+</script>

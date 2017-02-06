@@ -1,0 +1,310 @@
+<html lang="zh-cmn-Hans"><head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="/zaojiao/main/Public/css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="/zaojiao/main/Public//js/jquery-1.4.2.min.js"></script>
+    <script src="/zaojiao/main/Public//js/My97DatePicker/WdatePicker.js"></script><link href="/zaojiao/main/Public//js/My97DatePicker/skin/WdatePicker.css" rel="stylesheet" type="text/css">
+    <script src="/zaojiao/main/Public//js/flexigrid.js"></script>
+    <script src="/zaojiao/main/Public//js/jQuery.Ex.js"></script>
+    <script src="/zaojiao/main/Public//js/jQuery.etmTabs.js"></script>
+    <script src="/zaojiao/main/Public//js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isEtmClient = false;
+
+        function ReSizeScrollbar() {
+            if ($('form').getNiceScroll().length > 0) {
+                $('form').getNiceScroll().onResize();
+            }
+        }
+
+        function ReSizeFlexgridScrollbar() {
+            if ($('.bDiv').getNiceScroll().length > 0) {
+                $('.bDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitFlexgridScrollbar() {
+            $('.bDiv').niceScroll({
+                cursorcolor: '#75A801',
+                zindex: 4
+            });
+        }
+
+        function ReSizenDivScrollbar() {
+            if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+                $('.flexigrid .nDiv').getNiceScroll().onResize();
+            }
+        }
+
+        function InitnDivScrollbar() {
+            $('.flexigrid .nDiv').niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+        }
+
+        function proxyExecuteFun(funName) {
+            if (funName == undefined || funName == null || funName.length == 0) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return;
+            }
+            if (window[funName]()) {
+                window.parent.showsending(true, "执行中，请耐心等待...");
+                return true;
+            }
+            return false;
+        };
+        var _tmpOnSelectedFile = null;
+
+        function onSelectedFile(fileName, fileUrl, isImg) {
+            if (_tmpOnSelectedFile != null) {
+                _tmpOnSelectedFile(fileName, fileUrl, isImg);
+            }
+        }
+
+        function showFileList(callback) {
+            window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b', '900px', '450px');
+            _tmpOnSelectedFile = callback;
+        }
+        $(function() {
+            if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                window.parent.showsending(false, '');
+            }
+            $(".button").each(function() {
+                if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                    var tmpClick = $(this).attr("onclick");
+                    if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                        $(this).attr("onclick", "proxyExecuteFun();");
+                        return;
+                    }
+                    if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                        tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                        if (tmpClick.indexOf("()") != -1) {
+                            var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                            $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                        }
+                    }
+                }
+            });
+            $('body').click(function() {
+                if (typeof parent.onChildPageClick != 'undefined') {
+                    parent.onChildPageClick();
+                }
+            });
+            $('form').height($(window).height() - 0).niceScroll({
+                cursorcolor: '#75A801',
+                horizrailenabled: false
+            });
+            $(window).resize(function() {
+                ReSizeScrollbar();
+            });
+        });
+    </script>
+    <style type="text/css">
+        #followContainer {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .spanMark {
+            border: solid 1px #ccc;
+            background-color: #fff;
+            padding: 0 3px 0 3px;
+            margin: 1px;
+            display: inline-block;
+            height: 20px;
+            line-height: 20px;
+        }
+    </style>
+    <script type="text/javascript">
+        function ShowInfo(memberGuid, navId) {
+            window.parent.showDialog("幼儿资料查看", "../Modules/CRM/MemberInfo.aspx?memberGuid=" + memberGuid + "&navId=" + navId, "976px", "510px");
+        }
+
+        $(function() {
+            $(".MemberDelete").live("click", function() {
+                if (confirm("确定要删除吗？")) {
+                    $.ajaxMethod("CRM_MemberDelete", {
+                            "MemberGuid": $(this).attr("MemberGuid")
+                        },
+                        function(data) {
+                            alert(data);
+                        },
+                        true, "text");
+                }
+            });
+        });
+
+        var fixPageHeight = 135;
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            $("#tab").etmTabs({
+                item: [{
+                    Url: "/zaojiao/Baby/babyFileManage",
+                    Selected: true,
+                    Text: "档案管理"
+                }, {
+                    Url: "/zaojiao/Baby/classFile",
+                    Selected: false,
+                    Text: "班级档案"
+                }],
+                RadioItem: [{
+                    "Text": "在校幼儿",
+                    "Url": "/Modules/CRM/MemberList.aspx?memberStatus=1&navId=be8c6973-1713-427c-a64d-26d18285ca0b",
+                    "Selected": true
+                }, {
+                    "Text": "离校幼儿",
+                    "Url": "/Modules/CRM/MemberList.aspx?memberStatus=2&navId=be8c6973-1713-427c-a64d-26d18285ca0b",
+                    "Selected": false
+                }, {
+                    "Text": "全部",
+                    "Url": "/Modules/CRM/MemberList.aspx?memberStatus=1,2&navId=be8c6973-1713-427c-a64d-26d18285ca0b",
+                    "Selected": false
+                }],
+            });
+        });
+    </script>
+</head>
+
+<body style="cursor: default;">
+    <form method="post" action="MemberList.aspx?navId=be8c6973-1713-427c-a64d-26d18285ca0b" id="form1" tabindex="5000" style="height: 667px; overflow-y: hidden; outline: none;">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjEwODMxNjE4NA9kFgICAw9kFgJmD2QWAgIBDxBkEBUUCeivt+mAieaLqQzlubzlhL/lp5PlkI0M5bm85YS/5pi156ewBuWtpuWPtwbnlJ/ml6UM5bm85YS/57G75Z6LDOaJi+acuuWPt+eggQzlubzlhL/mnaXmupAM5b2V5YWl5pel5pyfDOWFpeWtpuaXpeacnwblrabmnJ8M5a626ZW/5aeT5ZCNBuePree6pwzlr7zlhaXmibnmrKEG5qCH562+DOWbuuWumueUteivnQblpIfms6gM5a625bqt5L2P5Z2ADOemu+agoeaXpeacnwzlu7rorq7nuqfliKsVFCZ8fDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDZzdHJpbmd8TWVtYmVyTmFtZXxmMDMyNmNiNy00MmI1LTRmNWYtOWJmNC1iOTIyNDA0MGZlOGE0c3RyaW5nfE5pY2tOYW1lfDdiMDQ0YTI5LTFkNmYtNDgzOC1iMjk3LTYzZTU2YzgwODViMzJzdHJpbmd8Q2FyZE5vfGY4MjgyZTM4LTI3YzgtNDk3Zi05NjQ1LTcyNjFmYTk1Yjg2YTdkYXRldGltZXxCaXJ0aERhdGV8NjRjNGM5ZGItZGNkOS00NjM2LWJkMTMtMmQzYzdjYzhjNjBmOnN0cmluZ3xNZW1iZXJUeXBlTmFtZXwzNWY0MDdlMS0xODg1LTQ1ZWQtOGI5Ni0xZDJlODBiYTkzNTYyc3RyaW5nfE1vYmlsZXw3N2JmOWZmYS03Mzg4LTQxNTMtOGIyMy0xZjYxODFjM2Q1ZDc2c3RyaW5nfFNvdXJjZU5hbWV8OGY0MDNlZWEtZTM3Yy00YjFhLTliMzMtN2JlYmEzOTgwMmFkOGRhdGV0aW1lfENyZWF0ZVRpbWV8ZDBiMDJlZmQtMGU4OC00YzgwLWE1ZTEtYmRlNTBmYzNhNzMwOGRhdGV0aW1lfEVucm9sbERhdGV8NjhkZmFhYzMtZmVjZC00ZDYyLWIzYWMtMzFlMTEyNTM4M2QxNHN0cmluZ3xUZXJtTmFtZXw0OGNmOWZkMC1lNDM1LTRhNDgtYTAyOC0xOTIyM2YyY2I4YWE0c3RyaW5nfEd1YXJkaWFufGIyY2NmNzFlLTA4NmQtNDRkYS1iMzI2LWZmOTAwZjMwNjEyMThzdHJpbmd8Tm93Q2xhc3NOYW1lfDg0MGFhYmY1LTlhZGYtNDBiMy05YWEyLTRkNDRhNDU4YzE3NjZzdHJpbmd8QmF0Y2hUaXRsZXwxOWFmYTY2MS1jMTMzLTQxNmYtYTlhYy1hNWM5YjM0OWMzNGQxc3RyaW5nfE1hcmtzfDBlYTE5MjU1LWY0M2ItNDZjYi05NDBiLWFlNzYyMjU5M2E1YjFzdHJpbmd8UGhvbmV8YzRlMzMyMDItOTliMS0xMDMxLWEyODEtY2UyNzU5NGE2NTFlMXN0cmluZ3xOb3Rlc3xlN2IwZGQ5ZS05OWIwLTEwMzEtYTI4MS1jZTI3NTk0YTY1MWUzc3RyaW5nfEFkZHJlc3N8NzhlODZkMzktOGJhMi00MWIwLWIyYzUtOGMyOTA4NDA2OTI3OmRhdGV0aW1lfEdyYWR1YXRlRGF0ZXxmOGNlZTNiZi1lODU1LTRjNzEtOTc4YS04YTA1ZGM4YTRjOTc2c3RyaW5nfE1lbWJlcl9VRDF8N2FiZjQ4YzMtYWE3NC00YTljLWJmODktZTNhNzg5MTUyMWNiFCsDFGdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZGRk2/F/TSd+nZ6BvyTnazOEiXbgwNY7QdKkMV0UtSWSJZw=">
+        </div>
+
+        <div class="aspNetHidden">
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="D5C27F1D">
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABadOLH27Io4YQV0RUxTBwm+3BiCyKY6sBYEM4cflALgqSVtGIvY/PwxIbRUQJVeWfKJdAI75+kGe0l9fdPAn/XSI/V6yRo2aaZdMvBsbBv38YcVmNob0/ND8LArMRLHD770ztLodR43YKCx8hyo5xj8CKrQYD1mTL8G6+76GeAPnJftKXlpXt6HE/+ASyjacLVMZx1upmgkARjlKebVAjRp84IbTJ7kinGH6w3/uapI2or9vlOs1zjEBM3pXK4r2Ai+lPlQluxGF13Blxrt8Q0HyHGnNc5axlk+vi1JyCEZrOvQTHBELcKMc0K6iSYt7TpauoNxgYf9Q76+RoCpp+aqk6aozE6FcTDGXs8AYIMcIaoRLBNgDOOfPrfyvqLaa7GEzqXIKEs/CPfh1aqljVu4w6Sm3YSyH1CNk6vXZZ2sxPycXvts/qKfnvEMMlGj4tZk7zAKaDaY3ajvlFgvF8I/6/mRQjO0lsZ/gbX37BDBid5MGXbnoiDq8B74Sqlegf0=">
+        </div>
+        <div class="tabs" style="text-align: left;"><div class="tabsBottomBar">&nbsp;</div><a href="/zaojiao/Baby/babyFileManage" style="margin-left:10px;" class="tabSelected currentTabSelected tabItem">档案管理</a>|<a href="/zaojiao/Baby/classFile" class="tabItem">班级档案</a><div class="selectedbar" style="width: 69px; left: 10px;">&nbsp;</div><div class="searchOption"><a href="/Modules/CRM/MemberList.aspx?memberStatus=1&amp;navId=be8c6973-1713-427c-a64d-26d18285ca0b">在校幼儿</a><a href="/Modules/CRM/MemberList.aspx?memberStatus=2&amp;navId=be8c6973-1713-427c-a64d-26d18285ca0b">离校幼儿</a><a href="/Modules/CRM/MemberList.aspx?memberStatus=1,2&amp;navId=be8c6973-1713-427c-a64d-26d18285ca0b">全部</a></div></div>
+
+
+
+
+
+
+        <div class="floatSearch">
+            <table id="tableSearch" cellpadding="0" cellspacing="0">
+                <tbody id="tbodySearch">
+                    <tr>
+                        <td id="tdAdvSearch" style="text-align: left; padding-left: 20px;" class="hidden">
+                            <div style="height: 25px;">选择条件：
+                                <select name="MemberSearch1$ddlSearchParamName_0" id="MemberSearch1_ddlSearchParamName_0" class="ParamName" onchange="BindSearchType(this)" lasttr="true" style="width: 140px;">
+                                    <option value="||00000000-0000-0000-0000-000000000000">请选择</option>
+                                    <option value="string|MemberName|f0326cb7-42b5-4f5f-9bf4-b9224040fe8a">幼儿姓名</option>
+                                    <option value="string|NickName|7b044a29-1d6f-4838-b297-63e56c8085b3">幼儿昵称</option>
+                                    <option value="string|CardNo|f8282e38-27c8-497f-9645-7261fa95b86a">学号</option>
+                                    <option value="datetime|BirthDate|64c4c9db-dcd9-4636-bd13-2d3c7cc8c60f">生日</option>
+                                    <option value="string|MemberTypeName|35f407e1-1885-45ed-8b96-1d2e80ba9356">幼儿类型</option>
+                                    <option value="string|Mobile|77bf9ffa-7388-4153-8b23-1f6181c3d5d7">手机号码</option>
+                                    <option value="string|SourceName|8f403eea-e37c-4b1a-9b33-7beba39802ad">幼儿来源</option>
+                                    <option value="datetime|CreateTime|d0b02efd-0e88-4c80-a5e1-bde50fc3a730">录入日期</option>
+                                    <option value="datetime|EnrollDate|68dfaac3-fecd-4d62-b3ac-31e1125383d1">入学日期</option>
+                                    <option value="string|TermName|48cf9fd0-e435-4a48-a028-19223f2cb8aa">学期</option>
+                                    <option value="string|Guardian|b2ccf71e-086d-44da-b326-ff900f306121">家长姓名</option>
+                                    <option value="string|NowClassName|840aabf5-9adf-40b3-9aa2-4d44a458c176">班级</option>
+                                    <option value="string|BatchTitle|19afa661-c133-416f-a9ac-a5c9b349c34d">导入批次</option>
+                                    <option value="string|Marks|0ea19255-f43b-46cb-940b-ae7622593a5b">标签</option>
+                                    <option value="string|Phone|c4e33202-99b1-1031-a281-ce27594a651e">固定电话</option>
+                                    <option value="string|Notes|e7b0dd9e-99b0-1031-a281-ce27594a651e">备注</option>
+                                    <option value="string|Address|78e86d39-8ba2-41b0-b2c5-8c2908406927">家庭住址</option>
+                                    <option value="datetime|GraduateDate|f8cee3bf-e855-4c71-978a-8a05dc8a4c97">离校日期</option>
+                                    <option value="string|Member_UD1|7abf48c3-aa74-4a9c-bf89-e3a7891521cb">建议级别</option>
+
+                                </select>&nbsp;
+                                <select name="MemberSearch1$ddlSearchType_0" id="MemberSearch1_ddlSearchType_0" class="int" onchange="showNullOrNotNull(this)">
+
+                                </select>&nbsp;
+                                <span id="span_ValueContent_0">
+                            <input name="MemberSearch1_Value" type="text" id="MemberSearch1_Value_0" class="int">
+                        </span>&nbsp;&nbsp;
+
+                                <input type="button" class="button" id="btnSearch" onclick="SaveSearchParam()" value="搜 索">&nbsp;&nbsp;
+                                <input type="button" class="button" id="btnBaseSearch" value="基本搜索">
+
+                            </div>
+                        </td>
+                    </tr>
+                <tr id="trBaseSearch"><td style="text-align: left; padding-left: 20px;height:25px;">模糊搜索：<input type="text" class="int" style="width:220px;margin-left:4px;" id="tbBaseSearchKey" name="tbBaseSearchKey">&nbsp;&nbsp;<input type="button" class="button" id="btnAllSearch" value="搜 索">&nbsp;&nbsp;<input type="button" class="button" id="btnAdvSearch" value="高级搜索"><span id="searchMultiple1"></span></td></tr></tbody>
+            </table>
+        </div>
+
+
+
+
+
+
+        <div style="display: none">
+            <div id="idContainer" style="width: 150px;">
+                <input class="int" id="txtSID" name="txtSID" style="width:64px"> -
+                <input class="int" id="txtEID" name="txtEID" style="width:64px">
+            </div>
+            <div id="memberNameContainer" style="width: 160px;">
+                <input class="int" id="txtMemberName" name="txtMemberName">
+            </div>
+            <div id="mobileContainer" style="width: 100px;">
+                <input class="int" id="txtMobile" name="txtMobile" style="width:90px">
+            </div>
+            <div id="followContainer" style="width: 100px;">
+                <input class="int" id="txtDayCount" name="txtDayCount" style="width:70px"> 天
+            </div>
+            <div id="nowClassNameContainer" style="width: 160px;">
+                <input class="int" id="txtNowClassName" name="txtNowClassName">
+            </div>
+            <select class="int" id="ddlStatus" name="ddlStatus">
+                <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+            </select>
+
+
+            <div id="assignContainer" style="width: 150px;">
+                <input class="int" id="Text1" name="container_txtLastAssignTime1" style="width: 65px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"> -
+                <input class="int" id="Text2" name="container_txtLastAssignTime2" style="width: 65px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+            </div>
+        </div>
+        <input type="button" onclick="" id="btnStart2" class="button button" etmclass="" style="position: fixed; top: 50px; right: 15px; width: 85px;" value="批量删除">
+        <input id="hFlag" name="hFlag" type="hidden">
+        <div class="flexigrid"><div class="gBlock" style="height: 512px; position: relative; margin-bottom: -512px; z-index: 1; top: 32px; left: 0px; opacity: 0.5; display: block; background: white;"><div class="loadingimg"><div></div></div></div><div class="nBtn" style="display: none;"><div>&nbsp;</div></div><div class="nDiv" tabindex="5001" style="margin-bottom: -512px; display: none; top: 31px; overflow-y: hidden; outline: none;"><table cellpadding="0" cellspacing="0" style="width: 150px;"><tbody><tr id="btnReset" etmname=""><td class="ndcol1"><input type="checkbox" class="togCol"></td><td class="ndcol2 secMemuBg">恢复默认表格设置</td></tr><tr class="" etmname="MemberGuid"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="0"></td><td class="ndcol2"><input type="checkbox" class="selectAll" disabled="disabled"></td></tr><tr class="" etmname="MemberAct"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="1"></td><td class="ndcol2">操作</td></tr><tr class="" etmname="MemberName"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="2"></td><td class="ndcol2">幼儿姓名</td></tr><tr class="" etmname="NowClassName"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="3"></td><td class="ndcol2">班级 | 学年</td></tr><tr class="" etmname="MemberTypeName"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="4"></td><td class="ndcol2">幼儿类型</td></tr><tr class="" etmname="MarksAct"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="5"></td><td class="ndcol2">标签</td></tr><tr class="" etmname="NickName"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="6"></td><td class="ndcol2">幼儿昵称</td></tr><tr class="" etmname="DateFormat"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="7"></td><td class="ndcol2">生日</td></tr><tr class="" etmname="Sex"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="8"></td><td class="ndcol2">性别</td></tr><tr class="" etmname="Guardian"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="9"></td><td class="ndcol2">家长姓名</td></tr><tr class="" etmname="Mobile"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="10"></td><td class="ndcol2">手机</td></tr><tr class="" etmname="Education"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="11"></td><td class="ndcol2">学历</td></tr><tr class="" etmname="WorkUnit"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="12"></td><td class="ndcol2">工作单位</td></tr><tr class="" etmname="Phone"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="13"></td><td class="ndcol2">电话</td></tr><tr class="" etmname="CreateTime"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="14"></td><td class="ndcol2">登记时间</td></tr><tr class="" etmname="Member_UD1"><td class="ndcol1"><input type="checkbox" checked="checked" class="togCol" value="15"></td><td class="ndcol2">建议级别</td></tr></tbody></table></div><div class="hDiv"><div class="hDivBox"><table cellpadding="0" cellspacing="0"><thead><tr><th axis="col0" normalname="" etmname="MemberGuid" align="Center" width="undefined" checkbox="true" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="35" style="text-align: center; width: 35px;"><input type="checkbox" class="selectAll"></div></th><th axis="col1" normalname="操作" etmname="MemberAct" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="80" style="text-align: center; width: 80px;">操作</div></th><th axis="col2" normalname="幼儿姓名" etmname="MemberName" align="Center" width="undefined" islink="true" linkclass="" iscanhide="true" isjsaddcolumn="false" bindid="memberNameContainer" isforddl="false" sortable1="false" style="position: relative;"><div initwidth="80" style="text-align: center; width: 80px;">幼儿姓名</div><span class="btnColumnHeaderSearch1" style="position:absolute;top:0px;right:0px; display:block;height:30px;width:30px; background: url(../../Images/arrowdown1.png) no-repeat scroll right center transparent;">&nbsp;</span></th><th axis="col3" normalname="班级 | 学年" etmname="NowClassName" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="150" style="text-align: center; width: 150px;">班级 | 学年</div></th><th axis="col4" normalname="幼儿类型" etmname="MemberTypeName" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;" class=""><div initwidth="100" style="text-align: center; width: 100px;">幼儿类型</div></th><th axis="col6" normalname="幼儿昵称" etmname="NickName" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">幼儿昵称</div></th><th axis="col7" normalname="生日" etmname="DateFormat" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">生日</div></th><th axis="col8" normalname="性别" etmname="Sex" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="60" style="text-align: center; width: 60px;">性别</div></th><th axis="col9" normalname="家长姓名" etmname="Guardian" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">家长姓名</div></th><th axis="col10" normalname="手机" etmname="Mobile" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" bindid="mobileContainer" isforddl="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">手机</div><span class="btnColumnHeaderSearch1" style="position:absolute;top:0px;right:0px; display:block;height:30px;width:30px; background: url(../../Images/arrowdown1.png) no-repeat scroll right center transparent;">&nbsp;</span></th><th axis="col11" normalname="学历" etmname="Education" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">学历</div></th><th axis="col12" normalname="工作单位" etmname="WorkUnit" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">工作单位</div></th><th axis="col13" normalname="电话" etmname="Phone" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="100" style="text-align: center; width: 100px;">电话</div></th><th axis="col14" normalname="登记时间" etmname="CreateTime" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="110" style="text-align: center; width: 110px;">登记时间</div></th><th axis="col15" normalname="建议级别" etmname="Member_UD1" align="Center" width="undefined" iscanhide="true" isjsaddcolumn="false" sortable1="false" style="position: relative;"><div initwidth="200" style="text-align: center; width: 200px;">建议级别</div></th></tr>
+        <?php foreach($baby as $baby):
+            $gj = GjzlccModel::model()->getDb()->where(array('bid' => $baby['bid']))->queryRow();
+            $jz = JzxxccModel::model()->getDb()->where(array('bid' => $baby['bid']))->queryRow();
+        ?>
+            <tr>
+                <th></th>
+                <th></th>
+                <th><?php echo $baby['name'];?></th>
+                <th><?php echo $gj['class'];?></th>
+                <th><?php echo $gj['type'];?></th>
+                <th><?php echo $baby['nickname'];?></th>
+                <th><?php echo $baby['birthday'];?></th>
+                <th><?php if($baby['sex'] == 0):?>女<?php else:?>男<?php endif;?></th>
+                <th><?php echo $jz['pname'];?></th>
+                <th><?php echo $jz['tel'];?></th>
+                <th><?php echo $jz['education'];?></th>
+                <th><?php echo $jz['working'];?></th>
+                <th><?php echo $baby['phone'];?></th>
+                <th><?php echo $jz['sdata'];?></th>
+                <th><?php echo $baby['level'];?></th>
+            </tr>
+        <?php endforeach;?>
+        </thead></table></div><div id="btnShowOrHide" style="width: 54px; height: 28px; z-index: 999; position: absolute; top: 3px; left: 1766px; background-image: url(&quot;/images/more.png&quot;); background-repeat: no-repeat;" title="隐藏/显示列">&nbsp;</div></div><div class="cDrag" style="top: 1px;"><div style="height: 542px; display: block; left: 43px;"></div><div style="height: 542px; display: block; left: 134px;"></div><div style="height: 542px; display: block; left: 225px;"></div><div style="height: 542px; display: block; left: 386px;"></div><div style="height: 542px; display: block; left: 497px;"></div><div style="height: 542px; display: block; left: 608px;"></div><div style="height: 542px; display: block; left: 719px;"></div><div style="height: 542px; display: block; left: 830px;"></div><div style="height: 542px; display: block; left: 901px;"></div><div style="height: 542px; display: block; left: 1012px;"></div><div style="height: 542px; display: block; left: 1123px;"></div><div style="height: 542px; display: block; left: 1234px;"></div><div style="height: 542px; display: block; left: 1345px;"></div><div style="height: 542px; display: block; left: 1456px;"></div><div style="height: 542px; display: block; left: 1577px;"></div><div style="height: 542px; display: block; left: 1788px;"></div></div><div class="bDiv" style="height: 512px;"><table id="Test" style="width: auto;" cellpadding="0" cellspacing="0" border="0" width="undefined"></table><div class="iDiv" style="display: none;"></div></div><div class="pDiv"><div class="pDiv2"><div class="pGroup fixselect"> 显示 <span style="display: inline-block;width:60px;"></span> <select id="rp" name="rp"><option value="20">20&nbsp;&nbsp;</option><option value="30" selected="selected">30&nbsp;&nbsp;</option><option value="50">50&nbsp;&nbsp;</option><option value="100">100&nbsp;&nbsp;</option><option value="200">200&nbsp;&nbsp;</option></select> 条/页 </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pFirst pButton">首页</div><div class="pPrev pButton">上一页</div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pcontrol">第 <input type="text" class="int" style="width:50px;height:15px;" value="1"> 页 <span class="pGoto button">转&nbsp;到</span> 共 <span class="pageCount"> 1 </span> 页 </span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton">下一页</div><div class="pLast pButton">末页</div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload button loading">刷&nbsp;新</div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat">数据加载中, 请稍后 ...</span></div></div><div style="clear:both"></div></div><div class="vGrip"><span></span></div></div>
+
+
+
+
+
+
+
+
+
+
+    <div id="ascrail2001" class="nicescroll-rails" style="width: 10px; z-index: 899; cursor: default; position: absolute; top: 0px; left: 140px; height: 393px; opacity: 1; display: none;"><div style="position: relative; top: 0px; float: right; width: 10px; height: 0px; border: none; border-radius: 0px; background-color: rgb(117, 168, 1); background-clip: padding-box;"></div></div></form>
+
+
+
+<div id="ascrail2000" class="nicescroll-rails" style="width: 10px; z-index: auto; cursor: default; position: absolute; top: 0px; left: 1356px; height: 667px; opacity: 1; display: none;"><div style="position: relative; top: 0px; float: right; width: 10px; height: 0px; border: none; border-radius: 0px; background-color: rgb(117, 168, 1); background-clip: padding-box;"></div></div><div id="jsAddColumnContainer" class="hidden"></div></body></html>

@@ -1,0 +1,187 @@
+
+    <div class="top" style="margin:10px">
+        <input type="text" name="searchtext" >
+        <input type="button" value="搜索" onclick="return search();"  class="button" />
+
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>幼儿姓名</td>
+                        <td>跟进类型</td>
+                        <td>添加时间</td>
+                        <td>联系电话</td>
+                        <td>跟进人</td>
+                        <td>备注</td>
+                        <td>状态</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if($follows):foreach($follows as $follow): ?>
+                    <tr>
+                        <td class="caozuo">
+                           <a href='javascript:modify(<?php echo json_encode($follow); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $follow['fid'] ?>')">删除</a>|
+                           <a href="javascript:show('<?php echo $follow['eid'] ?>')">查看档案</a>
+                        </td>
+                        <td><?php arEcho($follow['enrolment']['name'], '未定义'); ?></td>
+                        <td><?php arEcho($follow['type'], BabyEnrolmentFollowModel::$TYPE_MAP); ?></td>
+                        <td><?php echo date('Y-m-d H:i:s', $follow['addtime']); ?></td>
+                        <td><?php arEcho($follow['enrolment']['phone'],' '); ?></td>
+                        <td><?php arEcho($follow['follow_user']['account_name'],' '); ?></td>
+                        <td><?php arEcho($follow['info'],' '); ?></td>
+
+                        <td><?php arEcho($follow['status'], BabyEnrolmentFollowModel::$STATUS_MAP); ?></td>
+                    </tr>
+                    <?php endforeach;endif; ?>
+                </tbody>
+            </table>
+            <div class="page"><?php echo $page->show(); ?></div>
+        </div>
+     <!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <input type="hidden" name="fid" type="text" />
+                <td style="width: 228px;float:left">跟进类型 ：
+
+                       <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'type',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentFollowModel::$TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                <td style="width: 228px;float:left">状态 ：
+
+                                   <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'status',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentFollowModel::$STATUS_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                 <td style="width: 228px;float:left">备注:
+                    <input name="info" type="text" />
+                </td>
+                <td style="width: 228px;float:left">
+                    <input type="submit" name="btnAdd" value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+
+<script>
+    // 删除
+    function del(fid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('followDel') ?>', {fid:fid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'800px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 搜索
+    function search()
+    {
+        var searchText = $("[name='searchtext']").val();
+        window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchText;
+    }
+
+    // 分配管理员
+    function assign(data)
+    {
+        $("[name='admincid']").attr('value', data.cid);
+        $("[name='adminuser']").attr('value', '');
+
+        if (data.adminuser) {
+            $("[name='adminuser']").attr('value', data.adminuser.account_name);
+        }
+        layer.open({
+            title:'分配管理员',
+            type: 1,
+            area:'500px',
+            content: $('#assignadmin_window') //这里content是一个DOM
+        });
+
+    }
+
+    // 保存管理员信息
+    function saveadmin()
+    {
+        var cid = $("[name='admincid']").val();
+        var adminuser = $("[name='adminuser']").val();
+        var adminpwd = $("[name='adminpwd']").val();
+        if (cid && adminuser && adminpwd) {
+            $.post('<?php echo arU('addfollowManager') ?>', {cid: cid, adminuser: adminuser, adminpwd: adminpwd}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('添加成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+            }, 'json');
+        } else {
+            layer.alert('参数不能为空');
+        }
+
+
+    }
+
+    function show(eid)
+    {
+        loadurl('<?php echo arU('babyEnrolmentAddList'); ?>' + '?eid=' + eid + '&action=show_onwindow', '档案查看', 'yes');
+
+    }
+</script>

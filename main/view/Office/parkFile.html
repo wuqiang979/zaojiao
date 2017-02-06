@@ -1,0 +1,163 @@
+
+    <div class="top" style="margin:10px">
+    <form action="<?php echo arU(); ?>" method="get">
+        名称：
+        <input type="text" value="<?php echo arRequest('searchtext');?>" name="searchtext" >
+        <input type="submit" value="搜索"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </form>
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>学校名称</td>
+                        <td>负责人</td>
+                        <td>地址</td>
+                        <td>办园时间</td>
+                        <td>联系电话（固话）</td>
+                        <td>职工人数：</td>
+                        <td>园区班级数</td>
+                        <td>老师人数</td>
+                        <td>在校幼儿数</td>
+                        <td>奖项</td>
+                        <td>简介</td>
+                        <td>备注</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if($list):foreach($list as $auth):?>
+                    <tr>
+                        <td class="caozuo">
+                            <a href='javascript:modify(<?php echo json_encode($auth); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $auth['rid'] ?>')">删除</a></td>
+                        <td><?php arEcho($auth['sname'],'-'); ?></td>
+                        <td><?php arEcho($auth['principal'],'-'); ?></td>
+                        <td><?php arEcho($auth['detailsAdd'],'-'); ?></td>
+                        <!-- <td><?php //arEcho(date('Y-m-d H:i', $auth['createtime']),'-'); ?></td> -->
+                        <td><?php if(!$auth['createtime']){echo '-';}else{ echo  $auth['createtime'];} ?></td>
+                        <td><?php arEcho($auth['fixedline'],'-'); ?></td>
+                        <td><?php arEcho($auth['employeenum'],'-'); ?></td>
+                        <td><?php arEcho($auth['classnum'],'-'); ?></td>
+                        <td><?php arEcho($auth['teachernum'],'-'); ?></td>
+                        <td><?php arEcho($auth['babynum'],'-'); ?></td>
+                        <td><?php arEcho($auth['awards'],'-'); ?></td>
+                        <td><?php arEcho($auth['intro'],'-'); ?></td>
+                        <td><?php arEcho($auth['remark'],'-'); ?></td>
+                        
+                    </tr>
+                <?php endforeach;endif; ?> 
+                </tbody>
+                <tr>
+                    <td colspan="13"><?php echo $pagelist; ?></td>
+                </tr>
+            </table>
+            
+        </div>
+
+<!--弹出框-->
+<form action="<?php echo arU(''); ?>" id="add_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <td style="width: 228px;float:left">
+                    学校名称：
+                    <input name="sname" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">
+                    负责人：<input name="principal" type="text"/>
+                    <input name="rid" type="hidden" value="" />
+                </td>
+
+                <td style="float:left">
+                    地址：<input name="detailsAdd" type="text"/>
+                </td>
+                
+                <td style="width: 228px;float:left">办园时间 ：
+                    <input name="createtime" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">联系固话:
+                    <input name="fixedline" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">职工人数：
+                    <input name="employeenum" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">园区班级数 ：
+                    <input name="classnum" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">老师人数:
+                    <input name="teachernum" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">在校幼儿数:
+                    <input name="babynum" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">奖项:
+                    <input name="awards" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">简介:
+                    <input name="intro" type="text"/>
+                </td>
+                <td style="width: 228px;float:left">备注:
+                    <input name="remark" type="text"/>
+                </td>
+
+                <td style="width: 228px;float:left">
+                    <input type="submit"  value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<script>
+    // 增加
+    function add()
+    {
+        $("[name='rid']").attr('value', '');
+        layer.open({
+            title:'添加园所档案',
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+    }
+
+    // 删除
+    function del(nid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('delRecord') ?>', {rid:nid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        // 填充表单万能写法
+        for (var i in data) {
+            $("[name='" + i + "']").val(data[i]);
+        }
+
+        layer.open({
+            title:false,
+            type: 1,
+            area:'900px',
+            content: $('#add_window') //这里content是一个DOM
+        });
+
+    }
+
+
+</script>

@@ -1,0 +1,194 @@
+
+    <div class="top" style="margin:10px">
+        <input type="text" name="searchtext" >
+        <input type="button" value="搜索" onclick="return search();"  class="button" />
+        <input type="button" name="btnAdd" value="添 加" onclick="return add();" id="btnAdd" class="button" />
+    </div>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 120px;">操作</td>
+                        <td>幼儿姓名</td>
+                        <td>幼儿昵称</td>
+                        <td>来源</td>
+                        <td>类型</td>
+                        <td>申报年级</td>
+                        <td>申报班级</td>
+
+                        <td>生日</td>
+                        <td>性别</td>
+                        <td>固定电话</td>
+                        <td>家庭收入</td>
+                        <td>详细地址</td>
+                        <td>录入时间</td>
+                        <td>添加人</td>
+
+                        <td>推荐级别</td>
+
+                        <td>备注</td>
+                        <td>跟踪状态</td>
+
+                        <td>状态</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if($enrolments):foreach($enrolments as $enrolment): ?>
+                    <tr>
+                        <td class="caozuo">
+                           <a href='javascript:modify(<?php echo json_encode($enrolment); ?>)'>修改</a>|
+                           <a href="javascript:del('<?php echo $enrolment['eid'] ?>')">删除</a>|
+                           <a href="javascript:show('<?php echo $enrolment['eid'] ?>')">查看</a>
+                        </td>
+                        <td><?php arEcho($enrolment['name'],'未定义'); ?></td>
+                        <td><?php arEcho($enrolment['nickname'], '-'); ?></td>
+                        <td><?php arEcho($enrolment['source_type'], BabyEnrolmentModel::$SOURCE_TYPE_MAP); ?></td>
+                        <td><?php arEcho($enrolment['attention_type'], BabyEnrolmentModel::$ATTENTION_TYPE_MAP); ?></td>
+
+                          <td><?php arEcho($enrolment['profile']['school_year']['school_year'], '-'); ?></td>
+                             <td><?php arEcho($enrolment['profile']['class_room']['class_name'], '-'); ?></td>
+
+                        <td><?php arEcho($enrolment['birthday'],' '); ?></td>
+                        <td><?php arEcho($enrolment['sex'], BabyEnrolmentModel::$SEX_MAP); ?></td>
+                        <td><?php arEcho($enrolment['phone'],' '); ?></td>
+                        <td><?php arEcho($enrolment['income'], BabyEnrolmentModel::$INCOME_TYPE); ?></td>
+                        <td><?php arEcho($enrolment['address'],' '); ?></td>
+                        <td><?php echo date('Y-m-d H:i:s', $enrolment['addtime']); ?></td>
+                        <td><?php echo $enrolment['add_user']['account_name']; ?></td>
+                        <td><?php arEcho($enrolment['recommen_level'], BabyEnrolmentModel::$RECOMMENT_LEVEL_MAP); ?></td>
+                        <td><?php arEcho($enrolment['profile']['info'], '-'); ?></td>
+
+                        <td><?php arEcho($enrolment['status'], BabyEnrolmentModel::$STATUS_MAP); ?></td>
+                        <td>
+                        <?php if (empty($enrolment['follow'])): ?>
+                            <a href="javascript:add_follow('<?php echo $enrolment['eid']; ?>');">未跟进</a>
+                        <?php else: ?>
+                        <a href="<?php echo arU('enrolmentFollowManagement', array('fid' => $enrolment['follow']['fid'])); ?>">
+                        <?php arEcho($enrolment['follow']['status'], BabyEnrolmentFollowModel::$STATUS_MAP); ?>
+                        </a>
+                        <?php endif; ?>
+                        </td>
+                        <td style="text-align:left;"></td>
+                    </tr>
+                    <?php endforeach;endif; ?>
+                </tbody>
+            </table>
+            <div class="page"><?php echo $page->show(); ?></div>
+        </div>
+        <!--弹出框-->
+<form action="<?php echo arU('addFollow'); ?>" id="add_follow_window" method="post" style="display:none;width:800px;" >
+        <table class="search" style="width:800px">
+            <tr>
+                <input type="hidden" name="followeid" type="text" />
+                <td style="width: 228px;float:left">跟进类型 ：
+
+                       <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'type',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentFollowModel::$TYPE_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                <td style="width: 228px;float:left">状态 ：
+
+                                   <?php
+      // 调用用html seg 直接输出 select标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/select',
+            // <select name="name">
+            'name' => 'status',
+            // 适配器数据 数组
+            'map' => BabyEnrolmentFollowModel::$STATUS_MAP,
+            // map 多维数组适配器
+            // 'mapbundle' => array(array(), 'keyfield', 'showfield')),
+            // 选中的value selected = selected
+            // 'selected' => $ad['type']
+         )
+      );
+?>
+                </td>
+
+                 <td style="width: 228px;float:left">备注:
+                    <input name="info" type="text" />
+                </td>
+                <td style="width: 228px;float:left">
+                    <input type="submit" name="btnAdd" value="保存" class="button" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+<script>
+
+    // 增加
+    function add_follow(eid)
+    {
+        $("[name='followeid']").val(eid);
+        layer.open({
+            title:false,
+            type: 1,
+            area:'800px',
+            content: $('#add_follow_window') //这里content是一个DOM
+        });
+    }
+
+
+    // 增加
+    function add()
+    {
+        window.location.href = '<?php echo arU('babyEnrolmentAddList'); ?>';
+    }
+
+    // 删除
+    function del(eid)
+    {
+        layer.confirm('确认删除?', function(index){
+            $.get('<?php echo arU('enrolmentDel') ?>', {eid:eid}, function (res) {
+                if (res.success == '1') {
+                    layer.msg('删除成功');
+                    location.reload();
+                } else {
+                    layer.alert(res.ret_msg);
+                }
+                layer.close(index);
+            }, 'json');
+        });
+    }
+
+    // data
+    function modify(data)
+    {
+        loadurl('<?php echo arU('babyEnrolmentAddList'); ?>' + '?eid=' + data.eid + '&action=update_onwindow', '档案修改', 'yes');
+
+    }
+
+    // 搜索
+    function search()
+    {
+        var searchText = $("[name='searchtext']").val();
+        window.location.href = JSV.PATH_CURRENT + '?searchtext=' + searchText;
+    }
+
+    function show(eid)
+    {
+        loadurl('<?php echo arU('babyEnrolmentAddList'); ?>' + '?eid=' + eid + '&action=show_onwindow', '档案查看', 'yes');
+
+    }
+
+
+
+</script>

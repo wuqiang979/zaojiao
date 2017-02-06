@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css" >
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/lockScreen.css" >
+
+    <style type="text/css">
+        body {overflow: hidden;}
+        .btnChangeSkin img {width: 77px;height: 60px;}
+        .pointer {cursor: pointer;}
+    </style>
+
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.cookie.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/dialog.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/main.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/sys_notice.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    // 全局JS变量集合
+    // JSV = {
+    //     // 公用路径
+    //     PATH_PUBLIC: "/zaojiao/main/Public/",
+    //     // 服务地址
+    //     PATH_SERVER: "/zaojiao/",
+    // };
+    $(function() {
+        if ('false'.toLocaleLowerCase() == 'true'.toLocaleLowerCase()) {
+            $("#btnInfo").remove();
+        }
+    });
+
+    function resize(b) {
+        if (typeof setLock != "undefined") {
+            setLock();
+        }
+        if ($("#content").attr("src").toLocaleLowerCase().indexOf("<?php echo arU('Index/index'); ?>") != -1) {
+            // $("#content").height($(window).height() - 0);
+            //$("#content").height($(window).height() - 0);
+        } else {
+            $("#content").height($(window).height() - 65);
+        }
+
+        $(".firstMenuBg").remove();
+        var tmpheight = $(window).height() - 60;
+        if (tmpheight > ($(".firstMenu").size() * 35)) {
+            var firstMenuHeight = (tmpheight / $(".firstMenu").size()) - 17;
+
+            if (firstMenuHeight > 50) {
+                firstMenuHeight = 50;
+                $(".firstMenu").each(function() {
+                    $(this).append("<span class='firstMenuBg' style='background: url(Images/firstmenu/" + $(this).attr("ico") + ") no-repeat 13px 3px; '>&nbsp;</span>");
+                });
+                $(".firstMenu").height(50).css({
+                    "line-height": "50px"
+                }); //padding 8px;  8*@
+            } else {
+                $(".firstMenu").height(firstMenuHeight).css({
+                    "line-height": firstMenuHeight + "px"
+                }); //padding 8px;  8*@
+            }
+            var tmpTop = (firstMenuHeight - 16) / 2 + 9;
+            $(".firstMenuSelectedTips").css({
+                "top": tmpTop + "px"
+            });
+        }
+
+        var $Index = $("#firstMenu .currentSelected");
+        if ($Index.attr("id") != undefined && $Index.attr("id") == "logo") {
+
+            $(".firstMenuSelectedTips").css({
+                "top": "22px"
+            });
+        }
+
+        $("#menuhover,#menuNormal").height(tmpheight - 13);
+        if ($.browser.msie && $.browser.version == 7) {
+            $("#menuNormal").width(155);
+        }
+        $('#menuhover,#menuNormal').niceScroll({
+            cursorcolor: '#D7420A',
+            horizrailenabled: false
+        });
+        fixScrollbarLeft();
+    }
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        $(".floatBox iframe").each(function() {
+            if (typeof $(this)[0].contentWindow.onSelectedFile != "undefined") {
+                $(this)[0].contentWindow.onSelectedFile(fileName, fileUrl, isImg);
+            }
+        });
+        if (typeof $("#content")[0].contentWindow.onSelectedFile != "undefined") {
+            $("#content")[0].contentWindow.onSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+
+    function RefreshGrid() {
+        if (typeof $("#content")[0].contentWindow.RefreshGrid != "undefined") {
+            $("#content")[0].contentWindow.RefreshGrid();
+            BoxClose();
+        }
+    }
+
+    function RefreshMyFileList() {
+        if (typeof $("#content")[0].contentWindow.getList != "undefined") {
+            $("#content")[0].contentWindow.getList();
+            BoxClose();
+        }
+    }
+
+    function setCustomCookie(name, value) {
+        $.cookie(name, value);
+    }
+
+    function setFolderInfoGuid(guid, folderName) {
+        if (typeof $("#content")[0].contentWindow.setFolderInfoGuid != "undefined") {
+            $("#content")[0].contentWindow.setFolderInfoGuid(guid, folderName);
+            BoxClose();
+        }
+    }
+
+    function finish(path, obj) {
+        $(".floatBox iframe").each(function() {
+            if (typeof $(this)[0].contentWindow.finish != "undefined") {
+                $(this)[0].contentWindow.finish(path, obj);
+            }
+        });
+    }
+
+    </script>
+    <style type="text/css">
+        .op {
+            opacity: 0;
+            -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+            filter: 'alpha(opacity=50)';
+        }
+
+        #btnRefresh {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 9999;
+        }
+    </style>
+    <!--[if IE 8]> <link href='/Themes/Theme8/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+</head>
+
+<body scroll="no" unselectable="on" style="-moz-user-select: none; -webkit-user-select: none;" onselectstart="return false;">
+    <iframe class="hidden" src="RefreshSession.aspx"></iframe>
+    <form method="post" action="<?php echo arU('Account/loginOut'); ?>" id="form1">
+        <!-- <div id="lockScreen" class="hidden">
+            <div id="moveLock" class="lockNormal">&nbsp;</div>
+        </div> -->
+        <div id="hasUpdate" class="hidden" hasupdate="false"></div>
+        <div id="loading-mask" class="hidden">
+        </div>
+        <div id="loading" class="hidden">
+            <div class="loading-indicator">
+                <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/loading.gif" style="margin-right: 8px; float: left; vertical-align: top; margin-left: 136px" />
+                <div id="loading-msg" style="font-size: 12px; font-weight: normal;">
+                    执行中，请耐心等待 ...
+                </div>
+            </div>
+        </div>
+        <div id="noticeList" class="borderRight textAlignLeft borderBottom borderLeft hidden">
+            <div style="height: 200px;">
+                <table id="table_NoticeList">
+                </table>
+            </div>
+            <div style="text-align: center; padding-bottom: 10px; padding-top: 10px;">
+                <span onclick="getNoticeData('pre')" style="cursor: pointer;">上一页</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span id="notice_currentindex">0</span>&nbsp;/&nbsp;<span id="notice_totalPage">0</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                <span onclick="getNoticeData('next')" style="cursor: pointer;">下一页</span>
+            </div>
+        </div>
+        <div id="floatMenu" class="borderBottom borderRight borderTop hidden">
+            <!-- <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/floatNormal.png" id="btnFloatNormal" title="停靠" /> -->
+            <div class="firstMenuContent"></div>
+            <div class="otherMenuContent">
+                <table cellpadding="0" cellspacing="0"></table>
+            </div>
+        </div>
+        <div id="settingForHover" class="borderRight textAlignLeft borderBottom hidden">
+            <div class="settingNormal1">
+                <input type="image" name="btnLogOut11" id="btnLogOut11" title="安全退出" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/logout.png" />
+                <div class="bottomBarForSetting">
+                    <span class="userNameStr"><?php echo arComp('list.session')->get('member.account_name'); ?></span>
+                    <span class="otherInfo userico">
+                        (<?php echo arEcho(arComp('list.session')->get('member.rgid'), CompanySchoolMemberModel::$ROLE_MAP); ?>)
+                        <?php
+                            $posts = arComp('list.session')->get('member.profile.posts');
+                            foreach ($posts as $post): ?>
+                            <?php echo $post['name'] ?>|
+                        <?php
+                            endforeach;
+                        ?>
+                    </span>
+                </div>
+                <div class="borderBottom">
+                    <table cellpadding="0" cellspacing="0" class="settingHeader">
+                        <tr>
+                            <td id="btnHelp" class="pointer">
+                                <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/help.gif" />
+                                <div>使用帮助</div>
+                            </td>
+                            <td id="btnUserCenter" class="borderRight borderLeft pointer">
+                                <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/usercenter.gif" />
+                                <div>个人中心</div>
+                            </td>
+                            <td id="btnHome" class="borderRight pointer">
+                                <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/home1.png" />
+                                <div>我的桌面</div>
+                            </td>
+                            <td id="SysLockScreen" class="pointer">
+                                <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/lockscreen.png" />
+                                <div>系统锁屏</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="info">
+                    <div>幼教系统  v2.0</div>
+                    <div class="cc">Copyright © 2016</div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        <table id="maintable" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="firstMenu">
+                    <a d="总经办&nbsp;|&nbsp;市场顾问" u='<a href="../K_Department/WorkerInfo.aspx?ManagerGuid=36bdee20-6016-4f4e-a290-582c1143a5b7&navId=d00ca3d2-27c4-4f92-b910-c1d7b2332d2e" target="content">12345678910</a>' isindex="true" title1="我的桌面" id="logo" href="javascript:;" class="aWhite selected currentSelected" style="width:60px;height:60px; padding: 0 3px 0 2px;">
+                        <img class="sex" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/male.png" hasupdate="false" />
+                        <span class="firstMenuSelectedTips"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowLeft.png"></span>
+                    </a>
+                    <!--一级菜单Start-->
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('家园互通show', arCfg('current_member.profile.auths'))):
+                    ?>
+
+                    <a name="first" class="aWhite firstMenu" href="javascript:;" title1="家园互通" isIndex="false" u="13688327275" d="总经办" i="家园互通.png" ico="02.png" >家园互通</a>
+                    <div class="hidden">
+                        <!-- <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Home/babyGrow');?>">幼儿成长评价<span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span></a> -->
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Home/activityManage');?>">活动管理
+                            <span class="secMenuSelectedTips">
+                                <input type="hidden" id="hfIsSecond" name="hfIsSecond">
+                                <img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" />
+                            </span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Home/openDayManage');?>">开放日管理
+                            <span class="secMenuSelectedTips">
+                                <input type="hidden" id="hfIsSecond" name="hfIsSecond">
+                                <img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" />
+                            </span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                       <!--  <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">短信管理
+                            <span class="secMenuSelectedTips">
+                                <img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" />
+                            </span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="">群发短信</a>
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="">短信发送记录</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="">短信余额查询</a>
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">呼叫中心
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="">拨打电话</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="">通话记录管理</a>
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="">通话余额查询</a>
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="">呼叫中心管理</a>
+                        </div> -->
+                        <div class="bottomBar">&nbsp;</div>
+                    </div>
+                    <?php endif; ?>
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasSysRights(CompanySchoolMemberModel::ROLE_YZ)):
+                    ?>
+                    <a name="first" class="aWhite firstMenu" href="javascript:void(0);" title1="幼儿管理" isIndex="false" u="13688327275" d="总经办" i="幼儿管理.png" ico="03.png">用户管理</a>
+                    <div class="hidden">
+                        <a class="secMemu aNormal secUnSelected" href="<?php echo arU('Member/memberManagement'); ?>">用户列表
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                    </div>
+                    <?php endif;?>
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('幼儿管理show', arCfg('current_member.profile.auths'))):
+                    ?>
+                    <a name="first" class="aWhite firstMenu" href="javascript:void(0);" title1="幼儿管理" isIndex="false" u="13688327275" d="总经办" i="幼儿管理.png" ico="03.png">幼儿管理</a>
+                    <div class="hidden">
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">招生信息管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <!-- <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/CRM/AdvertList.aspx?navId=1993b3f0-d831-4553-a0d5-edb3be3ff9ba'>宣传推广</a> -->
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/babyEnrolmentAddList');?>">招生名单登记</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/babyEnrolmentList');?>">招生名单管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/enrolmentFollowManagement');?>">跟进记录管理</a>
+                            <!-- <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/babySex');?>">名单统计分析</a> -->
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">幼儿信息管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/babyAdd');?>">幼儿档案登记</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Baby/babyList');?>">幼儿档案管理</a>
+                            <!-- <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/CRM/SexRpt_1.aspx?navId=57ea5d3d-23ff-4fdd-b291-743a31fab3be&memberType=1'>幼儿统计分析</a> -->
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                    </div>
+                    <?php endif;?>
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('财务管理show', arCfg('current_member.profile.auths'))):
+                    ?>
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='财务管理' isIndex='false' u='12345678910' d='总经办' i='财务管理.png' ico='10.png'>财务管理</a>
+                    <div class='hidden'>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Finance/MemberDepositsList.aspx?navId=06b402bf-2b37-4357-8daf-accc064c017c'>定金管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div> -->
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">收费退费管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png"/></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="<?php echo arU('Finance/registerFee');?>">收费登记</a>
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="<?php echo arU('Finance/manageFees');?>">收费管理</a>
+                            <a class="thirdMemu aNormal  thirdMemuDisplay" target="content" href="<?php echo arU('Finance/expirationReminder');?>">到期提醒</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Finance/refundRegister');?>">退费登记</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Finance/refundManage');?>">退费管理</a></div>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Finance/BankDeductionList.aspx?navId=9603214b-b1e4-4e1e-939b-3a5b91953c84'>代扣单管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div> -->
+                        <!-- <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">幼儿出勤结算
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png"/></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Finance/feeSettlement');?>">出勤费用结算</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Finance/billingManage');?>">出勤结算管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Finance/billingRecords');?>">出勤结算记录</a>
+                        </div>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Finance/ChargeInList.aspx?navId=09226bbc-c677-4365-a764-550ad307fe74'>记账管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class='secMemu aNormal secUnSelected ' href='javascript:void(0);'>教师工资管理
+                            <span class='secMenuSelectedTips'></span>
+                        </a>
+                        <div class='thirdMenus hidden'>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Salary/StaffSalaryConfig.aspx?navId=0d143a7f-5e4f-42fa-b331-83f01ab71df9'>工资设置</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Salary/SalaryMonth.aspx?navId=d7574597-0c65-4168-a0b2-6eb3c0756398'>工资计算</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Salary/SalaryCheck.aspx?navId=2a6c3857-ec66-4837-a7c2-82e471ac9354'>工资审批</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Salary/SalaryChartRpt.aspx?navId=2556e6cb-d2bb-4d5f-9147-cbcb5c0d7578'>工资统计</a>
+                        </div>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                    </div>
+                    <?php endif;?>
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('教务教学show', arCfg('current_member.profile.auths'))):
+                    ?>
+                    <a name="first" class="aWhite firstMenu" href="javascript:void(0);" title1="教务教学" isIndex="false" u="13688327275" d="总经办" i="教务教学.png" ico="05.png">教务教学</a>
+                    <div class="hidden">
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">班级教学管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <!-- <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Teach/CoursePlan_Week.aspx?navId=67bd7f4e-8480-4c81-8276-f82b1eeda271'>课程表</a> -->
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/schoolYear');?>">学年管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/class');?>">班级管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/classList');?>">班级名单</a>
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">日常教务管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/changeClass');?>">转班管理</a>
+                            <!-- <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/upgradeManage');?>">升级管理</a> -->
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/classUpgrade');?>">班级升级</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/classGraduation');?>">班级毕业</a>
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">幼儿考勤管理
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <!-- <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Teach/CardSign.aspx?navId=9d85f94c-d118-4344-ba84-7875ccaf872b'>刷卡考勤</a> -->
+                            <!-- <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/Teach/Attendance.aspx?navId=65893f1e-33cb-4fcf-a7dc-9de55195a990'>人工考勤</a> -->
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/childLeaveManage');?>">幼儿请假管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/attendanceView');?>">考勤明细查看</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Senate/attendanceStatistics');?>">幼儿考勤</a>
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+
+                        <!-- <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Senate/trainManage');?>">教学培训管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Senate/lessonManage');?>">教学备课管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Senate/planManage');?>">教学计划管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Senate/jyplanManage');?>">教研计划管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Senate/library');?>">素材库
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div> -->
+                    </div>
+                    <?php endif;?>
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('办公管理show', arCfg('current_member.profile.auths'))):
+                    ?>
+
+                    <a name="first" class="aWhite firstMenu" href="javascript:void(0);" title1="办公管理" isIndex="false" u="13688327275" d="总经办" i="办公管理.png" ico="11.png">办公管理</a>
+                    <div class="hidden">
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Office/notice');?>">通知公告
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/OA/CredentialList.aspx?navId=26548043-2eba-4e29-b61d-badc722d36c4'>证照年审
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Office/parkFile');?>">园所档案
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/OA/PraiseList.aspx?navId=25d85023-5362-40c1-b844-5b55ce34cde6'>表扬投诉
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Office/teacherFile');?>">员工档案
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/OA/StaffExamineList.aspx?navId=fa30d75d-556f-48c0-9307-e96a1e7e1920'>教师考核
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <a class="secMemu aNormal secUnSelected" href="javascript:void(0);">员工考勤
+                            <span class="secMenuSelectedTips"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="thirdMenus hidden">
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Office/leaveManage');?>">请假管理</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Office/attendance');?>">考勤查看</a>
+                            <a class="thirdMemu aNormal thirdMemuDisplay" target="content" href="<?php echo arU('Office/attendanceDetails');?>">考勤明细</a>
+                        </div>
+                        <div class="bottomBar">&nbsp;</div>
+                        <!-- <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Office/parkManage');?>">园务管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div> -->
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/OA/ExpenseApplyList.aspx?navId=58d684e4-adf2-4dd9-968a-04e200530b9d'>费用申请
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('Office/maintenanceRecords');?>">维修记录
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div> -->
+                    </div>
+                     <?php endif;?>
+
+                     <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('卫生保健show', arCfg('current_member.profile.auths'))):
+                    ?>
+
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='卫生保健' isIndex='false' u='12345678910' d='总经办' i='卫生保健.png' ico='01.png'>卫生保健</a>
+                    <div class='hidden'>
+                        <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/examinationList');?>">幼儿体检管理
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Health/MorningCheckList.aspx?navId=88727117-e3cb-4b19-96f7-5d29bfc23769'>幼儿晨检记录
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/physiqueView');?>">体格锻炼观察记录
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a> -->
+                        <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/medicalRecord');?>">用药记录
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Health/HealthDefectList.aspx?navId=9614e95c-6714-41fc-9084-4fff1a6d32a4'>身体缺陷记录
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Health/HealthInfectionList.aspx?navId=7a9cd258-9213-44e2-9e43-7cc7243c1a65'>传染病记录
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='/Modules/Health/HealthExceptionalChildList.aspx?navId=db0f1751-4cc4-42e7-84d7-fa3ac39ecda2'>特殊儿童管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'><img class='arrowRight' src='<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png' /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/accidentRecord');?>">意外伤害记录
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/accidentAnalyze');?>">事故个案分析
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal  secUnSelected" target="content" href="<?php echo arU('HealthCare/lifeRecord');?>">生活情况记录
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                    </div>
+                     <?php endif;?>
+
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('饮食管理show', arCfg('current_member.profile.auths'))):
+                    ?>
+
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='饮食管理' isIndex='false' u='12345678910' d='总经办' i='饮食管理.png' ico='21.png'>饮食管理</a>
+                    <div class='hidden'>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('DietsMa/infantRecipe'); ?>'>食谱管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('DietsMa/CuisineMa'); ?>'>菜式管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('DietsMa/IngredientsMa'); ?>'>食材管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div> -->
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('DietsMa/IngredientsAmountsMa'); ?>'>食材用量管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('DietsMa/IngredientsInventory'); ?>'>食材库存
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                    </div>
+                     <?php endif;?>
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasRights('家校互联show', arCfg('current_member.profile.auths'))):
+                    ?>
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='家校互联' isIndex='false' u='12345678910' d='总经办' i='家校互联.png' ico='19.png'>家校互联</a>
+                    <div class='hidden'>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('HomeSchoolConnection/ClassPhotoMa'); ?>'>班级相册管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <!-- <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('HomeSchoolConnection/appLeaveListMa'); ?>'>幼儿请假管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a> -->
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('HomeSchoolConnection/DeanMailboxMa'); ?>'>园长信箱管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                    </div>
+                     <?php endif;?>
+
+
+                    <?php
+                    // 栏目权限检测
+                    if (arModule('Lib.Auth')->hasSysRights(CompanySchoolMemberModel::ROLE_COMPANY_ADMIN)):
+                    ?>
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='集团管理' isIndex='false' u='12345678910' d='总经办' i='集团管理.png' ico='20.png'>集团管理</a>
+                    <div class='hidden'>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('GroupManagement/companyManagement'); ?>">公司管理<span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span></a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href='<?php echo arU('GroupManagement/schoolManagement'); ?>'>园区管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                       <!--  <a class='secMemu aNormal secUnSelected ' href='javascript:void(0);'>物料资产
+                            <span class='secMenuSelectedTips'></span>
+                        </a> -->
+                       <!--  <div class='thirdMenus hidden'>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='<?php echo arU('LinkSetsMa/materialMa'); ?>'>物料管理</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='<?php echo arU('LinkSetsMa/stockMa'); ?>'>库存管理</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/HeadQuarters/C_ApplyList.aspx?navId=3fe3a5ab-d20f-4c34-b14a-5f9d4583a656'>申请单管理</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href='/Modules/HeadQuarters/C_DeliveryList.aspx?navId=75e94d42-3531-48b2-8e5f-21cf7d726556'>配送单管理</a>
+                        </div> -->
+                        <div class='bottomBar'>&nbsp;</div>
+                    </div>
+                     <?php endif;?>
+
+                    <a name='first' class='aWhite firstMenu ' href='javascript:void(0);' title1='系统配置' isIndex='false' u='12345678910' d='总经办' i='系统配置.png' ico='14.png'>系统配置</a>
+                    <div class='hidden'>
+                         <?php if (arModule('Lib.Auth')->hasSysRights(CompanySchoolMemberModel::ROLE_YZ, true)): ?>
+                        <a class='secMemu aNormal secUnSelected ' href='javascript:void(0);'>架构设置
+                            <span class='secMenuSelectedTips'></span>
+                        </a>
+                        <div class='thirdMenus hidden'>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href="<?php echo arU('SystemConfiguration/departmentManagement') ?>">部门管理</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href="<?php echo arU('SystemConfiguration/postManagement') ?>">岗位管理</a>
+                        </div>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('/system/auth/authList') ?>">权限管理
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <?php endif ?>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="javascript:void();">账号设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                         <div class='thirdMenus hidden'>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href="<?php echo arU('Mine/info') ?>">个人资料</a>
+                            <a class='thirdMemu aNormal  thirdMemuDisplay' target='content' href="<?php echo arU('Mine/account') ?>">修改密码</a>
+                        </div>
+                        <!--
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('SystemConfiguration/termSet') ?>">教务设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('SystemConfiguration/IncomeAccount') ?>">财务设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class="bottomBar">&nbsp;</div>
+                        <a class="secMemu aNormal secUnSelected" target="content" href="<?php echo arU('SystemConfiguration/AnnouncementType') ?>">办公设置
+                            <span class="secMenuSelectedTips"><input type="hidden" id="hfIsSecond" name="hfIsSecond"><img class="arrowRight" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/ArrowRight.png" /></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('SystemConfiguration/healthSets') ?>">卫生设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('SystemConfiguration/foodType') ?>">饮食设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a>
+                        <div class='bottomBar'>&nbsp;</div>
+                        <a class='secMemu aNormal  secUnSelected' target='content' href="<?php echo arU('SystemConfiguration/materialClassify') ?>">连锁设置
+                            <span class='secMenuSelectedTips'><input type='hidden' id='hfIsSecond' name='hfIsSecond'></span>
+                        </a> -->
+                        <div class='bottomBar'>&nbsp;</div>
+                    </div>
+
+                    <!--一级菜单End-->
+                    <script type="text/javascript">
+                    $(function() {
+                        $("a[name='first']").each(function() {
+                            $(this).live("click", function() {
+                                $("#content").attr("src", $(this).attr("Url"));
+                            });
+                        })
+                    })
+                    </script>
+                </td>
+                <td id="childMenu" style="border-right-width: 0px;">
+                    <div class="fixIndex" style="position: relative; height: 80px; width: 3px;">
+                        <div style="border-right: 1px solid #D7420A; height: 60px; position: absolute; right: -4px; top: 0; width: 13px;">&nbsp;</div>
+                    </div>
+                    <div class="childMenuTopBar hidden">
+                        <div class="d" source=""></div>
+                        <div class="i" source=""></div>
+                        <!-- <img alt="" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/floatTop.png" id="btnFloatTop" title="浮动" /> -->
+                    </div>
+                    <div id="menuhover" class="hidden">
+                    </div>
+                    <div id="menuNormal" class="hidden">
+                    </div>
+                </td>
+                <td valign="top" class="rightMainContent">
+                    <div class="topBar">
+                        <div id="pagetitle">
+                            <img alt="" class="img1" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/icon.png" />
+                            <span class="pagetitle">我的桌面</span>
+                        </div>
+                        <div class="floatRight">
+                            <a href="<?php echo arU('Index/index'); ?>" target='content' id="btnGoIndex" style="margin-right: 15px;">
+                                <img alt="" class="img1" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/img1.png" />
+                                <span class="fixTop hidden">我的桌面</span>
+                                <span class="fixWidth hidden">&nbsp;</span>
+                            </a>
+                            <a href="javascript:void(0)" onclick="getNoticeData('next')" id="btnNotice" style="margin-right: 0px;">
+                                <img alt="" id="notice_img" src="<?php echo arCfg('PATH.PUBLIC'); ?>img/notice.png" flickered="0" img1="Images/notice.png" img2="Images/blank.png" />
+                                <span class="fixTop hidden">提醒消息</span>
+                                <span class="fixWidth hidden">&nbsp;</span>
+                            </a>
+                        </div>
+                    </div>

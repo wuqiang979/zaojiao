@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=1642e9f5-1a27-4a48-84db-52c843de4636', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+    <script type='text/javascript'>
+    $(function() {
+        $('.list td').bind({
+            mouseenter: function(e) {
+                e.stopPropagation();
+            }
+        });
+    });
+    </script>
+    <style type="text/css">
+    ul {
+        list-style: none;
+        padding-left: 18px;
+    }
+
+    ul li {
+        padding: 1px 2px 1px 5px;
+        margin: 5px;
+        background-color: #fff;
+        height: 22px;
+        line-height: 22px;
+        font-size: 13px;
+    }
+    /* .calendar{ margin-top: 1px;}*/
+
+    .list tbody td {
+        line-height: none !important;
+        height: auto;
+    }
+
+    .list {
+        background-color: #DAD8D4;
+        border-bottom: 0px;
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+
+    .list tbody td,
+    .list thead td {
+        border: 0px;
+    }
+
+    /*clearboth {
+        clear: both;
+        display: block;
+        height: 0;
+        font-size: 0;
+        overflow: hidden;
+    }*/
+
+    .calendar .day {
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        font-size: 15px;
+        font-weight: bold;
+        /*font-size: 28px;
+    font-weight: bold;
+    line-height: 70px;*/
+    }
+
+    .calendar .dayhascontent {
+        font-size: 18px;
+        font-weight: bold;
+        /* left: 5px;
+    position: absolute;
+    top: 0;*/
+    }
+
+    .calendar .calendarContent {
+        /* width: 99%;
+    word-wrap:break-word;
+    word-break:break-all;
+    position: absolute;
+    top: 32px;
+    left: 0px;
+    padding-left: 5px;
+    text-align:left;
+    font-size: 13px;
+    text-align: center;*/
+    }
+
+    .calendar .numday {}
+
+    .calendar .cnday {
+        position: absolute;
+        right: 1px;
+        top: 1px;
+        /*  font-size: 13px;
+    position: absolute;
+    right: 5px;
+    text-align: right;
+    top: 0;
+    width: 70px;*/
+    }
+
+    .setCalendar {
+        /* position: relative;*/
+    }
+
+    .calendar .datestr {
+        font-size: 12px;
+    }
+
+    .dayList {
+        height: 99%;
+        position: relative;
+        width: 99%;
+    }
+
+    .listFrist {
+        cursor: pointer;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        height: 46px;
+    }
+
+    #minHeight {
+        height: 80px;
+    }
+
+    .dayinfo {
+        width: 99%;
+        height: 23px;
+        /*
+        font-size: 13px;*/
+        position: relative;
+    }
+
+    .btnAdd {
+        width: 99%;
+        text-align: center;
+    }
+
+    .add {
+        color: darkgrey;
+    }
+
+    .icon {
+        font-size: 10px;
+        color: darkgrey;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    td {
+        position: relative;
+    }
+
+    .cndatestr {
+        /*margin-left: 30px;*/
+    }
+
+    .cndatestr:hover {
+        text-decoration: none;
+    }
+
+    html {
+        -webkit-text-size-adjust: none;
+    }
+    /*fix*/
+
+    .td_4 {
+        height: 9px\9;
+    }
+    /* Opera */
+
+    @media all and (-webkit-min-device-pixel-ratio:10000),
+    not all and (-webkit-min-device-pixel-ratio:0) {
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 10px;
+        }
+    }
+    /* Safari chrome */
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        .icon {
+            font-size: 5px;
+        }
+        /*.list_td{ height: 76px;}*/
+        .td_4 {
+            height: 9px;
+        }
+    }
+    /* tip */
+
+    #tips {
+        font-size: 12px;
+        position: absolute;
+        top: 0;
+        z-index: 9999;
+        color: #000;
+        display: none;
+        background-color: white;
+        width: 150px;
+        /*height: 120px;*/
+        /*border: 2px solid #CAD3E2;*/
+        border: 1px solid #CAD3E2\9;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -moz-box-shadow: 5px 5px 10px #000;
+        -webkit-box-shadow: 5px 5px 10px #000;
+        box-shadow: 5px 5px 10px #000;
+        /*filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius=Ǝ', MakeShadow='true',ShadowOpacity=Ɔ.20');*/
+        filter: progid: DXImageTransform.Microsoft.Shadow(color='#969696', Direction=135, Strength=5);
+        word-wrap: break-word;
+        word-break: break-all;
+        padding: 10px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .dropdown-divider {
+        border-bottom: 1px solid #DDDDDD;
+        margin: 5px 1px 6px;
+        padding-top: 1px;
+    }
+
+    .text {
+        padding-left: 10px;
+    }
+
+    #buttons {
+        position: absolute;
+        right: 10px;
+        top: 107px;
+    }
+
+    .button {
+        height: 21px;
+    }
+
+    .list td:hover {
+        background-color: #FFFCD3;
+    }
+
+    th {
+        background: #ffffff;
+    }
+    /*模拟对角线*/
+
+    .outt {
+        border-top: 40px #ffffff solid;
+        /*上边框宽度等于表格第一行行高*/
+        width: 0px;
+        /*让容器宽度为0*/
+        height: 0px;
+        /*让容器高度为0*/
+        border-left: 80px #dfe solid;
+        /*左边框宽度等于表格第一行第一格宽度*/
+        position: relative;
+        /*让里面的两个子容器绝对定位*/
+    }
+
+    b {
+        font-style: normal;
+        display: block;
+        position: absolute;
+        top: -40px;
+        left: -40px;
+        width: 50px;
+    }
+
+    em {
+        font-style: normal;
+        display: block;
+        position: absolute;
+        top: -25px;
+        left: -70px;
+        width: 35px;
+    }
+    </style>
+    <script type="text/javascript">
+    $(function() {
+        $("#tab").etmTabs({
+           item: [{
+                Url: '<?php echo arU('DietsMa/infantRecipe'); ?>',
+                Selected: true,
+                Text: "幼儿食谱"
+            }, {
+                Url: '<?php echo arU('DietsMa/TeacherRecipe'); ?>',
+                Selected: false,
+                Text: "老师食谱"
+            }],
+            RadioItem: [{
+                "Text": "每周食谱",
+                "Url": '<?php echo arU('DietsMa/infantRecipe'); ?>',
+                "Selected": true
+            }, {
+                "Text": "食谱列表",
+                "Url": '<?php echo arU('DietsMa/recipeList'); ?>',
+                "Selected": false
+            }, {
+                "Text": "营养分析",
+                "Url": '<?php echo arU('DietsMa/nutritionAnalysis'); ?>',
+                "Selected": false
+            }],
+        });
+        $("#divList").niceScroll({
+            cursorcolor: '#75A801'
+        });
+    });
+
+    function show() {
+        if (document.getElementById("cbPreview").checked) {
+            window.parent.showDialog("打印食谱", "../Modules/Food/FoodPlanInfo.aspx?sc=btn&navId=1642e9f5-1a27-4a48-84db-52c843de4636", "1080px", "500px");
+        } else
+            startprint('../../Modules/Food/FoodPlanInfo.aspx?sc=btn&navId=1642e9f5-1a27-4a48-84db-52c843de4636');
+    }
+
+    function PlanFoodMenuDelete(planGuid, FoodMenuGuids, PlanFoodMenuGuid, planDate, navId) {
+        $.ajaxMethod("Plan_FoodMenuDelete", {
+            "PlanGuid": planGuid,
+            "FoodMenuGuids": FoodMenuGuids,
+            "PlanFoodMenuGuid": PlanFoodMenuGuid
+        }, function(data) {
+            if (data == "删除成功") {
+                alert("删除成功！");
+                window.location.reload();
+            } else {
+                alert("删除失败！");
+            }
+        }, true, "text");
+    }
+
+    function showMaterial(PlanMaterialGuid, navId) {
+        window.parent.showDialog("更换食材", "../Modules/Food/SelectMaterial_0.aspx?sc=btn&navId=1642e9f5-1a27-4a48-84db-52c843de4636&PlanMaterialGuid=" + PlanMaterialGuid + "&multiLayer=0", "592px", "450px");
+    }
+
+    function Copy() {
+        window.parent.showDialog("复制食谱", "../Modules/Food/FoodPlanCopy.aspx?sc=btn&navId=1642e9f5-1a27-4a48-84db-52c843de4636&Iswhether=0&IsUrl=2", "1080px", "600px");
+    }
+
+    function FoodPlanAdd() {
+        window.parent.showDialog("添加食谱", "../Modules/Food/SelectFoodMenuTimeNode.aspx?sc=btn&navId=1642e9f5-1a27-4a48-84db-52c843de4636&Iswhether=0&multiLayer=0", "650px", "500px");
+    }
+    </script>
+</head>
+
+<body>
+    <form method="post" action="FoodPlan_Day.aspx?sc=btn&amp;navId=1642e9f5-1a27-4a48-84db-52c843de4636" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJODU1NzcyMDM3D2QWAgIDD2QWBgIBDxBkEBUDDTIwMTfkuIvlrabmnJ8NMjAxN+S4iuWtpuacnw0yMDE25LiL5a2m5pyfFQMkOTg4MGRkZGItZDgyMi00NjUyLTk3NmUtOGRiNTUwM2FlNTRlJDY5ZGI4ZTYyLWZhZTYtNDI2ZC05YmIyLTgwNjkzNjcxODkwZSRkMGU1OWZkNi02MTcxLTRiOGUtYWY2OC0wZWVkOTlmNWRiOGUUKwMDZ2dnFgECAmQCAw8QZBAVGhTnrKwx5ZGoWzAyLjE4fjAyLjIxXRTnrKwy5ZGoWzAyLjIyfjAyLjI4XRTnrKwz5ZGoWzAyLjI5fjAzLjA2XRTnrKw05ZGoWzAzLjA3fjAzLjEzXRTnrKw15ZGoWzAzLjE0fjAzLjIwXRTnrKw25ZGoWzAzLjIxfjAzLjI3XRTnrKw35ZGoWzAzLjI4fjA0LjAzXRTnrKw45ZGoWzA0LjA0fjA0LjEwXRTnrKw55ZGoWzA0LjExfjA0LjE3XRXnrKwxMOWRqFswNC4xOH4wNC4yNF0V56ysMTHlkahbMDQuMjV+MDUuMDFdFeesrDEy5ZGoWzA1LjAyfjA1LjA4XRXnrKwxM+WRqFswNS4wOX4wNS4xNV0V56ysMTTlkahbMDUuMTZ+MDUuMjJdFeesrDE15ZGoWzA1LjIzfjA1LjI5XRXnrKwxNuWRqFswNS4zMH4wNi4wNV0V56ysMTflkahbMDYuMDZ+MDYuMTJdFeesrDE45ZGoWzA2LjEzfjA2LjE5XRXnrKwxOeWRqFswNi4yMH4wNi4yNl0V56ysMjDlkahbMDYuMjd+MDcuMDNdFeesrDIx5ZGoWzA3LjA0fjA3LjEwXRXnrKwyMuWRqFswNy4xMX4wNy4xN10V56ysMjPlkahbMDcuMTh+MDcuMjRdFeesrDI05ZGoWzA3LjI1fjA3LjMxXRXnrKwyNeWRqFswOC4wMX4wOC4wN10V56ysMjblkahbMDguMDh+MDguMTFdFRoVMjAxNi0wMi0xOH4yMDE2LTAyLTIxFTIwMTYtMDItMjJ+MjAxNi0wMi0yOBUyMDE2LTAyLTI5fjIwMTYtMDMtMDYVMjAxNi0wMy0wN34yMDE2LTAzLTEzFTIwMTYtMDMtMTR+MjAxNi0wMy0yMBUyMDE2LTAzLTIxfjIwMTYtMDMtMjcVMjAxNi0wMy0yOH4yMDE2LTA0LTAzFTIwMTYtMDQtMDR+MjAxNi0wNC0xMBUyMDE2LTA0LTExfjIwMTYtMDQtMTcVMjAxNi0wNC0xOH4yMDE2LTA0LTI0FTIwMTYtMDQtMjV+MjAxNi0wNS0wMRUyMDE2LTA1LTAyfjIwMTYtMDUtMDgVMjAxNi0wNS0wOX4yMDE2LTA1LTE1FTIwMTYtMDUtMTZ+MjAxNi0wNS0yMhUyMDE2LTA1LTIzfjIwMTYtMDUtMjkVMjAxNi0wNS0zMH4yMDE2LTA2LTA1FTIwMTYtMDYtMDZ+MjAxNi0wNi0xMhUyMDE2LTA2LTEzfjIwMTYtMDYtMTkVMjAxNi0wNi0yMH4yMDE2LTA2LTI2FTIwMTYtMDYtMjd+MjAxNi0wNy0wMxUyMDE2LTA3LTA0fjIwMTYtMDctMTAVMjAxNi0wNy0xMX4yMDE2LTA3LTE3FTIwMTYtMDctMTh+MjAxNi0wNy0yNBUyMDE2LTA3LTI1fjIwMTYtMDctMzEVMjAxNi0wOC0wMX4yMDE2LTA4LTA3FTIwMTYtMDgtMDh+MjAxNi0wOC0xMRQrAxpnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZxYBAhFkAg8PZBYCAgEPFgIeBFRleHQF/v0BPHRhYmxlIGNsYXNzPSJsaXN0IiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7bWFyZ2luLWJvdHRvbTogMTBweDsgd2lkdGg6IDIzMDBweDsiPgo8dHI+Cjx0ZCBzdHlsZT0id2lkdGg6MTIwcHg7Ij4yMDE2LTA2LTEzIOmkkOasoTwvdGQ+Cjx0ZCBzdHlsZT0id2lkdGg6MTIwcHg7Ij7oj5zlvI88L3RkPgo8dGQgc3R5bGU9IndpZHRoOjgwcHg7Ij7po5/mnZDlkI3np7A8L3RkPgo8dGQgc3R5bGU9IndpZHRoOjYwcHg7Ij7ph43ph48oZyk8L3RkPgo8dGQ+6aOf6YOoPC90ZD4KPHRkPuW4guWTgS/pnZ7luILlk4E8L3RkPgo8dGQ+6IO96YePPC90ZD4KPHRkPuibi+eZvei0qDwvdGQ+Cjx0ZD7ohILogqo8L3RkPgo8dGQ+56Kz5rC05YyW5ZCI54mpPC90ZD4KPHRkPumSmTwvdGQ+Cjx0ZD7pk4E8L3RkPgo8dGQ+6ZSMPC90ZD4KPHRkPuehkjwvdGQ+Cjx0ZD5WaXRBPC90ZD4KPHRkPlZpdEM8L3RkPgo8dGQ+6ZKgPC90ZD4KPHRkPuejtzwvdGQ+Cjx0ZD7noavog7rntKA8L3RkPgo8dGQ+5qC46buE57SgPC90ZD4KPHRkPuaKl+Wdj+ihgOmFuDwvdGQ+Cjx0ZD7lsLzlhYvphbg8L3RkPgo8dGQ+6Iaz6aOf57qk57u0PC90ZD4KPHRkPuiDhuWbuumGhzwvdGQ+Cjx0ZD7og6HokJ3ljZzntKA8L3RkPgo8dGQ+Vml0RTwvdGQ+Cjx0ZD7pkr48L3RkPgo8dGQ+6KeG6buE6YaH5b2T6YePPC90ZD4KPC90cj4KPHRyPjx0ZCA+5pep6aSQPC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0cj48dGQgPuS4remkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dHI+PHRkID7ljYjngrk8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRyPjx0ZCA+5pma6aSQPC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0YWJsZSBjbGFzcz0ibGlzdCIgc3R5bGU9InRleHQtYWxpZ246Y2VudGVyO21hcmdpbi1ib3R0b206IDEwcHg7IHdpZHRoOiAyMzAwcHg7Ij4KPHRyPgo8dGQgc3R5bGU9IndpZHRoOjEyMHB4OyI+MjAxNi0wNi0xNCDppJDmrKE8L3RkPgo8dGQgc3R5bGU9IndpZHRoOjEyMHB4OyI+6I+c5byPPC90ZD4KPHRkIHN0eWxlPSJ3aWR0aDo4MHB4OyI+6aOf5p2Q5ZCN56ewPC90ZD4KPHRkIHN0eWxlPSJ3aWR0aDo2MHB4OyI+6YeN6YePKGcpPC90ZD4KPHRkPumjn+mDqDwvdGQ+Cjx0ZD7luILlk4Ev6Z2e5biC5ZOBPC90ZD4KPHRkPuiDvemHjzwvdGQ+Cjx0ZD7om4vnmb3otKg8L3RkPgo8dGQ+6ISC6IKqPC90ZD4KPHRkPueis+awtOWMluWQiOeJqTwvdGQ+Cjx0ZD7pkpk8L3RkPgo8dGQ+6ZOBPC90ZD4KPHRkPumUjDwvdGQ+Cjx0ZD7noZI8L3RkPgo8dGQ+Vml0QTwvdGQ+Cjx0ZD5WaXRDPC90ZD4KPHRkPumSoDwvdGQ+Cjx0ZD7no7c8L3RkPgo8dGQ+56Gr6IO657SgPC90ZD4KPHRkPuaguOm7hOe0oDwvdGQ+Cjx0ZD7mipflnY/ooYDphbg8L3RkPgo8dGQ+5bC85YWL6YW4PC90ZD4KPHRkPuiGs+mjn+e6pOe7tDwvdGQ+Cjx0ZD7og4blm7rphoc8L3RkPgo8dGQ+6IOh6JCd5Y2c57SgPC90ZD4KPHRkPlZpdEU8L3RkPgo8dGQ+6ZK+PC90ZD4KPHRkPuinhum7hOmGh+W9k+mHjzwvdGQ+CjwvdHI+Cjx0cj48dGQgPuaXqemkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dHI+PHRkID7kuK3ppJA8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRyPjx0ZCA+5Y2I54K5PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0cj48dGQgPuaZmumkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dGFibGUgY2xhc3M9Imxpc3QiIHN0eWxlPSJ0ZXh0LWFsaWduOmNlbnRlcjttYXJnaW4tYm90dG9tOiAxMHB4OyB3aWR0aDogMjMwMHB4OyI+Cjx0cj4KPHRkIHN0eWxlPSJ3aWR0aDoxMjBweDsiPjIwMTYtMDYtMTUg6aSQ5qyhPC90ZD4KPHRkIHN0eWxlPSJ3aWR0aDoxMjBweDsiPuiPnOW8jzwvdGQ+Cjx0ZCBzdHlsZT0id2lkdGg6ODBweDsiPumjn+adkOWQjeensDwvdGQ+Cjx0ZCBzdHlsZT0id2lkdGg6NjBweDsiPumHjemHjyhnKTwvdGQ+Cjx0ZD7po5/pg6g8L3RkPgo8dGQ+5biC5ZOBL+mdnuW4guWTgTwvdGQ+Cjx0ZD7og73ph488L3RkPgo8dGQ+6JuL55m96LSoPC90ZD4KPHRkPuiEguiCqjwvdGQ+Cjx0ZD7norPmsLTljJblkIjniak8L3RkPgo8dGQ+6ZKZPC90ZD4KPHRkPumTgTwvdGQ+Cjx0ZD7plIw8L3RkPgo8dGQ+56GSPC90ZD4KPHRkPlZpdEE8L3RkPgo8dGQ+Vml0QzwvdGQ+Cjx0ZD7pkqA8L3RkPgo8dGQ+56O3PC90ZD4KPHRkPuehq+iDuue0oDwvdGQ+Cjx0ZD7moLjpu4TntKA8L3RkPgo8dGQ+5oqX5Z2P6KGA6YW4PC90ZD4KPHRkPuWwvOWFi+mFuDwvdGQ+Cjx0ZD7ohrPpo5/nuqTnu7Q8L3RkPgo8dGQ+6IOG5Zu66YaHPC90ZD4KPHRkPuiDoeiQneWNnOe0oDwvdGQ+Cjx0ZD5WaXRFPC90ZD4KPHRkPumSvjwvdGQ+Cjx0ZD7op4bpu4TphoflvZPph488L3RkPgo8L3RyPgo8dHI+PHRkID7ml6nppJA8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRyPjx0ZCA+5Lit6aSQPC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0cj48dGQgPuWNiOeCuTwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dHI+PHRkID7mmZrppJA8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRhYmxlIGNsYXNzPSJsaXN0IiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7bWFyZ2luLWJvdHRvbTogMTBweDsgd2lkdGg6IDIzMDBweDsiPgo8dHI+Cjx0ZCBzdHlsZT0id2lkdGg6MTIwcHg7Ij4yMDE2LTA2LTE2IOmkkOasoTwvdGQ+Cjx0ZCBzdHlsZT0id2lkdGg6MTIwcHg7Ij7oj5zlvI88L3RkPgo8dGQgc3R5bGU9IndpZHRoOjgwcHg7Ij7po5/mnZDlkI3np7A8L3RkPgo8dGQgc3R5bGU9IndpZHRoOjYwcHg7Ij7ph43ph48oZyk8L3RkPgo8dGQ+6aOf6YOoPC90ZD4KPHRkPuW4guWTgS/pnZ7luILlk4E8L3RkPgo8dGQ+6IO96YePPC90ZD4KPHRkPuibi+eZvei0qDwvdGQ+Cjx0ZD7ohILogqo8L3RkPgo8dGQ+56Kz5rC05YyW5ZCI54mpPC90ZD4KPHRkPumSmTwvdGQ+Cjx0ZD7pk4E8L3RkPgo8dGQ+6ZSMPC90ZD4KPHRkPuehkjwvdGQ+Cjx0ZD5WaXRBPC90ZD4KPHRkPlZpdEM8L3RkPgo8dGQ+6ZKgPC90ZD4KPHRkPuejtzwvdGQ+Cjx0ZD7noavog7rntKA8L3RkPgo8dGQ+5qC46buE57SgPC90ZD4KPHRkPuaKl+Wdj+ihgOmFuDwvdGQ+Cjx0ZD7lsLzlhYvphbg8L3RkPgo8dGQ+6Iaz6aOf57qk57u0PC90ZD4KPHRkPuiDhuWbuumGhzwvdGQ+Cjx0ZD7og6HokJ3ljZzntKA8L3RkPgo8dGQ+Vml0RTwvdGQ+Cjx0ZD7pkr48L3RkPgo8dGQ+6KeG6buE6YaH5b2T6YePPC90ZD4KPC90cj4KPHRyPjx0ZCA+5pep6aSQPC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0cj48dGQgPuS4remkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dHI+PHRkID7ljYjngrk8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRyPjx0ZCA+5pma6aSQPC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0YWJsZSBjbGFzcz0ibGlzdCIgc3R5bGU9InRleHQtYWxpZ246Y2VudGVyO21hcmdpbi1ib3R0b206IDEwcHg7IHdpZHRoOiAyMzAwcHg7Ij4KPHRyPgo8dGQgc3R5bGU9IndpZHRoOjEyMHB4OyI+MjAxNi0wNi0xNyDppJDmrKE8L3RkPgo8dGQgc3R5bGU9IndpZHRoOjEyMHB4OyI+6I+c5byPPC90ZD4KPHRkIHN0eWxlPSJ3aWR0aDo4MHB4OyI+6aOf5p2Q5ZCN56ewPC90ZD4KPHRkIHN0eWxlPSJ3aWR0aDo2MHB4OyI+6YeN6YePKGcpPC90ZD4KPHRkPumjn+mDqDwvdGQ+Cjx0ZD7luILlk4Ev6Z2e5biC5ZOBPC90ZD4KPHRkPuiDvemHjzwvdGQ+Cjx0ZD7om4vnmb3otKg8L3RkPgo8dGQ+6ISC6IKqPC90ZD4KPHRkPueis+awtOWMluWQiOeJqTwvdGQ+Cjx0ZD7pkpk8L3RkPgo8dGQ+6ZOBPC90ZD4KPHRkPumUjDwvdGQ+Cjx0ZD7noZI8L3RkPgo8dGQ+Vml0QTwvdGQ+Cjx0ZD5WaXRDPC90ZD4KPHRkPumSoDwvdGQ+Cjx0ZD7no7c8L3RkPgo8dGQ+56Gr6IO657SgPC90ZD4KPHRkPuaguOm7hOe0oDwvdGQ+Cjx0ZD7mipflnY/ooYDphbg8L3RkPgo8dGQ+5bC85YWL6YW4PC90ZD4KPHRkPuiGs+mjn+e6pOe7tDwvdGQ+Cjx0ZD7og4blm7rphoc8L3RkPgo8dGQ+6IOh6JCd5Y2c57SgPC90ZD4KPHRkPlZpdEU8L3RkPgo8dGQ+6ZK+PC90ZD4KPHRkPuinhum7hOmGh+W9k+mHjzwvdGQ+CjwvdHI+Cjx0cj48dGQgPuaXqemkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj48dHI+PHRkID7kuK3ppJA8L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjwvdHI+PHRyPjx0ZCA+5Y2I54K5PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48L3RyPjx0cj48dGQgPuaZmumkkDwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PHRkICBzdHlsZT0idGV4dC1hbGlnbjpsZWZ0OyIgY2xhc3M9Im1pbkhlaWdodCI+PC90ZD48dGQgIHN0eWxlPSJ0ZXh0LWFsaWduOmxlZnQ7IiBjbGFzcz0ibWluSGVpZ2h0Ij48L3RkPjx0ZCAgc3R5bGU9InRleHQtYWxpZ246bGVmdDsiIGNsYXNzPSJtaW5IZWlnaHQiPjwvdGQ+PC90cj5kZN/xsUa5B6ETWIU2jBtDf9EN4nIAnbaq8br/wGPKi7Pk"
+            />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="67152805" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdACTKQO01F/+PNzr5ekTghL01ANpOIZirpJgMNqpm0lBMkXiQsKj/1/vMlTK7atLnwnaFdOKX3hOtCAC/dn8UVy20aiMxMik8/HR4Zdrdi+cLkGDxKVepn6X/y7t5GQ416cNqty8DyPef5zEHg5PnLWfsAKoIGw6kHshuuZhLh/VdkasIPMrqkmZwd4fHv3HvOwr0sSBGzqqNiTSbcR0IZLCXl5hs2zX9qAlln7mYaWkPF8Uy5zaSBjLeKMe+w44guWpj+9isUnTtRmOAiendJLRUtjCHlpkp2YSCklMFjqy8oOHhcLFEjUynaeaHIIs7v3bK3az7u8xoBWiS0QWTmepK9O5Sw6HkzdtZVBgUWhMEPvI9Zi7f+RdvdcA2HBq2+t+XoreygZBI/kNOes+duMRKq5Xkcju9CNFf97NwqpcTDPuAbkf7BrqNZAwoVg1MAsyR46C7LKCF8nviQtKdW+d5eTiaFa1FkgxQqkV8QBsCQjQhPKVZCKNS8X6WjmZGn/qsLx2GpAQZ7GhPqL0elOBWHjI2KiMs7LgTJUYQOfVq8RRB8IIGMYenT9XCuqJ00zbEimUwOP8UbUwEpRsAdzSgALnnp2apHxnxdPSv4BBmEZmwVAni81ym77G9EQba+aCkBqsDa/uHJdf8iWqbtmdkzl8G3pBoDLy+tvzhq8KOQQDhmNKolwp+82XxBG267lOBY6SC6BYHkKr11gPu2hA0ct/8CRwV5bwX3adocsOqvZNcQtnKtb31hEtbT6bWJ99Nj/q7rSJhPVSeBj8h0xfx65sBMC9epX7UoZ2XgiqwVg==" />
+        </div>
+        <div id="tab"></div>
+        <div class="tabs" style="text-align: left;">
+            <div class="tabsBottomBar"></div>
+            <div style="padding-top: 7px; padding-left: 20px;">
+                学期：
+                <select name="ddlTerm" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ddlTerm\&#39;,\&#39;\&#39;)&#39;, 0)" id="ddlTerm" class="int" style="margin-right: 20px;">
+                    <option value="9880dddb-d822-4652-976e-8db5503ae54e">2017下学期</option>
+                    <option value="69db8e62-fae6-426d-9bb2-80693671890e">2017上学期</option>
+                    <option selected="selected" value="d0e59fd6-6171-4b8e-af68-0eed99f5db8e">2016下学期</option>
+                </select>
+                周：
+                <select name="ddlWeek" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ddlWeek\&#39;,\&#39;\&#39;)&#39;, 0)" id="ddlWeek" class="int" style="margin-right: 14px;">
+                    <option value="2016-02-18~2016-02-21">第1周[02.18~02.21]</option>
+                    <option value="2016-02-22~2016-02-28">第2周[02.22~02.28]</option>
+                    <option value="2016-02-29~2016-03-06">第3周[02.29~03.06]</option>
+                    <option value="2016-03-07~2016-03-13">第4周[03.07~03.13]</option>
+                    <option value="2016-03-14~2016-03-20">第5周[03.14~03.20]</option>
+                    <option value="2016-03-21~2016-03-27">第6周[03.21~03.27]</option>
+                    <option value="2016-03-28~2016-04-03">第7周[03.28~04.03]</option>
+                    <option value="2016-04-04~2016-04-10">第8周[04.04~04.10]</option>
+                    <option value="2016-04-11~2016-04-17">第9周[04.11~04.17]</option>
+                    <option value="2016-04-18~2016-04-24">第10周[04.18~04.24]</option>
+                    <option value="2016-04-25~2016-05-01">第11周[04.25~05.01]</option>
+                    <option value="2016-05-02~2016-05-08">第12周[05.02~05.08]</option>
+                    <option value="2016-05-09~2016-05-15">第13周[05.09~05.15]</option>
+                    <option value="2016-05-16~2016-05-22">第14周[05.16~05.22]</option>
+                    <option value="2016-05-23~2016-05-29">第15周[05.23~05.29]</option>
+                    <option value="2016-05-30~2016-06-05">第16周[05.30~06.05]</option>
+                    <option value="2016-06-06~2016-06-12">第17周[06.06~06.12]</option>
+                    <option selected="selected" value="2016-06-13~2016-06-19">第18周[06.13~06.19]</option>
+                    <option value="2016-06-20~2016-06-26">第19周[06.20~06.26]</option>
+                    <option value="2016-06-27~2016-07-03">第20周[06.27~07.03]</option>
+                    <option value="2016-07-04~2016-07-10">第21周[07.04~07.10]</option>
+                    <option value="2016-07-11~2016-07-17">第22周[07.11~07.17]</option>
+                    <option value="2016-07-18~2016-07-24">第23周[07.18~07.24]</option>
+                    <option value="2016-07-25~2016-07-31">第24周[07.25~07.31]</option>
+                    <option value="2016-08-01~2016-08-07">第25周[08.01~08.07]</option>
+                    <option value="2016-08-08~2016-08-11">第26周[08.08~08.11]</option>
+                </select>&nbsp;
+                <input type="submit" name="btnPre" value="本 周" id="btnPre" class="button" />&nbsp;&nbsp;
+                <input type="submit" name="btnNext" value="下 周" id="btnNext" class="button" /> &nbsp;&nbsp;
+                <input type="submit" name="btnCopy" value="复制食谱" onclick="return Copy();" id="btnCopy" class="button" /> &nbsp;&nbsp;
+                <input type="submit" name="btnAdd" value="添加食谱" onclick="return FoodPlanAdd();" id="btnAdd" class="button" /> &nbsp;&nbsp;
+                <input type="button" value="打印食谱" id="btnPrint" onclick="show()" class="button" /> &nbsp;&nbsp;
+                <input id="cbPreview" type="checkbox" />打印预览
+            </div>
+        </div>
+        <div id="P_Data">
+            <div style="width: 100%; overflow: auto; clear: both;" id="divList">
+                <table class="list" style="text-align:center;margin-bottom: 10px; width: 2300px;">
+                    <tr>
+                        <td style="width:120px;">2016-06-13 餐次</td>
+                        <td style="width:120px;">菜式</td>
+                        <td style="width:80px;">食材名称</td>
+                        <td style="width:60px;">重量(g)</td>
+                        <td>食部</td>
+                        <td>市品/非市品</td>
+                        <td>能量</td>
+                        <td>蛋白质</td>
+                        <td>脂肪</td>
+                        <td>碳水化合物</td>
+                        <td>钙</td>
+                        <td>铁</td>
+                        <td>锌</td>
+                        <td>硒</td>
+                        <td>VitA</td>
+                        <td>VitC</td>
+                        <td>钠</td>
+                        <td>磷</td>
+                        <td>硫胺素</td>
+                        <td>核黄素</td>
+                        <td>抗坏血酸</td>
+                        <td>尼克酸</td>
+                        <td>膳食纤维</td>
+                        <td>胆固醇</td>
+                        <td>胡萝卜素</td>
+                        <td>VitE</td>
+                        <td>钾</td>
+                        <td>视黄醇当量</td>
+                    </tr>
+                    <tr>
+                        <td>早餐</td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                    </tr>
+                    <tr>
+                        <td>中餐</td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                    </tr>
+                    <tr>
+                        <td>午点</td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                    </tr>
+                    <tr>
+                        <td>晚餐</td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                        <td style="text-align:left;" class="minHeight"></td>
+                    </tr>
+                    <table class="list" style="text-align:center;margin-bottom: 10px; width: 2300px;">
+                        <tr>
+                            <td style="width:120px;">2016-06-14 餐次</td>
+                            <td style="width:120px;">菜式</td>
+                            <td style="width:80px;">食材名称</td>
+                            <td style="width:60px;">重量(g)</td>
+                            <td>食部</td>
+                            <td>市品/非市品</td>
+                            <td>能量</td>
+                            <td>蛋白质</td>
+                            <td>脂肪</td>
+                            <td>碳水化合物</td>
+                            <td>钙</td>
+                            <td>铁</td>
+                            <td>锌</td>
+                            <td>硒</td>
+                            <td>VitA</td>
+                            <td>VitC</td>
+                            <td>钠</td>
+                            <td>磷</td>
+                            <td>硫胺素</td>
+                            <td>核黄素</td>
+                            <td>抗坏血酸</td>
+                            <td>尼克酸</td>
+                            <td>膳食纤维</td>
+                            <td>胆固醇</td>
+                            <td>胡萝卜素</td>
+                            <td>VitE</td>
+                            <td>钾</td>
+                            <td>视黄醇当量</td>
+                        </tr>
+                        <tr>
+                            <td>早餐</td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                        </tr>
+                        <tr>
+                            <td>中餐</td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                        </tr>
+                        <tr>
+                            <td>午点</td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                        </tr>
+                        <tr>
+                            <td>晚餐</td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                            <td style="text-align:left;" class="minHeight"></td>
+                        </tr>
+                        <table class="list" style="text-align:center;margin-bottom: 10px; width: 2300px;">
+                            <tr>
+                                <td style="width:120px;">2016-06-15 餐次</td>
+                                <td style="width:120px;">菜式</td>
+                                <td style="width:80px;">食材名称</td>
+                                <td style="width:60px;">重量(g)</td>
+                                <td>食部</td>
+                                <td>市品/非市品</td>
+                                <td>能量</td>
+                                <td>蛋白质</td>
+                                <td>脂肪</td>
+                                <td>碳水化合物</td>
+                                <td>钙</td>
+                                <td>铁</td>
+                                <td>锌</td>
+                                <td>硒</td>
+                                <td>VitA</td>
+                                <td>VitC</td>
+                                <td>钠</td>
+                                <td>磷</td>
+                                <td>硫胺素</td>
+                                <td>核黄素</td>
+                                <td>抗坏血酸</td>
+                                <td>尼克酸</td>
+                                <td>膳食纤维</td>
+                                <td>胆固醇</td>
+                                <td>胡萝卜素</td>
+                                <td>VitE</td>
+                                <td>钾</td>
+                                <td>视黄醇当量</td>
+                            </tr>
+                            <tr>
+                                <td>早餐</td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                            </tr>
+                            <tr>
+                                <td>中餐</td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                            </tr>
+                            <tr>
+                                <td>午点</td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                            </tr>
+                            <tr>
+                                <td>晚餐</td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                                <td style="text-align:left;" class="minHeight"></td>
+                            </tr>
+                            <table class="list" style="text-align:center;margin-bottom: 10px; width: 2300px;">
+                                <tr>
+                                    <td style="width:120px;">2016-06-16 餐次</td>
+                                    <td style="width:120px;">菜式</td>
+                                    <td style="width:80px;">食材名称</td>
+                                    <td style="width:60px;">重量(g)</td>
+                                    <td>食部</td>
+                                    <td>市品/非市品</td>
+                                    <td>能量</td>
+                                    <td>蛋白质</td>
+                                    <td>脂肪</td>
+                                    <td>碳水化合物</td>
+                                    <td>钙</td>
+                                    <td>铁</td>
+                                    <td>锌</td>
+                                    <td>硒</td>
+                                    <td>VitA</td>
+                                    <td>VitC</td>
+                                    <td>钠</td>
+                                    <td>磷</td>
+                                    <td>硫胺素</td>
+                                    <td>核黄素</td>
+                                    <td>抗坏血酸</td>
+                                    <td>尼克酸</td>
+                                    <td>膳食纤维</td>
+                                    <td>胆固醇</td>
+                                    <td>胡萝卜素</td>
+                                    <td>VitE</td>
+                                    <td>钾</td>
+                                    <td>视黄醇当量</td>
+                                </tr>
+                                <tr>
+                                    <td>早餐</td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                </tr>
+                                <tr>
+                                    <td>中餐</td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                </tr>
+                                <tr>
+                                    <td>午点</td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                </tr>
+                                <tr>
+                                    <td>晚餐</td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                    <td style="text-align:left;" class="minHeight"></td>
+                                </tr>
+                                <table class="list" style="text-align:center;margin-bottom: 10px; width: 2300px;">
+                                    <tr>
+                                        <td style="width:120px;">2016-06-17 餐次</td>
+                                        <td style="width:120px;">菜式</td>
+                                        <td style="width:80px;">食材名称</td>
+                                        <td style="width:60px;">重量(g)</td>
+                                        <td>食部</td>
+                                        <td>市品/非市品</td>
+                                        <td>能量</td>
+                                        <td>蛋白质</td>
+                                        <td>脂肪</td>
+                                        <td>碳水化合物</td>
+                                        <td>钙</td>
+                                        <td>铁</td>
+                                        <td>锌</td>
+                                        <td>硒</td>
+                                        <td>VitA</td>
+                                        <td>VitC</td>
+                                        <td>钠</td>
+                                        <td>磷</td>
+                                        <td>硫胺素</td>
+                                        <td>核黄素</td>
+                                        <td>抗坏血酸</td>
+                                        <td>尼克酸</td>
+                                        <td>膳食纤维</td>
+                                        <td>胆固醇</td>
+                                        <td>胡萝卜素</td>
+                                        <td>VitE</td>
+                                        <td>钾</td>
+                                        <td>视黄醇当量</td>
+                                    </tr>
+                                    <tr>
+                                        <td>早餐</td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>中餐</td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>午点</td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>晚餐</td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                        <td style="text-align:left;" class="minHeight"></td>
+                                    </tr>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

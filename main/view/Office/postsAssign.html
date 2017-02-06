@@ -1,0 +1,31 @@
+<form action="<?php echo arU(''); ?>" method="post">
+<input type="hidden" name="mid" value="<?php echo arRequest('mid'); ?>">
+<?php foreach ($postDetail as $post): ?>
+<div style="margin:5px;">
+    <div>
+        <div>
+          <span><input name="postids[]" type="checkbox" value="<?php echo $post['pid']; ?>" <?php if (in_array($post['pid'], $hasRights)): ?>
+            checked
+            <?php endif ?>><?php echo $post['name'] ?></span>
+        </div>
+        <div style="margin:5px;">
+        <?php if(is_array($post['sub_menu'])): foreach ($post['sub_menu'] as $list): ?>
+            <span><input name="postids[]" type="checkbox" value="<?php echo $list['pid']; ?>" <?php if (in_array($list['pid'], $hasRights)): ?>
+            checked
+            <?php endif ?>><?php echo $list['name'] ?></span>
+            <div style="margin:5px;">
+            <?php if (is_array($list['sub_menu'])): ?>
+            <?php foreach ($list['sub_menu'] as $second_list): ?>
+                <span><input name="postids[]" type="checkbox" value="<?php echo $second_list['pid']; ?>" <?php if (in_array($second_list['pid'], $hasRights)): ?>
+                checked
+                <?php endif ?>><?php echo $second_list['name'] ?></span>
+            <?php endforeach ?>
+            <?php endif ?>
+            </div>
+        <?php endforeach; endif; ?>
+        </div>
+    </div>
+</div>
+<?php endforeach ?>
+<input type="submit" name="btnAdd" value="保存" class="button" />
+</form>

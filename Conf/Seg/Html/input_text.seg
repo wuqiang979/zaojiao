@@ -1,0 +1,25 @@
+<?php
+/*
+      // 调用用html seg 直接输出 input type text 标签
+      arSeg(
+         array(
+            // seg文件
+            'segKey' => 'Html/input_text',
+            // showname<input name="name" value="value" extra/>
+            'name' => 'type',
+            // 名称
+            'showname' => '名称',
+            // 'displayKey' => 'dd',
+            'extra' => 'class="testcheck"'
+         )
+      );
+*/
+?>
+<?php if (isset($showname)): ?>
+<?php echo $showname; ?>
+<?php endif ?>
+<input name="<?php echo $name; ?>" value="<?php if (isset($value)): ?>
+<?php echo $value; ?>
+<?php endif ?>" <?php if (isset($extra)): ?>
+<?php echo $extra; ?>
+<?php endif ?> />

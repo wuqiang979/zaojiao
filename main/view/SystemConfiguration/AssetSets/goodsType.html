@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <title>乐育谷云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="<?php echo arCfg('PATH.PUBLIC'); ?>css/zaojiao.css">
+    <!--[if IE 8]> <link href='/Themes/Theme3/ie8Fix.css' rel='stylesheet' /> <![endif]-->
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery-1.4.2.min.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/FusionCharts.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.Ex.js"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/funnel.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/jQuery.etmTabs.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/Validator.js" type="text/javascript"></script>
+    <script src="<?php echo arCfg('PATH.PUBLIC'); ?>js/flexigrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var isEtmClient = false;
+
+    function ReSizeScrollbar() {
+        if ($('form').getNiceScroll().length > 0) {
+            $('form').getNiceScroll().onResize();
+        }
+    }
+
+    function ReSizeFlexgridScrollbar() {
+        if ($('.bDiv').getNiceScroll().length > 0) {
+            $('.bDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitFlexgridScrollbar() {
+        $('.bDiv').niceScroll({
+            cursorcolor: '#75A801',
+            zindex: 4
+        });
+    }
+
+    function ReSizenDivScrollbar() {
+        if ($('.flexigrid .nDiv').getNiceScroll().length > 0) {
+            $('.flexigrid .nDiv').getNiceScroll().onResize();
+        }
+    }
+
+    function InitnDivScrollbar() {
+        $('.flexigrid .nDiv').niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+    }
+
+    function proxyExecuteFun(funName) {
+        if (funName == undefined || funName == null || funName.length == 0) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return;
+        }
+        if (window[funName]()) {
+            window.parent.showsending(true, "执行中，请耐心等待...");
+            return true;
+        }
+        return false;
+    };
+    var _tmpOnSelectedFile = null;
+
+    function onSelectedFile(fileName, fileUrl, isImg) {
+        if (_tmpOnSelectedFile != null) {
+            _tmpOnSelectedFile(fileName, fileUrl, isImg);
+        }
+    }
+
+    function showFileList(callback) {
+        window.parent.showDialog('查看素材库', '/Modules/OA/CMyFileListView.aspx?navId=d065b06f-e444-44bf-8956-465622ab0e60', '900px', '450px');
+        _tmpOnSelectedFile = callback;
+    }
+    $(function() {
+        if (window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+            window.parent.showsending(false, '');
+        }
+        $(".button").each(function() {
+            if ($(this).attr("type") == "submit" && !$(this).hasClass('noloading') && window.parent != undefined && window.parent != null && typeof window.parent.showsending != "undefined") {
+                var tmpClick = $(this).attr("onclick");
+                if (tmpClick == undefined || tmpClick == null || tmpClick.length < 2) {
+                    $(this).attr("onclick", "proxyExecuteFun();");
+                    return;
+                }
+                if (tmpClick.indexOf("return ") != -1 && tmpClick.indexOf("(") != -1) {
+                    tmpClick = tmpClick.substring(7).replace(/\s+/g, '');
+                    if (tmpClick.indexOf("()") != -1) {
+                        var funName = tmpClick.substring(0, tmpClick.indexOf("("));
+                        $(this).attr("onclick", "return proxyExecuteFun('" + funName + "');");
+                    }
+                }
+            }
+        });
+        $('body').click(function() {
+            if (typeof parent.onChildPageClick != 'undefined') {
+                parent.onChildPageClick();
+            }
+        });
+        $('form').height($(window).height() - 0).niceScroll({
+            cursorcolor: '#75A801',
+            horizrailenabled: false
+        });
+        $(window).resize(function() {
+            ReSizeScrollbar();
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form method="post" action="AssetCategory.aspx?isLeft=1&amp;navId=d065b06f-e444-44bf-8956-465622ab0e60" id="form1">
+        <div class="aspNetHidden">
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTUxNzQ4ODk0MQ9kFgICAw9kFgYCAQ8WAh4EVGV4dAXABDxzY3JpcHQgc3JjPSIuLi8uLi9TY3JpcHRzL2pRdWVyeS5ldG1UYWJzLmpzIj48L3NjcmlwdD48c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+JChmdW5jdGlvbiAoKSB7JCgiI3MiKS5ldG1UYWJzKHtpdGVtOiBbeyBUZXh0OiAi54mp5ZOB57G75Z6LIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Bc3NldC9Bc3NldENhdGVnb3J5LmFzcHg/aXNMZWZ0PTEmbmF2SWQ9ZDA2NWIwNmYtZTQ0NC00NGJmLTg5NTYtNDY1NjIyYWIwZTYwIiwgU2VsZWN0ZWQ6IHRydWUgfSx7IFRleHQ6ICLku5PlupPkv6Hmga8iLCBVcmw6ICIuLi8uLi9Nb2R1bGVzL0Fzc2V0L1BhcmFtQ29uZmlnLmFzcHg/aXNMZWZ0PTImbmF2SWQ9ZDA2NWIwNmYtZTQ0NC00NGJmLTg5NTYtNDY1NjIyYWIwZTYwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0seyBUZXh0OiAi54mp5ZOB5Y2V5L2NIiwgVXJsOiAiLi4vLi4vTW9kdWxlcy9Bc3NldC9Vbml0Q29uZmlnLmFzcHg/aXNMZWZ0PTMmbmF2SWQ9ZDA2NWIwNmYtZTQ0NC00NGJmLTg5NTYtNDY1NjIyYWIwZTYwIiwgU2VsZWN0ZWQ6IGZhbHNlIH0sXX0pO30pOzwvc2NyaXB0PjxkaXYgaWQ9J3MnPjwvZGl2PmQCBw8QZBAVAwnor7fpgInmi6kNfOKAlOWbvuS5puexuw184oCU5paH5YW357G7FQMkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwJDAzMTUxNGUzLTZmNjAtNGY4MS05NDRhLTVhMjEyMDEzZjhkZCRhMGVmOWYyNC00ZWFiLTQxMDgtYmFkZC1mOWUyNjkyN2EwMWIUKwMDZ2dnZGQCDQ9kFgICAQ8WAh4LXyFJdGVtQ291bnQCAhYEZg9kFgoCAQ8PFgIeC0NvbW1hbmROYW1lBSQwMzE1MTRlMy02ZjYwLTRmODEtOTQ0YS01YTIxMjAxM2Y4ZGRkZAIDDw8WAh8CBSQwMzE1MTRlMy02ZjYwLTRmODEtOTQ0YS01YTIxMjAxM2Y4ZGRkZAIEDxUDCzIwMTYwNDA2MDAyCeWbvuS5puexuwBkAgUPDxYEHwIFJDAzMTUxNGUzLTZmNjAtNGY4MS05NDRhLTVhMjEyMDEzZjhkZB4HVmlzaWJsZWhkZAIHDw8WAh8CBSQwMzE1MTRlMy02ZjYwLTRmODEtOTQ0YS01YTIxMjAxM2Y4ZGRkZAIBD2QWCgIBDw8WAh8CBSRhMGVmOWYyNC00ZWFiLTQxMDgtYmFkZC1mOWUyNjkyN2EwMWJkZAIDDw8WAh8CBSRhMGVmOWYyNC00ZWFiLTQxMDgtYmFkZC1mOWUyNjkyN2EwMWJkZAIEDxUDCzIwMTYwNDA2MDAxCeaWh+WFt+exuwBkAgUPDxYCHwIFJGEwZWY5ZjI0LTRlYWItNDEwOC1iYWRkLWY5ZTI2OTI3YTAxYmRkAgcPDxYEHwIFJGEwZWY5ZjI0LTRlYWItNDEwOC1iYWRkLWY5ZTI2OTI3YTAxYh8DaGRkZEpGJltV298NqIH4Dt/T/C1TufSZGNDtK92BgaqytVvW" />
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['form1'];
+        if (!theForm) {
+            theForm = document.form1;
+        }
+
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+        </script>
+        <div class="aspNetHidden">
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C2DF61F2" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAA2uKCO4XaccQyXrif23BstbSC21dBR9r/GJnE8nUnzpxUscay2Pw8Kmc74r/IzoBqUWg0tM/zD5f5gfNwU8VFQFUZ/keMHe2KLKwhoKxhKxots8P4b6UW5QWFsGb2PLh0STXELZyrW99YRLW0+m1iffOvtqeqkNx0qCuJFrqPREMOQeiIHHI/dknBStHcJTNddd2JmdrVH4EBcKqcf2eDUnhPmOt2StiL8rPUkv1oGljy9ooAO9La4w7zw3NAA2ZX6Y0d4LNIn5Ti1RGQrBBgRPpf0Sd86RrhJ42pDBcjZkP3G0UMTwQqaCs8QUozQ7tWA=" />
+        </div>
+        <script src="../../Scripts/jQuery.etmTabs.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            $("#s").etmTabs({
+                item: [{
+                    Text: "物品类型",
+                    Url: "<?php echo arU('SystemConfiguration/goodsType'); ?>",
+                    Selected: true
+                }, {
+                    Text: "仓库信息",
+                    Url: "<?php echo arU('SystemConfiguration/wharehouseInfo'); ?>",
+                    Selected: false
+                }, {
+                    Text: "物品单位",
+                    Url: "<?php echo arU('SystemConfiguration/goodsUnit'); ?>",
+                    Selected: false
+                }, ]
+            });
+        });
+        </script>
+        <div id='s'></div>
+        <table class="search">
+            <tr>
+                <td class="textAlignRight" style="width: 78px;">物品编码：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbCategoryCode" type="text" id="tbCategoryCode" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">物品分类：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <input name="tbCategoryName" type="text" id="tbCategoryName" class="int" />
+                    <span class="words">*</span>
+                </td>
+                <td class="textAlignRight" style="width: 78px;">上级分类：
+                </td>
+                <td class="borderRight" style="width: 160px;">
+                    <select name="ddlParent" id="ddlParent" class="int">
+                        <option value="00000000-0000-0000-0000-000000000000">请选择</option>
+                        <option value="031514e3-6f60-4f81-944a-5a212013f8dd">|—图书类</option>
+                        <option value="a0ef9f24-4eab-4108-badd-f9e26927a01b">|—文具类</option>
+                    </select>
+                </td>
+                <td rowspan="2" style="padding-left: 20px;">
+                    <input type="submit" name="btnAdd" value="添 加" onclick="return check();" id="btnAdd" class="button" />
+                </td>
+            </tr>
+        </table>
+        <div id="P_Data">
+            <table class="list" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <td style="width: 100px">操作</td>
+                        <td>物品编码</td>
+                        <td>物品分类</td>
+                        <td>上级分类</td>
+                        <td>排序</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>20160406002</td>
+                        <td>图书类</td>
+                        <td></td>
+                        <td>
+                            <a id="rptCategory_lnkDown_0" href="javascript:__doPostBack(&#39;rptCategory$ctl00$lnkDown&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/dn9.png" /></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a id="rptCategory_linkEdit_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkEdit&#39;,&#39;&#39;)">[修改]</a>
+                            <a onclick="return confirm(&#39;确认要删除吗？&#39;);" id="rptCategory_linkDel_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$linkDel&#39;,&#39;&#39;)">[删除]</a>
+                        </td>
+                        <td>20160406001</td>
+                        <td>文具类</td>
+                        <td></td>
+                        <td>
+                            <a id="rptCategory_lnkUp_1" href="javascript:__doPostBack(&#39;rptCategory$ctl01$lnkUp&#39;,&#39;&#39;)"><img src="<?php echo arCfg('PATH.PUBLIC'); ?>/img/up9.png" /></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+        function check() {
+            if ($.trim($("#tbCategoryCode").val()) == '') {
+                alert("物品编码不能为空！");
+                return false;
+            }
+            if ($.trim($("#tbCategoryName").val()) == '') {
+                alert("物品分类不能为空！");
+                return false;
+            }
+            return true;
+        }
+        </script>
+    </form>
+</body>
+
+</html>

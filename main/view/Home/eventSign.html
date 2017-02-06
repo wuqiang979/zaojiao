@@ -1,0 +1,128 @@
+<!-- 活动管理 -->
+<!-- 显示内容 -->
+<!-- top -->
+<div class="top">
+    <!-- <span>活动主题：</span>
+    <input type="text" class="int" name="activity_theme">
+    <input type="radio" name="status" checked="checked">全部
+    <input type="radio" name="status">有效
+    <input type="radio" name="status">过期
+    <input type="button" class="button" value="搜 索" onclick="return search();">
+    <input type="button" class="button" value="添 加" onclick="return add();"> -->
+</div>
+<!-- content -->
+<div>
+<form action="<?php echo arU(''); ?>" method="post" style="padding-left: 0;padding-right: 0;">
+    <table class="list" style="text-align: center;max-width: 100%;margin: auto;">
+        <thead>
+            <tr>
+                <th colspan="16">活动幼儿签到</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 15%"></td>
+                <td>班级：</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            // seg文件
+                            'segKey' => 'Html/select2',
+                            // <select name="name">
+                            'name' => 'cid',
+                            'id' => 'cid',
+                            // 适配器数据 数组
+                            // 'map' => AdModel::$TYPE_MAP,
+                            // map 多维数组适配器
+                            'mapbundle' => array($cs, 'cid', 'SY'),
+                            // 选中的value selected = selected
+                            // 'selected' => $ad['type']
+                            )
+                        );
+                    ?>
+                </td>
+                <td>签到幼儿：</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        @arSeg(
+                            array(
+                            'segKey' => 'Html/select2',
+                            'name' => 'bid',
+                            'id'    => 'bid',
+                            'map'   => '',
+                            )
+                        );
+                    ?>
+                </td>
+                <td>签到活动：</td>
+                <td>
+                    <?php
+                        // 调用用html seg 直接输出 select标签
+                        arSeg(
+                            array(
+                            'segKey' => 'Html/select',
+                            'name' => 'aid',
+                            'mapbundle' => array($activities, 'aid', 'activity_theme'),
+                            // 'map' => ActivityModel::$STATUS_ACTIVITY,
+                            )
+                        );
+                    ?>
+                </td>
+                <td>收费(RMB)：</td>
+                <td>
+                    <input type="text" class="int" name="charge">
+                </td>
+                <td style="width: 15%"></td>
+            </tr>
+            <tr>
+                <td colspan="18" style="padding: 15px 0;">
+                    <input type="submit" class="button" value="签 到" onclick="return add();">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+</div>
+<!-- buttom -->
+<div>
+    <?php if(isset($page)){echo($page->show());} ?>
+</div>
+<!-- 弹窗内容 -->
+<!-- <form action="" method="post" style="width: 868px;display: none;" id="edit_window">
+</form> -->
+<!-- js内容 -->
+<script>
+// function add() {
+//     $("[name = 'type']").attr('value', 'add');
+//     $.post("<?php echo arU('Home/eventSign') ?>",{name:name},function(res){});
+// }
+</script>
+<script>
+$("[name='cid']").change(function() {
+    var cid = document.getElementById('cid').value;
+    $.post("<?php echo arU('Senate/getbabysByCid') ?>", {
+            cid: cid,
+        },
+        function(res) {
+            var res = eval(res);
+            var sel = document.getElementById('bid');
+            sel.options.length = 0; //清空原来的项，如果不想清空去掉这句
+            if (res.length == 0) {
+                sel.options.add(new Option('请选择',''))
+            } else {
+                for (var i = 0; i < res.length; i++) {
+                    sel.options.add(new Option(res[i].name, res[i].bid));
+                }
+            }
+        });
+});
+</script>
+<!-- 测试内容 -->
+<pre>
+<?php 
+    // var_dump($activities);
+?>
+</pre>
